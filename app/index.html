@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <!-- SheetJS from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
     <div class="container">
@@ -24,6 +25,33 @@
                     </label>
                 </div>
                 <div id="fileInfo" class="file-info"></div>
+            </section>
+
+            <section class="scanner-section">
+                <div class="scanner-container">
+                    <div class="video-container">
+                        <video id="qrVideo" playsinline></video>
+                        <canvas id="qrCanvas" class="qr-overlay"></canvas>
+                    </div>
+                    <div class="scanner-controls">
+                        <button id="startScan" class="control-button">Start Scanner</button>
+                        <button id="stopScan" class="control-button" disabled>Stop Scanner</button>
+                    </div>
+                    <div class="manual-entry">
+                        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID manually">
+                        <button id="submitManual" class="control-button">Submit</button>
+                    </div>
+                </div>
+                <div id="scanResult" class="scan-result"></div>
+            </section>
+
+            <section class="scan-history">
+                <h2>Scan History</h2>
+                <div class="history-controls">
+                    <button id="exportHistory" class="control-button">Export History</button>
+                    <button id="clearHistory" class="control-button">Clear History</button>
+                </div>
+                <div id="scanHistory" class="history-list"></div>
             </section>
 
             <section class="data-display">
@@ -63,5 +91,6 @@
     </div>
 
     <script src="js/main.js"></script>
+    <script src="js/scanner.js"></script>
 </body>
 </html>

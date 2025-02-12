@@ -68,7 +68,7 @@ async function processFile(file) {
         
         // Extract table data starting from row 4
         const data = XLSX.utils.sheet_to_json(worksheet, {
-            range: 4, // Start from row 4 (0-based index)
+            range: 3, // Start from row 4 (0-based index)
             header: ['date', 'time', 'invoiceId', 'unused1', 'unused2', 'unused3', 'unused4', 'lnurlComment']
         });
         
@@ -118,14 +118,28 @@ function updateTable() {
     const end = start + rowsPerPage;
     const pageData = currentData.data.slice(start, end);
     
-    tableBody.innerHTML = pageData.map(row => `
-        <tr>
-            <td>${row.date}</td>
-            <td>${row.time}</td>
-            <td>${row.invoiceId}</td>
-            <td>${row.lnurlComment}</td>
-        </tr>
-    `).join('');
+    // Get scanned tickets from localStorage
+    let scannedTickets = [];
+    try {
+        const savedHistory = localStorage.getItem('scanHistory');
+        if (savedHistory) {
+            scannedTickets = JSON.parse(savedHistory).map(scan => scan.ticketId);
+        }
+    } catch (error) {
+        console.error('Error loading scan history:', error);
+    }
+    
+    tableBody.innerHTML = pageData.map(row => {
+        const isScanned = scannedTickets.includes(row.invoiceId.trim());
+        return `
+            <tr class="${isScanned ? 'scanned' : ''}">
+                <td>${row.date}</td>
+                <td>${row.time}</td>
+                <td>${row.invoiceId}</td>
+                <td>${row.lnurlComment}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function updatePagination() {

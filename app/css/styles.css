@@ -149,3 +149,185 @@ th {
 tr:hover {
     background-color: #f8f9fa;
 }
+
+tr.scanned {
+    background-color: #d4edda;
+}
+
+tr.scanned:hover {
+    background-color: #c3e6cb;
+}
+
+tr.scanned td {
+    position: relative;
+}
+
+tr.scanned td:first-child::before {
+    content: "✓";
+    position: absolute;
+    left: 5px;
+    color: #155724;
+}
+
+/* Scanner Section Styles */
+.scanner-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scanner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    height: 480px;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#qrVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.qr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.scanner-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.control-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.control-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.control-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.manual-entry {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.manual-entry input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.scan-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.scan-result.valid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.scan-result.duplicate {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.scan-result.invalid {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Scan History Styles */
+.scan-history {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.history-controls {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.history-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item .timestamp {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.history-item .status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.valid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.invalid {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge.duplicate {
+    background-color: #fff3cd;
+    color: #856404;
+}

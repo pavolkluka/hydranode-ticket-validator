@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure File Processor</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- SheetJS from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Secure File Processor</h1>
+        </header>
+
+        <main>
+            <section class="file-upload">
+                <div class="upload-zone" id="dropZone">
+                    <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input">
+                    <label for="fileInput" class="file-label">
+                        Drop files here or click to upload
+                        <span class="supported-formats">(Supported: .xls, .xlsx, .csv)</span>
+                    </label>
+                </div>
+                <div id="fileInfo" class="file-info"></div>
+            </section>
+
+            <section class="data-display">
+                <div class="metadata-panel">
+                    <div id="clientInfo"></div>
+                    <div id="storeInfo"></div>
+                </div>
+
+                <div class="table-controls">
+                    <div class="rows-per-page">
+                        <label for="rowsPerPage">Rows per page:</label>
+                        <select id="rowsPerPage">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Invoice ID</th>
+                                <th>LNURL Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

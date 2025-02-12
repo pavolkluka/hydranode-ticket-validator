@@ -13,6 +13,13 @@ A simple web-based application using HTML, JavaScript, and secure libraries.
 3. **High Security** – Since no data is sent to a server, there’s minimal risk of data leaks.
 4. **Easy Deployment** – The system is simple and can be shared via a local file, USB, or even hosted on an event organizer’s local web server.
 
+### Example of QR code
+
+Scanned QR code contains this example of a URL:
+https://tuttifrutti-event.com/btcpay/i/CtBMVpDs7ddFPgG4q2zQmJ/receipt
+
+Where `CtBMVpDs7ddFPgG4q2zQmJ` is the Ticket ID. This ID is located in uploaded file under column with the name "Invoice ID".
+
 ### Suggestions for Improvement
 
 #### 1. File Validation & Security
@@ -47,6 +54,7 @@ A simple web-based application using HTML, JavaScript, and secure libraries.
 - Implement audible or haptic feedback when an identifier is scanned to assist event staff.
 - Allow manual ticket entry for cases where QR scanners fail.
 - Use simple animations to make status changes more visible.
+- Implement view of loaded ticket from uploaded file, for example 5 per page or make availability to set number of view tickets per page.
 
 #### 5. Recommended Enhancements
 

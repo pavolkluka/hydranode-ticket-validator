@@ -65,3 +65,12 @@ Where `CtBMVpDs7ddFPgG4q2zQmJ` is the Ticket ID. This ID is located in uploaded 
 ### Conclusion
 
 Implementing these small improvements will ensure a **safe, fast, and smooth** ticket verification experience.
+
+## ToDo
+
+- [ ] Record invalid Ticked ID into Scan History(append column with information about Ticket ID- valid/invalid)
+- [ ] After scanner scan QR code successfully, stop scanner automaticaly
+- [ ] a
+- [ ] a
+- [ ] a
+- [ ] a

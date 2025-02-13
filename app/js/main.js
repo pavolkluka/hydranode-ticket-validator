@@ -68,7 +68,7 @@ async function processFile(file) {
         
         // Extract table data starting from row 4
         const data = XLSX.utils.sheet_to_json(worksheet, {
-            range: 3, // Start from row 4 (0-based index)
+            range: 4, // Start from row 5 (0-based index)
             header: ['date', 'time', 'invoiceId', 'unused1', 'unused2', 'unused3', 'unused4', 'lnurlComment']
         });
         

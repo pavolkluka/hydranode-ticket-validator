@@ -200,7 +200,7 @@
             position: relative;
             width: 100%;
             max-width: 300px;
-            height: 300px;
+            height: auto;
             background-color: #000;
             border-radius: 8px;
             overflow: hidden;
@@ -347,7 +347,7 @@
     <!-- SheetJS from CDN: use version 0.20.3 -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
     <!-- jsQR from JSDelvr: user version 1.4.0 -->
-    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" integrity="sha384-2EBe4bOCAHoiyZtAsgW2cgo3crpM072svgIIV2pYxOQWejDaa1rMJA9NH6LCkVQb" crossorigin="anonymous" defer></script>
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" integrity="sha384-7+6NtuEPG8SPa+HRop4AdiOIt8o2Pn7Mx7kG6WU6DP+bGLL38Nx5/WYqIgAUQKpP" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <div class="container">
@@ -678,6 +678,7 @@
         // DOM Elements
         const video = document.getElementById('qrVideo');
         const canvas = document.getElementById('qrCanvas');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
         const startButton = document.getElementById('startScan');
         const stopButton = document.getElementById('stopScan');
         const scanResult = document.getElementById('scanResult');
@@ -693,6 +694,16 @@
         submitManual.addEventListener('click', handleManualEntry);
         exportButton.addEventListener('click', exportScanHistory);
         clearButton.addEventListener('click', clearScanHistory);
+
+        // Stroke for QR code
+        function drawLine(begin, end, color) {
+            context.beginPath();
+            context.moveTo(begin.x, begin.y);
+            context.lineTo(end.x, end.y);
+            context.lineWidth = 4;
+            context.strokeStyle = color;
+            context.stroke();
+        }
 
         // Scanner Functions
         async function startScanner() {
@@ -723,7 +734,6 @@
         function scanQRCode() {
             if (!scanning) return;
 
-            const context = canvas.getContext('2d', { willReadFrequently: true });
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             
@@ -734,6 +744,11 @@
                 try {
                     const code = jsQR(imageData.data, imageData.width, imageData.height);
                     if (code) {
+                        console.log('QR Code detected:', code.data);
+                        drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF4D00");
+                        drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF4D00");
+                        drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF4D00");
+                        drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF4D00");
                         handleScan(code.data);
                     }
                 } catch (error) {

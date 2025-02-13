@@ -15,6 +15,7 @@ try {
 // DOM Elements
 const video = document.getElementById('qrVideo');
 const canvas = document.getElementById('qrCanvas');
+const context = canvas.getContext('2d', { willReadFrequently: true });
 const startButton = document.getElementById('startScan');
 const stopButton = document.getElementById('stopScan');
 const scanResult = document.getElementById('scanResult');
@@ -31,16 +32,29 @@ submitManual.addEventListener('click', handleManualEntry);
 exportButton.addEventListener('click', exportScanHistory);
 clearButton.addEventListener('click', clearScanHistory);
 
+// Stroke for QR code
+function drawLine(begin, end, color) {
+    context.beginPath();
+    context.moveTo(begin.x, begin.y);
+    context.lineTo(end.x, end.y);
+    context.lineWidth = 4;
+    context.strokeStyle = color;
+    context.stroke();
+}
+
 // Scanner Functions
-async function startScanner() {
+// async function startScanner() {
+function startScanner() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        video.srcObject = stream;
-        video.play();
-        scanning = true;
-        startButton.disabled = true;
-        stopButton.disabled = false;
-        scanQRCode();
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
+            video.srcObject = stream;
+            video.play();
+            scanning = true;
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            requestAnimationFrame(scanQRCode);
+        };
+        
     } catch (error) {
         console.error('Error accessing camera:', error);
         scanResult.textContent = 'Error accessing camera. Please check permissions.';
@@ -60,7 +74,6 @@ function stopScanner() {
 function scanQRCode() {
     if (!scanning) return;
 
-    const context = canvas.getContext('2d', { willReadFrequently: true });
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     
@@ -71,6 +84,11 @@ function scanQRCode() {
         try {
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             if (code) {
+                console.log('QR Code detected:', code.data);
+                drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF4D00");
+                drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF4D00");
+                drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF4D00");
+                drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF4D00");
                 handleScan(code.data);
             }
         } catch (error) {

@@ -68,15 +68,18 @@ Implementing these small improvements will ensure a **safe, fast, and smooth** t
 
 ## ToDo
 
-- [ ] Record invalid Ticked ID into Scan History(append column with information about Ticket ID- valid/invalid)
-- [ ] After scanner scan QR code successfully, stop scanner automaticaly
+- [ ] Add "Subresource Integrity" for remote JavaScript resources (jsQR, SheetJS)
+- [ ] ? Add collumn to "Scan History" > LNURL Comment
+- [ ] Add filter options for "Scan History" and "Ticket List"
 - [ ] Make "Scan History" with tabs > All | Valid | Duplicate | Invalid
 - [ ] Make "Ticket List" with tabs > All | Valid | Duplicate | Invalid
-- [ ] Reorder sections
-  - [ ] 1 Load File
-  - [ ] 2 Scan QR Code
-  - [ ] 3 List of Tickets
-  - [ ] 4 Scan History
-- [ ] Add filter options for "Scan History" and "Ticket List"
-- [ ] Make smaller "Scan Window"
-
+- [ ] Record invalid Ticked ID into Scan History(append column with information about Ticket ID- valid/invalid)
+- [x] After scanner scan QR code, stop scanner automaticaly
+- [x] Make smaller "Scan Window"
+- [x] Reorder sections
+  - [x] 1 Load File
+  - [x] 2 Scan QR Code
+  - [x] 3 List of Tickets
+  - [x] 4 Scan History
+- [x] Add main.js and scanner.js to HTML page to make it portable
+- [ ] Prepare a business model

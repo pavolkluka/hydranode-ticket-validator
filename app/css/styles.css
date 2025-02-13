@@ -189,7 +189,7 @@ tr.scanned td:first-child::before {
     position: relative;
     width: 100%;
     max-width: 300px;
-    height: 300px;
+    height: auto;
     background-color: #000;
     border-radius: 8px;
     overflow: hidden;

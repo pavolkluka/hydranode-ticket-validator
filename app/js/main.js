@@ -177,6 +177,27 @@ function updatePagination() {
     pagination.innerHTML = paginationHTML.join('');
 }
 
+// Function to update the statistics
+function updateStatistics() {
+    if (!currentData || !currentData.data) return;
+    
+    const totalTickets = currentData.data.length;
+    const scannedTickets = scanHistory.reduce((acc, scan) => {
+        if (scan.status === 'valid') acc.valid++;
+        else if (scan.status === 'duplicate') acc.duplicate++;
+        else if (scan.status === 'invalid') acc.invalid++;
+        return acc;
+    }, { valid: 0, duplicate: 0, invalid: 0 });
+    
+    const remainingTickets = totalTickets - scannedTickets.valid;
+
+    document.getElementById('totalTickets').textContent = totalTickets;
+    document.getElementById('validTickets').textContent = scannedTickets.valid;
+    document.getElementById('duplicateTickets').textContent = scannedTickets.duplicate;
+    document.getElementById('invalidTickets').textContent = scannedTickets.invalid;
+    document.getElementById('remainingTickets').textContent = remainingTickets;
+}
+
 // Event Handlers
 async function handleFileSelect(event) {
     const file = event.target.files[0];
@@ -185,6 +206,7 @@ async function handleFileSelect(event) {
     try {
         const processedData = await processFile(file);
         updateDisplay(processedData);
+        updateStatistics();
         fileInfo.style.display = 'block';
         fileInfo.textContent = `File processed successfully: ${file.name}`;
     } catch (error) {

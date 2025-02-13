@@ -53,7 +53,7 @@ function startScanner() {
             startButton.disabled = true;
             stopButton.disabled = false;
             requestAnimationFrame(scanQRCode);
-        };
+        });
         
     } catch (error) {
         console.error('Error accessing camera:', error);
@@ -183,7 +183,8 @@ function processScan(ticketId) {
         // Stop scanner after valid scan
         stopScanner();
     }
-    
+
+    updateStatistics();
     updateHistoryDisplay();
     updateTable();
 }

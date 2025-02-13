@@ -68,8 +68,7 @@ Implementing these small improvements will ensure a **safe, fast, and smooth** t
 
 ## ToDo
 
-- [ ] Add "Subresource Integrity" for remote JavaScript resources (jsQR, SheetJS)
-- [ ] ? Add collumn to "Scan History" > LNURL Comment
+- [ ] Add small buttons for quick statistics about scanned valid QR codes, invalid, duplicate and the rest of them
 - [ ] Add filter options for "Scan History" and "Ticket List"
 - [ ] Make "Scan History" with tabs > All | Valid | Duplicate | Invalid
 - [ ] Make "Ticket List" with tabs > All | Valid | Duplicate | Invalid
@@ -82,4 +81,6 @@ Implementing these small improvements will ensure a **safe, fast, and smooth** t
   - [x] 3 List of Tickets
   - [x] 4 Scan History
 - [x] Add main.js and scanner.js to HTML page to make it portable
+- [x] Add "Subresource Integrity" for remote JavaScript resources (jsQR, SheetJS)
+- [ ] ? Add collumn to "Scan History" > LNURL Comment
 - [ ] Prepare a business model

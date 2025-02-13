@@ -3,11 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure File Processor</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- SheetJS from CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <title>Hydranode Ticket Validator</title>
+    <meta name="title" content="Scan and verify ticket for your event with Hydranode Ticket Validator!">
+    <meta name="description" content="Hydranode Ticket Validator is a tool that allows you to verify whether a ticket is valid by simply scanning a QR code.">
+    <!-- Main CSS Style -->
+    <!-- <link rel="stylesheet" href="css/styles.css"> -->
+    <style type="text/css">
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* File Upload Styles */
+        .file-upload {
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: #666;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: block;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .supported-formats {
+            display: block;
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #fff;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* Data Display Styles */
+        .data-display {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .metadata-panel {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .rows-per-page select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .pagination button.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        tr.scanned {
+            background-color: #d4edda;
+        }
+
+        tr.scanned:hover {
+            background-color: #c3e6cb;
+        }
+
+        tr.scanned td {
+            position: relative;
+        }
+
+        tr.scanned td:first-child::before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #155724;
+        }
+
+        /* Scanner Section Styles */
+        .scanner-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .scanner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #qrVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .qr-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .scanner-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .control-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .control-button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        .manual-entry {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .manual-entry input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .scan-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .scan-result.valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .scan-result.duplicate {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .scan-result.invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Scan History Styles */
+        .scan-history {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .history-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item .timestamp {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .history-item .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.duplicate {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+    <!-- JavaScript Libraries -->
+    <!-- SheetJS from CDN: use version 0.20.3 -->
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
+    <!-- jsQR from JSDelvr: user version 1.4.0 -->
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" integrity="sha384-2EBe4bOCAHoiyZtAsgW2cgo3crpM072svgIIV2pYxOQWejDaa1rMJA9NH6LCkVQb" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <div class="container">
@@ -90,7 +430,475 @@
         </main>
     </div>
 
-    <script src="js/main.js"></script>
-    <script src="js/scanner.js"></script>
+    <!-- <script src="js/main.js"></script> -->
+    <script lang="text/javascript">
+        // Global variables
+        let currentData = null;
+        let currentPage = 1;
+        let rowsPerPage = 5;
+
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const fileInfo = document.getElementById('fileInfo');
+        const clientInfo = document.getElementById('clientInfo');
+        const storeInfo = document.getElementById('storeInfo');
+        const tableBody = document.getElementById('tableBody');
+        const rowsPerPageSelect = document.getElementById('rowsPerPage');
+        const pagination = document.getElementById('pagination');
+
+        // Event Listeners
+        fileInput.addEventListener('change', handleFileSelect);
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('drop', handleDrop);
+        rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
+
+        // File Validation Functions
+        function isValidFileType(file) {
+            const validTypes = [
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'text/csv'
+            ];
+            return validTypes.includes(file.type) || 
+                   file.name.endsWith('.xls') || 
+                   file.name.endsWith('.xlsx') || 
+                   file.name.endsWith('.csv');
+        }
+
+        function validateFile(file) {
+            if (!file) {
+                throw new Error('No file selected');
+            }
+            
+            if (!isValidFileType(file)) {
+                throw new Error('Invalid file type. Please upload .xls, .xlsx, or .csv files only');
+            }
+            
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                throw new Error('File size too large. Maximum size is 10MB');
+            }
+        }
+
+        // File Processing Functions
+        async function processFile(file) {
+            try {
+                validateFile(file);
+                
+                const arrayBuffer = await file.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, {
+                    type: 'array',
+                    cellDates: true,
+                    cellNF: true,
+                    cellStyles: true
+                });
+                
+                // Get the first sheet
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                
+                // Extract metadata
+                const clientId = worksheet['B1']?.v || 'N/A';
+                const storeName = worksheet['B2']?.v || 'N/A';
+                
+                // Extract table data starting from row 4
+                const data = XLSX.utils.sheet_to_json(worksheet, {
+                    range: 4, // Start from row 5 (0-based index)
+                    header: ['date', 'time', 'invoiceId', 'unused1', 'unused2', 'unused3', 'unused4', 'lnurlComment']
+                });
+                
+                // Filter only required columns and validate data
+                const processedData = data.map(row => ({
+                    date: formatDate(row.date),
+                    time: row.time || '',
+                    invoiceId: row.invoiceId || '',
+                    lnurlComment: row.lnurlComment || ''
+                }));
+                
+                return {
+                    clientId,
+                    storeName,
+                    data: processedData
+                };
+            } catch (error) {
+                throw new Error(`Error processing file: ${error.message}`);
+            }
+        }
+
+        // Helper Functions
+        function formatDate(date) {
+            if (!date) return '';
+            if (date instanceof Date) {
+                return date.toLocaleDateString();
+            }
+            return date.toString();
+        }
+
+        function updateDisplay(processedData) {
+            currentData = processedData;
+            
+            // Update metadata
+            clientInfo.innerHTML = `<strong>Client ID:</strong> ${processedData.clientId}`;
+            storeInfo.innerHTML = `<strong>Store Name:</strong> ${processedData.storeName}`;
+            
+            // Update table
+            updateTable();
+            updatePagination();
+        }
+
+        function updateTable() {
+            if (!currentData) return;
+            
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = currentData.data.slice(start, end);
+            
+            // Get scanned tickets from localStorage
+            let scannedTickets = [];
+            try {
+                const savedHistory = localStorage.getItem('scanHistory');
+                if (savedHistory) {
+                    scannedTickets = JSON.parse(savedHistory).map(scan => scan.ticketId);
+                }
+            } catch (error) {
+                console.error('Error loading scan history:', error);
+            }
+            
+            tableBody.innerHTML = pageData.map(row => {
+                const isScanned = scannedTickets.includes(row.invoiceId.trim());
+                return `
+                    <tr class="${isScanned ? 'scanned' : ''}">
+                        <td>${row.date}</td>
+                        <td>${row.time}</td>
+                        <td>${row.invoiceId}</td>
+                        <td>${row.lnurlComment}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updatePagination() {
+            if (!currentData) return;
+            
+            const totalPages = Math.ceil(currentData.data.length / rowsPerPage);
+            const paginationHTML = [];
+            
+            // Previous button
+            paginationHTML.push(`
+                <button ${currentPage === 1 ? 'disabled' : ''} 
+                        onclick="changePage(${currentPage - 1})">
+                    Previous
+                </button>
+            `);
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML.push(`
+                    <button class="${currentPage === i ? 'active' : ''}"
+                            onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `);
+            }
+            
+            // Next button
+            paginationHTML.push(`
+                <button ${currentPage === totalPages ? 'disabled' : ''} 
+                        onclick="changePage(${currentPage + 1})">
+                    Next
+                </button>
+            `);
+            
+            pagination.innerHTML = paginationHTML.join('');
+        }
+
+        // Event Handlers
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                const processedData = await processFile(file);
+                updateDisplay(processedData);
+                fileInfo.style.display = 'block';
+                fileInfo.textContent = `File processed successfully: ${file.name}`;
+            } catch (error) {
+                fileInfo.style.display = 'block';
+                fileInfo.textContent = error.message;
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            dropZone.classList.add('dragover');
+        }
+
+        async function handleDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            dropZone.classList.remove('dragover');
+            
+            const file = event.dataTransfer.files[0];
+            if (!file) return;
+            
+            fileInput.files = event.dataTransfer.files;
+            await handleFileSelect({ target: { files: [file] } });
+        }
+
+        function handleRowsPerPageChange(event) {
+            rowsPerPage = parseInt(event.target.value);
+            currentPage = 1;
+            updateTable();
+            updatePagination();
+        }
+
+        // Navigation Functions
+        function changePage(page) {
+            currentPage = page;
+            updateTable();
+            updatePagination();
+        }
+    </script>
+    <!-- <script src="js/scanner.js"></script> -->
+    <script type="text/javascript">
+        // Scanner state
+        let scanning = false;
+        let scanHistory = [];
+
+        // Load scan history from localStorage
+        try {
+            const savedHistory = localStorage.getItem('scanHistory');
+            if (savedHistory) {
+                scanHistory = JSON.parse(savedHistory);
+            }
+        } catch (error) {
+            console.error('Error loading scan history:', error);
+        }
+
+        // DOM Elements
+        const video = document.getElementById('qrVideo');
+        const canvas = document.getElementById('qrCanvas');
+        const startButton = document.getElementById('startScan');
+        const stopButton = document.getElementById('stopScan');
+        const scanResult = document.getElementById('scanResult');
+        const manualInput = document.getElementById('manualTicketId');
+        const submitManual = document.getElementById('submitManual');
+        const exportButton = document.getElementById('exportHistory');
+        const clearButton = document.getElementById('clearHistory');
+        const historyList = document.getElementById('scanHistory');
+
+        // Event Listeners
+        startButton.addEventListener('click', startScanner);
+        stopButton.addEventListener('click', stopScanner);
+        submitManual.addEventListener('click', handleManualEntry);
+        exportButton.addEventListener('click', exportScanHistory);
+        clearButton.addEventListener('click', clearScanHistory);
+
+        // Scanner Functions
+        async function startScanner() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                video.play();
+                scanning = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                scanQRCode();
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                scanResult.textContent = 'Error accessing camera. Please check permissions.';
+                scanResult.className = 'scan-result invalid';
+            }
+        }
+
+        function stopScanner() {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            scanning = false;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        function scanQRCode() {
+            if (!scanning) return;
+
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                
+                try {
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    if (code) {
+                        handleScan(code.data);
+                    }
+                } catch (error) {
+                    console.error('Error processing QR code:', error);
+                }
+            }
+            
+            requestAnimationFrame(scanQRCode);
+        }
+
+        // Ticket Processing Functions
+        function extractTicketId(url) {
+            try {
+                const match = url.match(/\/i\/([^\/]+)\/receipt/);
+                return match ? match[1] : null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function validateTicketId(ticketId) {
+            if (!ticketId || !currentData) return { valid: false, message: 'Invalid ticket ID' };
+            
+            // Trim the ticket ID and ensure consistent format
+            const normalizedTicketId = ticketId.trim();
+            console.log('Searching for ticket:', normalizedTicketId); // Debug log
+            console.log('Available tickets:', currentData.data.map(row => row.invoiceId)); // Debug log
+            
+            const ticket = currentData.data.find(row => 
+                row.invoiceId && row.invoiceId.trim() === normalizedTicketId
+            );
+            if (!ticket) return { valid: false, message: 'Ticket not found in database' };
+            
+            const previousScan = scanHistory.find(scan => scan.ticketId === ticketId);
+            if (previousScan) {
+                return { 
+                    valid: true, 
+                    duplicate: true, 
+                    message: `Ticket already scanned at ${new Date(previousScan.timestamp).toLocaleString()}`
+                };
+            }
+            
+            return { valid: true, duplicate: false, message: 'Valid ticket' };
+        }
+
+        async function handleScan(qrData) {
+            const ticketId = extractTicketId(qrData);
+            if (!ticketId) {
+                updateScanResult('Invalid QR code format', 'invalid');
+                return;
+            }
+            
+            processScan(ticketId);
+        }
+
+        function handleManualEntry() {
+            const ticketId = manualInput.value.trim();
+            if (!ticketId) {
+                updateScanResult('Please enter a ticket ID', 'invalid');
+                return;
+            }
+            
+            processScan(ticketId);
+            manualInput.value = '';
+        }
+
+        function processScan(ticketId) {
+            const validation = validateTicketId(ticketId);
+
+            const scan = {
+                ticketId,
+                timestamp: Date.now(),
+                method: 'scan',
+                status: validation.valid ? (validation.duplicate ? 'duplicate' : 'valid') : 'invalid'
+            };
+            
+            // Add to scan history regardless of validity
+            scanHistory.unshift(scan);
+            saveScanHistory();
+            
+            // Update UI based on validation result
+            if (!validation.valid) {
+                updateScanResult(validation.message, 'invalid');
+                // Stop scanner after invalid scan
+                stopScanner();
+            } else if (validation.duplicate) {
+                updateScanResult(validation.message, 'duplicate');
+                // Stop scanner after duplicate scan
+                stopScanner();
+            } else {
+                updateScanResult('Ticket validated successfully', 'valid');
+                // Stop scanner after valid scan
+                stopScanner();
+            }
+            
+            updateHistoryDisplay();
+            updateTable();
+        }
+
+        // UI Update Functions
+        function updateScanResult(message, status) {
+            scanResult.textContent = message;
+            scanResult.className = `scan-result ${status}`;
+        }
+
+        function getStatusText(status) {
+            const statusMapping = {
+                valid: 'Valid',
+                invalid: 'Invalid',
+                duplicate: 'Duplicate'
+            };
+            
+            return statusMapping[status];
+        }
+
+        function updateHistoryDisplay() {
+            historyList.innerHTML = scanHistory.map(scan => `
+                <div class="history-item">
+                    <span class="ticket-id">${scan.ticketId}</span>
+                    <span class="status-badge ${scan.status}">${getStatusText(scan.status)}</span>
+                    <span class="timestamp">${new Date(scan.timestamp).toLocaleString()}</span>
+                </div>
+            `).join('');
+        }
+
+        // History Management Functions
+        function saveScanHistory() {
+            try {
+                localStorage.setItem('scanHistory', JSON.stringify(scanHistory));
+            } catch (error) {
+                console.error('Error saving scan history:', error);
+            }
+        }
+
+        function clearScanHistory() {
+            if (confirm('Are you sure you want to clear the scan history?')) {
+                scanHistory = [];
+                saveScanHistory();
+                updateHistoryDisplay();
+            }
+        }
+
+        async function exportScanHistory() {
+            const csv = [
+                ['Ticket ID', 'Timestamp', 'Method'],
+                ...scanHistory.map(scan => [
+                    scan.ticketId,
+                    new Date(scan.timestamp).toLocaleString(),
+                    scan.method
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scan-history-${new Date().toISOString()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize history display
+        updateHistoryDisplay();
+    </script>
 </body>
 </html>

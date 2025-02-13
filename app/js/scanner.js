@@ -60,7 +60,7 @@ function stopScanner() {
 function scanQRCode() {
     if (!scanning) return;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     

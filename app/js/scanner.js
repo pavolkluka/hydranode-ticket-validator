@@ -139,30 +139,34 @@ function handleManualEntry() {
 
 function processScan(ticketId) {
     const validation = validateTicketId(ticketId);
-    
-    if (!validation.valid) {
-        updateScanResult(validation.message, 'invalid');
-        return;
-    }
-    
-    if (validation.duplicate) {
-        updateScanResult(validation.message, 'duplicate');
-        return;
-    }
-    
-    // Add to scan history
+
     const scan = {
         ticketId,
         timestamp: Date.now(),
-        method: 'scan'
+        method: 'scan',
+        status: validation.valid ? (validation.duplicate ? 'duplicate' : 'valid') : 'invalid'
     };
     
+    // Add to scan history regardless of validity
     scanHistory.unshift(scan);
     saveScanHistory();
-    updateScanResult('Ticket validated successfully', 'valid');
-    updateHistoryDisplay();
     
-    // Refresh the table to show the newly scanned ticket
+    // Update UI based on validation result
+    if (!validation.valid) {
+        updateScanResult(validation.message, 'invalid');
+        // Stop scanner after invalid scan
+        stopScanner();
+    } else if (validation.duplicate) {
+        updateScanResult(validation.message, 'duplicate');
+        // Stop scanner after duplicate scan
+        stopScanner();
+    } else {
+        updateScanResult('Ticket validated successfully', 'valid');
+        // Stop scanner after valid scan
+        stopScanner();
+    }
+    
+    updateHistoryDisplay();
     updateTable();
 }
 
@@ -172,10 +176,21 @@ function updateScanResult(message, status) {
     scanResult.className = `scan-result ${status}`;
 }
 
+function getStatusText(status) {
+    const statusMapping = {
+        valid: 'Valid',
+        invalid: 'Invalid',
+        duplicate: 'Duplicate'
+    };
+    
+    return statusMapping[status];
+}
+
 function updateHistoryDisplay() {
     historyList.innerHTML = scanHistory.map(scan => `
         <div class="history-item">
             <span class="ticket-id">${scan.ticketId}</span>
+            <span class="status-badge ${scan.status}">${getStatusText(scan.status)}</span>
             <span class="timestamp">${new Date(scan.timestamp).toLocaleString()}</span>
         </div>
     `).join('');

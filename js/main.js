@@ -249,6 +249,7 @@ async function handleFileSelect(event) {
         // Then process the file
         const processedData = await processFile(file);
         updateDisplay(processedData);
+        updateStatistics();
         
         if (fileInfo) {
             fileInfo.style.display = 'block';

@@ -16,6 +16,9 @@ const pagination = document.getElementById('pagination');
 // XLS file signature (D0 CF 11 E0 A1 B1 1A E1)
 const XLS_SIGNATURE = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
 
+// Default value for scan status
+scanStatus = "pending";
+
 // Event Listeners
 fileInput.addEventListener('change', handleFileSelect);
 dropZone.addEventListener('dragover', handleDragOver);
@@ -161,8 +164,15 @@ function updateTable() {
     
     tableBody.innerHTML = pageData.map(row => {
         const isScanned = scannedTickets.includes(row.invoiceId.trim());
+        if (isScanned) {
+            scannedTableRowClass = "status-" + scanStatus;
+        }
+        else {
+            scannedTableRowClass = ''
+        }
+
         return `
-            <tr class="${isScanned ? 'scanned' : ''}">
+            <tr class="${scannedTableRowClass}">
                 <td>${row.date}</td>
                 <td>${row.time}</td>
                 <td>${row.invoiceId}</td>
@@ -216,6 +226,7 @@ function updateStatistics() {
         if (scan.status === 'valid') acc.valid++;
         else if (scan.status === 'duplicate') acc.duplicate++;
         else if (scan.status === 'invalid') acc.invalid++;
+        scanStatus = scan.status;
         return acc;
     }, { valid: 0, duplicate: 0, invalid: 0 });
     

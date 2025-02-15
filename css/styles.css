@@ -18,6 +18,8 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 /* Header */
@@ -296,25 +298,71 @@ tr:hover {
 }
 
 @media (max-width: 768px) {
+    body {
+        min-width: 320px;
+        overflow-x: hidden;
+    }
+
     .container {
         padding: 1rem;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
     
+    .main-container {
+        padding: 0.5rem;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
     .scanner-controls,
     .history-controls {
         flex-direction: column;
+        width: 100%;
     }
     
     .manual-entry {
         flex-direction: column;
+        width: 100%;
     }
     
     .statistics-grid {
         grid-template-columns: 1fr;
+        width: 100%;
     }
     
     .control-button {
         width: 100%;
+    }
+
+    .table-container {
+        max-width: 100vw;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        width: 100%;
+        min-width: 100%;
+        font-size: 14px;
+    }
+
+    td, th {
+        padding: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .data-display {
+        padding: 0.75rem;
+        width: 100%;
+    }
+
+    .file-info,
+    .scan-data,
+    .scan-result {
+        width: 100%;
+        word-break: break-word;
     }
 }
 

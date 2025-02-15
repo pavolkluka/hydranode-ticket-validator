@@ -28,6 +28,8 @@ const submitManual = document.getElementById('submitManual');
 const exportButton = document.getElementById('exportHistory');
 const clearButton = document.getElementById('clearHistory');
 const historyList = document.getElementById('scanHistory');
+const scanMessageModal = document.getElementById('scanMessageModal');
+const closeModalButton = document.getElementById('closeModal');
 
 // Event Listeners
 startButton.addEventListener('click', startScanner);
@@ -35,6 +37,11 @@ stopButton.addEventListener('click', stopScanner);
 submitManual.addEventListener('click', handleManualEntry);
 exportButton.addEventListener('click', exportScanHistory);
 clearButton.addEventListener('click', clearScanHistory);
+closeModalButton.addEventListener('click', () => {
+    scanMessageModal.classList.remove('active');
+    scanData.innerHTML = '';
+    scanResult.textContent = '';
+});
 
 // Stroke for QR code
 function drawLine(begin, end, color) {
@@ -182,11 +189,6 @@ function handleManualEntry() {
     const ticketId = manualInput.value.trim();
     
     if (!ticketId) {
-        const resultMessage = `Data: ${code.data}<br>Ticket ID: ${ticketId || 'Not found'}`;
-
-        scanData.innerHTML = resultMessage;
-        // scanData.textContent = resultMessage;
-        scanData.className = 'scan-data message';
         
         updateScanResult('Please enter a ticket ID', 'invalid');
         return;
@@ -240,6 +242,8 @@ function processScan(ticketId) {
 function updateScanResult(message, status) {
     scanResult.textContent = message;
     scanResult.className = `scan-result ${status}`;
+    scanData.className = `scan-data ${status}`;
+    scanMessageModal.classList.add('active');
 }
 
 function getStatusText(status) {

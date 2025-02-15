@@ -176,6 +176,12 @@ function handleManualEntry() {
     const ticketId = manualInput.value.trim();
     
     if (!ticketId) {
+        const resultMessage = `Data: ${code.data} | Ticket ID: ${ticketId || 'Not found'}`;
+
+        // scanData.innerHTML = resultMessage;
+        scanData.textContent = resultMessage;
+        scanData.className = 'scan-data message';
+        
         updateScanResult('Please enter a ticket ID', 'invalid');
         return;
     }

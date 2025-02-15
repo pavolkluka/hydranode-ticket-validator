@@ -98,7 +98,6 @@ function scanQRCode() {
                 // Extract ticket ID
                 const ticketId = extractTicketId(code.data);
                 
-
                 // Update scan result with full information
                 const resultMessage = `Data: ${code.data} | Ticket ID: ${ticketId || 'Not found'}`;
 
@@ -117,6 +116,13 @@ function scanQRCode() {
                     }
 
                     handleScan(code.data);
+                }
+                else {
+                    updateScanResult('Invalid or missing ticket ID format.', 'invalid');
+                        
+                    // Stop scanner after valid scan
+                    stopScanner();
+                    return;
                 }
             }
         } catch (error) {

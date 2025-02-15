@@ -12,6 +12,9 @@ try {
     console.error('Error loading scan history:', error);
 }
 
+// Base58 validation regex
+const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{22,44}$/;
+
 // DOM Elements
 const video = document.getElementById('qrVideo');
 const canvas = document.getElementById('qrCanvas');
@@ -19,6 +22,7 @@ const context = canvas.getContext('2d', { willReadFrequently: true });
 const startButton = document.getElementById('startScan');
 const stopButton = document.getElementById('stopScan');
 const scanResult = document.getElementById('scanResult');
+const scanData = document.getElementById('scanData');
 const manualInput = document.getElementById('manualTicketId');
 const submitManual = document.getElementById('submitManual');
 const exportButton = document.getElementById('exportHistory');
@@ -85,11 +89,35 @@ function scanQRCode() {
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             if (code) {
                 console.log('QR Code detected:', code.data);
+                // Draw QR code outline
                 drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF4D00");
                 drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF4D00");
                 drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF4D00");
                 drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF4D00");
-                handleScan(code.data);
+                
+                // Extract ticket ID
+                const ticketId = extractTicketId(code.data);
+                
+
+                // Update scan result with full information
+                const resultMessage = `Data: ${code.data} | Ticket ID: ${ticketId || 'Not found'}`;
+
+                // scanData.innerHTML = resultMessage;
+                scanData.textContent = resultMessage;
+                scanData.className = 'scan-data message';
+                
+                if (ticketId) {
+                    // Validate Base58 format and length
+                    if (!base58Regex.test(ticketId)) {
+                        updateScanResult('Invalid ticket ID format.', 'invalid');
+                        
+                        // Stop scanner after valid scan
+                        stopScanner();
+                        return;
+                    }
+
+                    handleScan(code.data);
+                }
             }
         } catch (error) {
             console.error('Error processing QR code:', error);
@@ -100,7 +128,7 @@ function scanQRCode() {
 }
 
 // Ticket Processing Functions
-function extractTicketId(url) {
+function extractTicketId(url) {updateScanResult
     try {
         const match = url.match(/\/i\/([^\/]+)\/receipt/);
         return match ? match[1] : null;
@@ -146,8 +174,15 @@ async function handleScan(qrData) {
 
 function handleManualEntry() {
     const ticketId = manualInput.value.trim();
+    
     if (!ticketId) {
         updateScanResult('Please enter a ticket ID', 'invalid');
+        return;
+    }
+    
+    // Validate Base58 format and length
+    if (!base58Regex.test(ticketId)) {
+        updateScanResult('Invalid ticket ID format.', 'invalid');
         return;
     }
     

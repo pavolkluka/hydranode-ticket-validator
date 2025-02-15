@@ -21,15 +21,8 @@ rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
 
 // File Validation Functions
 function isValidFileType(file) {
-    const validTypes = [
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv'
-    ];
-    return validTypes.includes(file.type) || 
-           file.name.endsWith('.xls') || 
-           file.name.endsWith('.xlsx') || 
-           file.name.endsWith('.csv');
+    const validType = 'application/vnd.ms-excel';
+    return file.type === validType || file.name.toLowerCase().endsWith('.xls');
 }
 
 function validateFile(file) {
@@ -38,7 +31,7 @@ function validateFile(file) {
     }
     
     if (!isValidFileType(file)) {
-        throw new Error('Invalid file type. Please upload .xls, .xlsx, or .csv files only');
+        throw new Error('Invalid file type. Please upload .xls file.');
     }
     
     if (file.size > 10 * 1024 * 1024) { // 10MB limit

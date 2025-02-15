@@ -1,15 +1,18 @@
 {
   "name": "Hydranode Ticket Validator",
-  "short_name": "HydraTickValid",
-  "start_url": "index.html",
+  "short_name": "Ticket Validator",
+  "description": "Validate event tickets by scanning QR codes",
+  "id": "/hydranode-ticket-validator/",
+  "start_url": "/hydranode-ticket-validator/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#000000",
+  "theme_color": "#f8c423",
   "icons": [
     {
       "src": "data:image/png;base64, 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",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

@@ -109,7 +109,7 @@ function scanQRCode() {
                 if (ticketId) {
                     // Validate Base58 format and length
                     if (!base58Regex.test(ticketId)) {
-                        updateScanResult('Invalid ticket ID format.', 'invalid');
+                        updateScanResult('Invalid or missing ticket ID format.', 'invalid');
                         
                         // Stop scanner after valid scan
                         stopScanner();

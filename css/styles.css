@@ -23,6 +23,25 @@ header {
     text-align: center;
 }
 
+/* Responsive Grid Layout */
+.main-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.file-upload,
+.scanner-section,
+.data-statistics,
+.data-display,
+.scan-history {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* File Upload Styles */
 .file-upload {
     margin-bottom: 2rem;
@@ -71,6 +90,14 @@ header {
     background-color: #fff;
     border-radius: 8px;
     display: none;
+}
+
+/* Improve Touch Targets */
+button,
+select,
+input[type="file"] {
+    min-height: 44px;
+    padding: 0.75rem 1.25rem;
 }
 
 /* Data Display Styles */
@@ -128,10 +155,12 @@ header {
 /* Table Styles */
 .table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
     width: 100%;
+    min-width: 600px;
     border-collapse: collapse;
 }
 
@@ -347,19 +376,14 @@ tr.scanned td:first-child::before {
 
 .upload-scanner-wrapper {
     display: flex;
+    flex-wrap: wrap;
     gap: 2rem;
-    margin-bottom: 2rem;
-    align-items: flex-start;
+    justify-content: space-between;
 }
 
-.file-upload {
-    flex: 1;
-    margin-bottom: 0; /* Remove the original margin */
-}
-
+.file-upload,
 .scanner-section {
-    flex: 1;
-    margin-top: 0; /* Remove the original margin */
+    flex: 1 1 300px;
 }
 
 /* Make the upload zone maintain height */
@@ -564,6 +588,44 @@ tr.scanned td:first-child::before {
 }
 
 /* Print styles */
+@media print {
+    .scanner-section,
+    .scanner-controls,
+    .manual-entry,
+    .file-upload {
+        display: none;
+    }
+}
+
+/* Mobile-friendly Enhancements */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .upload-scanner-wrapper {
+        flex-direction: column;
+    }
+    
+    .manual-entry {
+        flex-direction: column;
+    }
+    
+    .manual-entry input,
+    .manual-entry button {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+
+/* Large Screens */
+@media (min-width: 992px) {
+    .container {
+        max-width: 1400px;
+    }
+}
+
+/* Print Styles */
 @media print {
     .scanner-section,
     .scanner-controls,

@@ -309,7 +309,7 @@ tr.scanned td:first-child::before {
 }
 
 .scan-data.message {
-    background-color: #daa520;
+    background-color: #f8f9fa;
     color: #000;
 }
 

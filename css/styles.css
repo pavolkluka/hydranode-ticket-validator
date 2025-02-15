@@ -5,6 +5,7 @@
     box-sizing: border-box;
 }
 
+/* Body Styling */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
@@ -12,12 +13,14 @@ body {
     background-color: #f5f5f5;
 }
 
+/* Container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
 }
 
+/* Header */
 header {
     margin-bottom: 2rem;
     text-align: center;
@@ -26,11 +29,12 @@ header {
 /* Responsive Grid Layout */
 .main-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     padding: 1.5rem;
 }
 
+/* Component Styling */
 .file-upload,
 .scanner-section,
 .data-statistics,
@@ -92,12 +96,12 @@ header {
     display: none;
 }
 
-/* Improve Touch Targets */
-button,
-select,
-input[type="file"] {
+/* Button Improvements */
+button, select, input[type="file"] {
     min-height: 44px;
-    padding: 0.75rem 1.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    cursor: pointer;
 }
 
 /* Data Display Styles */
@@ -548,14 +552,15 @@ tr.scanned td:first-child::before {
     }
 }
 
-/* Medium devices (landscape tablets, 768px and up) */
+/* Medium Devices (Tablets, 768px-992px) */
 @media only screen and (min-width: 768px) and (max-width: 992px) {
     .main-container {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         gap: 1rem;
     }
 }
 
-/* Large devices (laptops/desktops, 992px and up) */
+/* Large Devices (Desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
     .container {
         max-width: 1400px;
@@ -574,6 +579,22 @@ tr.scanned td:first-child::before {
     }
 }
 
+/* Small Screens (Phones, up to 767px) */
+@media only screen and (max-width: 767px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .main-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    button {
+        width: 100%;
+    }
+}
+
 /* Improve touch targets on mobile */
 @media (hover: none) {
     button, 
@@ -587,7 +608,7 @@ tr.scanned td:first-child::before {
     }
 }
 
-/* Print styles */
+/* Print Styles */
 @media print {
     .scanner-section,
     .scanner-controls,

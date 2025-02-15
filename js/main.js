@@ -13,25 +13,62 @@ const tableBody = document.getElementById('tableBody');
 const rowsPerPageSelect = document.getElementById('rowsPerPage');
 const pagination = document.getElementById('pagination');
 
+// XLS file signature (D0 CF 11 E0 A1 B1 1A E1)
+const XLS_SIGNATURE = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
+
 // Event Listeners
 fileInput.addEventListener('change', handleFileSelect);
 dropZone.addEventListener('dragover', handleDragOver);
 dropZone.addEventListener('drop', handleDrop);
 rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
 
-// File Validation Functions
-function isValidFileType(file) {
-    const validType = 'application/vnd.ms-excel';
-    return file.type === validType || file.name.toLowerCase().endsWith('.xls');
+// Function to check file signature
+async function checkFileSignature(file) {
+    try {
+        // Read the first 8 bytes of the file
+        const buffer = await file.slice(0, 8).arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        
+        // Compare with XLS signature
+        return XLS_SIGNATURE.every((byte, index) => byte === bytes[index]);
+    } catch (error) {
+        console.error('Error checking file signature:', error);
+        return false;
+    }
 }
 
-function validateFile(file) {
+// Enhanced file type validation
+async function isValidFileType(file) {
+    // Check file extension and MIME type
+    const validType = 'application/vnd.ms-excel';
+    const hasValidExtension = file.name.toLowerCase().endsWith('.xls');
+    const hasValidMimeType = file.type === validType;
+    
+    // If basic checks fail, return false
+    if (!hasValidExtension || !hasValidMimeType) {
+        console.warn('File failed basic type validation');
+        return false;
+    }
+    
+    // Check file signature
+    const hasValidSignature = await checkFileSignature(file);
+    if (!hasValidSignature) {
+        console.warn('File failed signature validation');
+        return false;
+    }
+    
+    return true;
+}
+
+// Update the validateFile function to use async/await
+async function validateFile(file) {
     if (!file) {
         throw new Error('No file selected');
     }
     
-    if (!isValidFileType(file)) {
-        throw new Error('Invalid file type. Please upload .xls file.');
+    const isValid = await isValidFileType(file);
+    if (!isValid) {
+        throw new Error('Invalid file type. Please upload only .xls files');
     }
     
     if (file.size > 10 * 1024 * 1024) { // 10MB limit
@@ -191,20 +228,38 @@ function updateStatistics() {
     document.getElementById('remainingTickets').textContent = remainingTickets;
 }
 
-// Event Handlers
+// Update the handleFileSelect function to handle async validation
 async function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+    const file = event.target?.files?.[0];
+    if (!file) {
+        console.error('No file selected');
+        return;
+    }
     
     try {
+        // Show processing message
+        if (fileInfo) {
+            fileInfo.style.display = 'block';
+            fileInfo.textContent = 'Validating file...';
+        }
+        
+        // Validate file first
+        await validateFile(file);
+        
+        // Then process the file
         const processedData = await processFile(file);
         updateDisplay(processedData);
-        updateStatistics();
-        fileInfo.style.display = 'block';
-        fileInfo.textContent = `File processed successfully: ${file.name}`;
+        
+        if (fileInfo) {
+            fileInfo.style.display = 'block';
+            fileInfo.textContent = `File processed successfully: ${file.name}`;
+        }
     } catch (error) {
-        fileInfo.style.display = 'block';
-        fileInfo.textContent = error.message;
+        console.error('Error handling file:', error);
+        if (fileInfo) {
+            fileInfo.style.display = 'block';
+            fileInfo.textContent = error.message;
+        }
     }
 }
 
@@ -214,6 +269,7 @@ function handleDragOver(event) {
     dropZone.classList.add('dragover');
 }
 
+// Update the handleDrop function to handle async validation
 async function handleDrop(event) {
     event.preventDefault();
     event.stopPropagation();

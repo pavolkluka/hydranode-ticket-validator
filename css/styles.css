@@ -198,6 +198,77 @@ header h1 {
     cursor: not-allowed;
 }
 
+/* Modal Styles */
+.scan-message-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.scan-message-modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #212529;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 90%;
+    width: 500px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Updated Scan Result Styles */
+.scan-data {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    word-break: break-all;
+}
+
+.scan-result {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Status-based colors for scan results */
+.scan-result.valid {
+    background-color: #198754;
+    color: #fff;
+}
+
+.scan-result.invalid {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.scan-result.duplicate {
+    background-color: #ffc107;
+    color: #000;
+}
+
+/* Modal close button */
+#closeModal {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+}
+
 /* Metadata Panel */
 .metadata-panel {
     grid-area: metadata;
@@ -392,11 +463,16 @@ tr.status-pending:hover {
     }
 }
 
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {
     html, body {
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden;
+    }*/
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
     }
 
     .container,

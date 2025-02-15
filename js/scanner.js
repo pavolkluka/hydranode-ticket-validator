@@ -99,10 +99,10 @@ function scanQRCode() {
                 const ticketId = extractTicketId(code.data);
                 
                 // Update scan result with full information
-                const resultMessage = `Data: ${code.data}<br />Ticket ID: ${ticketId || 'Not found'}`;
+                const resultMessage = `Data: ${code.data}<br>Ticket ID: ${ticketId || 'Not found'}`;
 
-                // scanData.innerHTML = resultMessage;
-                scanData.textContent = resultMessage;
+                scanData.innerHTML = resultMessage;
+                // scanData.textContent = resultMessage;
                 scanData.className = 'scan-data message';
                 
                 if (ticketId) {
@@ -182,10 +182,10 @@ function handleManualEntry() {
     const ticketId = manualInput.value.trim();
     
     if (!ticketId) {
-        const resultMessage = `Data: ${code.data}<br />Ticket ID: ${ticketId || 'Not found'}`;
+        const resultMessage = `Data: ${code.data}<br>Ticket ID: ${ticketId || 'Not found'}`;
 
-        // scanData.innerHTML = resultMessage;
-        scanData.textContent = resultMessage;
+        scanData.innerHTML = resultMessage;
+        // scanData.textContent = resultMessage;
         scanData.className = 'scan-data message';
         
         updateScanResult('Please enter a ticket ID', 'invalid');

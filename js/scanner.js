@@ -99,7 +99,7 @@ function scanQRCode() {
                 const ticketId = extractTicketId(code.data);
                 
                 // Update scan result with full information
-                const resultMessage = `Data: ${code.data} | Ticket ID: ${ticketId || 'Not found'}`;
+                const resultMessage = `Data: ${code.data}<br />Ticket ID: ${ticketId || 'Not found'}`;
 
                 // scanData.innerHTML = resultMessage;
                 scanData.textContent = resultMessage;
@@ -182,7 +182,7 @@ function handleManualEntry() {
     const ticketId = manualInput.value.trim();
     
     if (!ticketId) {
-        const resultMessage = `Data: ${code.data} | Ticket ID: ${ticketId || 'Not found'}`;
+        const resultMessage = `Data: ${code.data}<br />Ticket ID: ${ticketId || 'Not found'}`;
 
         // scanData.innerHTML = resultMessage;
         scanData.textContent = resultMessage;

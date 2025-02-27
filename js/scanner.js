@@ -20,8 +20,8 @@ try {
     localStorage.removeItem('scanHistory');
 }
 
-// Base58 validation regex
-const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{22,44}$/;
+// Base58 validation regex - updated to properly validate all ticket ID formats
+const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{20,50}$/;
 
 // DOM Elements
 const video = document.getElementById('qrVideo');

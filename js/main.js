@@ -17,13 +17,31 @@ const pagination = document.getElementById('pagination');
 const XLS_SIGNATURE = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
 
 // Default value for scan status
-scanStatus = "pending";
+let scanStatus = "pending";
 
 // Event Listeners
 fileInput.addEventListener('change', handleFileSelect);
 dropZone.addEventListener('dragover', handleDragOver);
 dropZone.addEventListener('drop', handleDrop);
 rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
+
+// Check URL parameters for PWA actions
+document.addEventListener('DOMContentLoaded', function() {
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    
+    // Handle 'scan' action from PWA shortcuts
+    if (action === 'scan') {
+        // Start scanner after a short delay to ensure the page is fully loaded
+        setTimeout(() => {
+            const startScanButton = document.getElementById('startScan');
+            if (startScanButton && !startScanButton.disabled) {
+                startScanButton.click();
+            }
+        }, 500);
+    }
+});
 
 // Function to check file signature
 async function checkFileSignature(file) {
@@ -77,12 +95,15 @@ async function validateFile(file) {
     if (file.size > 10 * 1024 * 1024) { // 10MB limit
         throw new Error('File size too large. Maximum size is 10MB');
     }
+    
+    return true; // Return true if validation passes
 }
 
 // File Processing Functions
 async function processFile(file) {
     try {
-        validateFile(file);
+        // Make sure to await validateFile
+        await validateFile(file);
         
         const arrayBuffer = await file.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer, {
@@ -156,19 +177,28 @@ function updateTable() {
     try {
         const savedHistory = localStorage.getItem('scanHistory');
         if (savedHistory) {
-            scannedTickets = JSON.parse(savedHistory).map(scan => scan.ticketId);
+            // Validate that savedHistory is a valid JSON string containing an array
+            const parsedHistory = JSON.parse(savedHistory);
+            if (Array.isArray(parsedHistory)) {
+                scannedTickets = parsedHistory.map(scan => {
+                    // Ensure ticketId exists and is a string before returning
+                    return scan && typeof scan.ticketId === 'string' ? scan.ticketId.trim() : '';
+                }).filter(id => id !== ''); // Filter out any empty IDs
+            } else {
+                console.error('Invalid scan history format in localStorage');
+            }
         }
     } catch (error) {
         console.error('Error loading scan history:', error);
+        // Reset localStorage if corrupted
+        localStorage.removeItem('scanHistory');
     }
     
     tableBody.innerHTML = pageData.map(row => {
         const isScanned = scannedTickets.includes(row.invoiceId.trim());
+        let scannedTableRowClass = '';
         if (isScanned) {
             scannedTableRowClass = "status-" + scanStatus;
-        }
-        else {
-            scannedTableRowClass = ''
         }
 
         return `
@@ -222,21 +252,48 @@ function updateStatistics() {
     if (!currentData || !currentData.data) return;
     
     const totalTickets = currentData.data.length;
-    const scannedTickets = scanHistory.reduce((acc, scan) => {
-        if (scan.status === 'valid') acc.valid++;
-        else if (scan.status === 'duplicate') acc.duplicate++;
-        else if (scan.status === 'invalid') acc.invalid++;
-        scanStatus = scan.status;
-        return acc;
-    }, { valid: 0, duplicate: 0, invalid: 0 });
     
-    const remainingTickets = totalTickets - scannedTickets.valid;
-
-    document.getElementById('totalTickets').textContent = totalTickets;
-    document.getElementById('validTickets').textContent = scannedTickets.valid;
-    document.getElementById('duplicateTickets').textContent = scannedTickets.duplicate;
-    document.getElementById('invalidTickets').textContent = scannedTickets.invalid;
-    document.getElementById('remainingTickets').textContent = remainingTickets;
+    // Safe access to scanHistory from scanner.js
+    let valid = 0;
+    let duplicate = 0;
+    let invalid = 0;
+    
+    try {
+        // Get scan history from localStorage to ensure we have the latest data
+        const savedHistory = localStorage.getItem('scanHistory');
+        if (savedHistory) {
+            const parsedHistory = JSON.parse(savedHistory);
+            if (Array.isArray(parsedHistory)) {
+                // Count statistics from scan history
+                parsedHistory.forEach(scan => {
+                    if (scan.status === 'valid') valid++;
+                    else if (scan.status === 'duplicate') duplicate++;
+                    else if (scan.status === 'invalid') invalid++;
+                    if (scan.status) scanStatus = scan.status;
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error calculating statistics:', error);
+    }
+    
+    const remainingTickets = totalTickets - valid;
+    
+    // Safely update DOM elements
+    const elements = {
+        'totalTickets': totalTickets,
+        'validTickets': valid,
+        'duplicateTickets': duplicate,
+        'invalidTickets': invalid,
+        'remainingTickets': remainingTickets
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
 }
 
 // Update the handleFileSelect function to handle async validation
@@ -254,7 +311,7 @@ async function handleFileSelect(event) {
             fileInfo.textContent = 'Validating file...';
         }
         
-        // Validate file first
+        // Validate file first - ensure we await the validation
         await validateFile(file);
         
         // Then process the file

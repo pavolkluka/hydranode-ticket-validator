@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Offline - Hydranode Ticket Validator</title>
+    <meta name="theme-color" content="#f8c423">
+    <link rel="manifest" href="/hydranode-ticket-validator/manifest.json">
+    <link rel="icon" href="data:image/x-icon;base64,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">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -13,17 +16,21 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 20px;
             text-align: center;
+        }
+        .offline-container {
+            max-width: 500px;
+            width: 90%;
         }
         .offline-message {
             background-color: #212529;
             padding: 2rem;
             border-radius: 8px;
-            max-width: 400px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .retry-button {
             background-color: #f8c423;
@@ -34,14 +41,62 @@
             cursor: pointer;
             margin-top: 1rem;
             font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .retry-button:hover {
+            background-color: #e5b41e;
+        }
+        .offline-features {
+            background-color: #212529;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .feature-item {
+            margin-bottom: 1rem;
+            text-align: left;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .feature-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #f8c423;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .logo {
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="offline-message">
-        <h1>You're Offline</h1>
-        <p>Please check your internet connection and try again.</p>
-        <button class="retry-button" onclick="window.location.reload()">Retry</button>
+    <div class="offline-container">
+        <div class="logo">🎟️ Hydranode Ticket Validator</div>
+        <div class="offline-message">
+            <h1>You're Offline</h1>
+            <p>The app requires an internet connection to validate new tickets.</p>
+            <p>However, you can still access previously scanned ticket information stored in your device.</p>
+            <button class="retry-button" onclick="window.location.reload()">Retry Connection</button>
+        </div>
+        
+        <div class="offline-features">
+            <h2>Available Offline:</h2>
+            <div class="feature-item">View your scan history</div>
+            <div class="feature-item">Check previously validated tickets</div>
+            <div class="feature-item">Browse previously loaded ticket database</div>
+        </div>
     </div>
+
+    <script>
+    // Check for online status changes
+    window.addEventListener('online', () => {
+        window.location.href = '/hydranode-ticket-validator/';
+    });
+    </script>
 </body>
 </html>

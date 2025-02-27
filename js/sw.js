@@ -1,10 +1,14 @@
-const CACHE_NAME = 'ticket-validator-v1';
+const CACHE_NAME = 'ticket-validator-v1.1';
+const BASE_PATH = '/hydranode-ticket-validator';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/js/main.js',
-  '/js/scanner.js',
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/offline.html`,
+  `${BASE_PATH}/css/styles.css`,
+  `${BASE_PATH}/js/main.js`,
+  `${BASE_PATH}/js/scanner.js`,
+  `${BASE_PATH}/js/sw.js`,
+  `${BASE_PATH}/manifest.json`,
   'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js',
   'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'
 ];
@@ -61,7 +65,7 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         // Return offline fallback for HTML requests
         if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('/offline.html');
+          return caches.match(`${BASE_PATH}/offline.html`);
         }
       })
   );

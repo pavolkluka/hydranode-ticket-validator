@@ -6,10 +6,18 @@ let scanHistory = [];
 try {
     const savedHistory = localStorage.getItem('scanHistory');
     if (savedHistory) {
-        scanHistory = JSON.parse(savedHistory);
+        const parsedHistory = JSON.parse(savedHistory);
+        if (Array.isArray(parsedHistory)) {
+            scanHistory = parsedHistory;
+        } else {
+            console.error('Invalid scan history format in localStorage');
+            localStorage.removeItem('scanHistory');
+        }
     }
 } catch (error) {
     console.error('Error loading scan history:', error);
+    // Reset localStorage if corrupted
+    localStorage.removeItem('scanHistory');
 }
 
 // Base58 validation regex
@@ -54,18 +62,15 @@ function drawLine(begin, end, color) {
 }
 
 // Scanner Functions
-// async function startScanner() {
-function startScanner() {
+async function startScanner() {
     try {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
-            video.srcObject = stream;
-            video.play();
-            scanning = true;
-            startButton.disabled = true;
-            stopButton.disabled = false;
-            requestAnimationFrame(scanQRCode);
-        });
-        
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        video.srcObject = stream;
+        video.play();
+        scanning = true;
+        startButton.disabled = true;
+        stopButton.disabled = false;
+        requestAnimationFrame(scanQRCode);
     } catch (error) {
         console.error('Error accessing camera:', error);
         scanResult.textContent = 'Error accessing camera. Please check permissions.';
@@ -141,7 +146,7 @@ function scanQRCode() {
 }
 
 // Ticket Processing Functions
-function extractTicketId(url) {updateScanResult
+function extractTicketId(url) {
     try {
         const match = url.match(/\/i\/([^\/]+)\/receipt/);
         return match ? match[1] : null;
@@ -151,18 +156,32 @@ function extractTicketId(url) {updateScanResult
 }
 
 function validateTicketId(ticketId) {
-    if (!ticketId || !currentData) return { valid: false, message: 'Invalid ticket ID' };
+    // Check if ticket ID is provided
+    if (!ticketId) {
+        return { valid: false, message: 'Invalid ticket ID' };
+    }
+    
+    // Get access to currentData from the global scope or another source
+    // This uses window.currentData since currentData may be defined in main.js
+    const dataSource = window.currentData || (typeof currentData !== 'undefined' ? currentData : null);
+    
+    if (!dataSource || !dataSource.data) {
+        return { valid: false, message: 'No ticket database loaded' };
+    }
     
     // Trim the ticket ID and ensure consistent format
     const normalizedTicketId = ticketId.trim();
-    console.log('Searching for ticket:', normalizedTicketId); // Debug log
-    console.log('Available tickets:', currentData.data.map(row => row.invoiceId)); // Debug log
     
-    const ticket = currentData.data.find(row => 
+    // Find the ticket in the database
+    const ticket = dataSource.data.find(row => 
         row.invoiceId && row.invoiceId.trim() === normalizedTicketId
     );
-    if (!ticket) return { valid: false, message: 'Ticket not found in database' };
     
+    if (!ticket) {
+        return { valid: false, message: 'Ticket not found in database' };
+    }
+    
+    // Check if ticket was already scanned
     const previousScan = scanHistory.find(scan => scan.ticketId === ticketId);
     if (previousScan) {
         return { 
@@ -269,7 +288,21 @@ function updateHistoryDisplay() {
 // History Management Functions
 function saveScanHistory() {
     try {
-        localStorage.setItem('scanHistory', JSON.stringify(scanHistory));
+        // Validate scan history before saving to localStorage
+        if (!Array.isArray(scanHistory)) {
+            console.error('Invalid scan history format');
+            return;
+        }
+        
+        // Filter out any invalid entries
+        const validScanHistory = scanHistory.filter(scan => 
+            scan && 
+            typeof scan.ticketId === 'string' && 
+            typeof scan.timestamp === 'number' &&
+            typeof scan.status === 'string'
+        );
+        
+        localStorage.setItem('scanHistory', JSON.stringify(validScanHistory));
     } catch (error) {
         console.error('Error saving scan history:', error);
     }
@@ -284,24 +317,51 @@ function clearScanHistory() {
 }
 
 async function exportScanHistory() {
-    const csv = [
-        ['Ticket ID', 'Timestamp', 'Method'],
-        ...scanHistory.map(scan => [
-            scan.ticketId,
+    try {
+        // Ensure scanHistory is valid before exporting
+        if (!Array.isArray(scanHistory) || scanHistory.length === 0) {
+            console.warn('No scan history to export');
+            return;
+        }
+        
+        // Create CSV data with proper escaping for CSV fields
+        const escapeCsvField = (field) => {
+            if (field === null || field === undefined) return '';
+            const str = String(field);
+            // If the field contains commas, quotes, or newlines, wrap it in quotes and escape any quotes
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        };
+        
+        const csvHeader = ['Ticket ID', 'Timestamp', 'Method', 'Status'].map(escapeCsvField).join(',');
+        const csvRows = scanHistory.map(scan => [
+            scan.ticketId || '',
             new Date(scan.timestamp).toLocaleString(),
-            scan.method
-        ])
-    ].map(row => row.join(',')).join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `scan-history-${new Date().toISOString()}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+            scan.method || '',
+            scan.status || ''
+        ].map(escapeCsvField).join(','));
+        
+        const csv = [csvHeader, ...csvRows].join('\n');
+        
+        // Create and download the file
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `scan-history-${new Date().toISOString()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    } catch (error) {
+        console.error('Error exporting scan history:', error);
+    }
 }
 
 // Initialize history display

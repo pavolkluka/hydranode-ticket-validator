@@ -25,23 +25,41 @@
 <body>
     <div class="container">
         <header>
-            <h1>Hydranode Ticket Validator</h1>
-            <!-- <p>A simple web-based application using HTML, JavaScript libraries for Hydranode Ticket validation.</p>
-            <strong>Warning: Application in Development</strong>
-            <p>
-                This application is currently in the development phase. Features, security, and stability are still being refined.
-                Use this application at your own risk—there may be bugs, incomplete functionality, or potential security risks.
-            <p> -->
+            <div class="header-top">
+                <div class="logo-container">
+                    <img id="appLogo" src="logos/hydranode-horizontal-dark.png" alt="Hydranode Logo" class="app-logo">
+                </div>
+                <div class="header-controls">
+                    <div class="control-group">
+                        <label for="languageSelect" data-i18n="language">Language:</label>
+                        <select id="languageSelect" class="theme-control">
+                            <option value="en">English</option>
+                            <option value="cz">Čeština</option>
+                            <option value="sk">Slovenčina</option>
+                            <option value="de">Deutsch</option>
+                            <option value="es">Español</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="themeToggle" data-i18n="theme">Theme:</label>
+                        <button id="themeToggle" class="theme-control">
+                            <span id="themeIcon">🌙</span>
+                            <span id="themeText" data-i18n="darkMode">Dark</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <h1 data-i18n="appTitle">Hydranode Ticket Validator</h1>
         </header>
 
         <main class="main-container">
             <section class="file-upload">
                 <div class="upload-zone" id="dropZone">
                     <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input">
-                    <label for="fileInput" class="custom-file-upload">
+                    <label for="fileInput" class="custom-file-upload" data-i18n="chooseFile">
                         Choose File
                     </label>
-                    <span class="supported-formats">(Supported .xls file: use exported report for store.)</span>
+                    <span class="supported-formats" data-i18n="supportedFormats">(Supported .xls file: use exported report for store.)</span>
                     <div id="fileInfo" class="file-info"></div>
                 </div>
             </section>
@@ -53,12 +71,12 @@
                         <canvas id="qrCanvas" class="qr-overlay"></canvas>
                     </div>
                     <div class="scanner-controls">
-                        <button id="startScan" class="control-button">Start Scanner</button>
-                        <button id="stopScan" class="control-button" disabled>Stop Scanner</button>
+                        <button id="startScan" class="control-button" data-i18n="startScanner">Start Scanner</button>
+                        <button id="stopScan" class="control-button" disabled data-i18n="stopScanner">Stop Scanner</button>
                     </div>
                     <div class="manual-entry">
-                        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID manually">
-                        <button id="submitManual" class="control-button">Submit</button>
+                        <input type="text" id="manualTicketId" data-i18n-placeholder="enterTicketId" placeholder="Enter Ticket ID manually">
+                        <button id="submitManual" class="control-button" data-i18n="submit">Submit</button>
                     </div>
                 </div>
                 
@@ -67,32 +85,32 @@
                     <div class="modal-content">
                         <div id="scanData" class="scan-data"></div>
                         <div id="scanResult" class="scan-result"></div>
-                        <button id="closeModal" class="control-button">OK</button>
+                        <button id="closeModal" class="control-button" data-i18n="ok">OK</button>
                     </div>
                 </div>
             </section>
 
             <section class="data-statistics">
-                <h2 class="mb-4">Ticket Statistics</h2>
+                <h2 class="mb-4" data-i18n="ticketStatistics">Ticket Statistics</h2>
                 <div class="statistics-grid">
                     <div class="stat-card total">
-                        <div class="stat-label">Total Tickets</div>
+                        <div class="stat-label" data-i18n="totalTickets">Total Tickets</div>
                         <div class="stat-value" id="totalTickets">0</div>
                     </div>
                     <div class="stat-card valid">
-                        <div class="stat-label">Valid Tickets</div>
+                        <div class="stat-label" data-i18n="validTickets">Valid Tickets</div>
                         <div class="stat-value" id="validTickets">0</div>
                     </div>
                     <div class="stat-card duplicate">
-                        <div class="stat-label">Duplicate Tickets</div>
+                        <div class="stat-label" data-i18n="duplicateTickets">Duplicate Tickets</div>
                         <div class="stat-value" id="duplicateTickets">0</div>
                     </div>
                     <div class="stat-card invalid">
-                        <div class="stat-label">Invalid Tickets</div>
+                        <div class="stat-label" data-i18n="invalidTickets">Invalid Tickets</div>
                         <div class="stat-value" id="invalidTickets">0</div>
                     </div>
                     <div class="stat-card remaining">
-                        <div class="stat-label">Remaining Tickets</div>
+                        <div class="stat-label" data-i18n="remainingTickets">Remaining Tickets</div>
                         <div class="stat-value" id="remainingTickets">0</div>
                     </div>
                 </div>
@@ -106,7 +124,7 @@
 
                 <div class="table-controls">
                     <div class="rows-per-page">
-                        <label for="rowsPerPage">Rows per page:</label>
+                        <label for="rowsPerPage" data-i18n="rowsPerPage">Rows per page:</label>
                         <select id="rowsPerPage">
                             <option value="5">5</option>
                             <option value="10">10</option>
@@ -121,10 +139,10 @@
                     <table id="dataTable">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Invoice ID</th>
-                                <th>LNURL Comment</th>
+                                <th data-i18n="date">Date</th>
+                                <th data-i18n="time">Time</th>
+                                <th data-i18n="invoiceId">Invoice ID</th>
+                                <th data-i18n="lnurlComment">LNURL Comment</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
@@ -133,16 +151,18 @@
             </section>
 
             <section class="scan-history">
-                <h2>Scan History</h2>
+                <h2 data-i18n="scanHistory">Scan History</h2>
                 <div class="history-controls">
-                    <button id="exportHistory" class="control-button">Export History</button>
-                    <button id="clearHistory" class="control-button">Clear History</button>
+                    <button id="exportHistory" class="control-button" data-i18n="exportHistory">Export History</button>
+                    <button id="clearHistory" class="control-button" data-i18n="clearHistory">Clear History</button>
                 </div>
                 <div id="scanHistory" class="history-list"></div>
             </section>
         </main>
     </div>
 
+    <script src="js/i18n.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/main.js"></script>
     <!-- <script lang="text/javascript">
     </script> -->

@@ -1,0 +1,50 @@
+{
+  "appTitle": "Hydranode Validátor Vstupenek",
+  "language": "Jazyk",
+  "theme": "Téma",
+  "lightMode": "Světlé",
+  "darkMode": "Tmavé",
+  
+  "chooseFile": "Vybrat soubor",
+  "supportedFormats": "(Podporovaný .xls soubor: použijte exportovaný report pro obchod.)",
+  
+  "startScanner": "Spustit skener",
+  "stopScanner": "Zastavit skener",
+  "enterTicketId": "Zadejte ID vstupenky ručně",
+  "submit": "Odeslat",
+  "ok": "OK",
+  
+  "ticketStatistics": "Statistiky vstupenek",
+  "totalTickets": "Celkem vstupenek",
+  "validTickets": "Platné vstupenky",
+  "duplicateTickets": "Duplicitní vstupenky",
+  "invalidTickets": "Neplatné vstupenky",
+  "remainingTickets": "Zbývající vstupenky",
+  
+  "rowsPerPage": "Řádků na stránku",
+  "date": "Datum",
+  "time": "Čas",
+  "invoiceId": "ID faktury",
+  "lnurlComment": "LNURL komentář",
+  
+  "scanHistory": "Historie skenování",
+  "exportHistory": "Exportovat historii",
+  "clearHistory": "Vymazat historii",
+  
+  "validTicket": "Platná vstupenka",
+  "invalidTicket": "Neplatná vstupenka",
+  "duplicateTicket": "Duplicitní vstupenka",
+  "ticketNotFound": "Vstupenka nenalezena",
+  
+  "fileLoaded": "Soubor úspěšně načten",
+  "fileError": "Chyba při načítání souboru",
+  "processingFile": "Zpracování souboru...",
+  
+  "scannerStarted": "Skener spuštěn",
+  "scannerStopped": "Skener zastaven",
+  "cameraError": "Přístup k kameře zamítnut nebo není k dispozici",
+  
+  "exportComplete": "Export dokončen",
+  "historyCleared": "Historie vymazána",
+  "noDataToExport": "Žádná data k exportu"
+}

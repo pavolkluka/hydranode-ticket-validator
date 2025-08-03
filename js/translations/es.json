@@ -1,0 +1,50 @@
+{
+  "appTitle": "Validador de Entradas Hydranode",
+  "language": "Idioma",
+  "theme": "Tema",
+  "lightMode": "Claro",
+  "darkMode": "Oscuro",
+  
+  "chooseFile": "Elegir archivo",
+  "supportedFormats": "(Archivo .xls compatible: use el informe exportado para la tienda.)",
+  
+  "startScanner": "Iniciar escáner",
+  "stopScanner": "Detener escáner",
+  "enterTicketId": "Ingrese ID de entrada manualmente",
+  "submit": "Enviar",
+  "ok": "OK",
+  
+  "ticketStatistics": "Estadísticas de entradas",
+  "totalTickets": "Total de entradas",
+  "validTickets": "Entradas válidas",
+  "duplicateTickets": "Entradas duplicadas",
+  "invalidTickets": "Entradas inválidas",
+  "remainingTickets": "Entradas restantes",
+  
+  "rowsPerPage": "Filas por página",
+  "date": "Fecha",
+  "time": "Hora",
+  "invoiceId": "ID de factura",
+  "lnurlComment": "Comentario LNURL",
+  
+  "scanHistory": "Historial de escaneo",
+  "exportHistory": "Exportar historial",
+  "clearHistory": "Limpiar historial",
+  
+  "validTicket": "Entrada válida",
+  "invalidTicket": "Entrada inválida",
+  "duplicateTicket": "Entrada duplicada",
+  "ticketNotFound": "Entrada no encontrada",
+  
+  "fileLoaded": "Archivo cargado exitosamente",
+  "fileError": "Error al cargar archivo",
+  "processingFile": "Procesando archivo...",
+  
+  "scannerStarted": "Escáner iniciado",
+  "scannerStopped": "Escáner detenido",
+  "cameraError": "Acceso a cámara denegado o no disponible",
+  
+  "exportComplete": "Exportación completada",
+  "historyCleared": "Historial limpiado",
+  "noDataToExport": "No hay datos para exportar"
+}

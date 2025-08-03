@@ -1,0 +1,50 @@
+{
+  "appTitle": "Hydranode Validátor Lístkov",
+  "language": "Jazyk",
+  "theme": "Téma",
+  "lightMode": "Svetlé",
+  "darkMode": "Tmavé",
+  
+  "chooseFile": "Vybrať súbor",
+  "supportedFormats": "(Podporovaný .xls súbor: použite exportovaný report pre obchod.)",
+  
+  "startScanner": "Spustiť skener",
+  "stopScanner": "Zastaviť skener",
+  "enterTicketId": "Zadajte ID lístka ručne",
+  "submit": "Odoslať",
+  "ok": "OK",
+  
+  "ticketStatistics": "Štatistiky lístkov",
+  "totalTickets": "Celkom lístkov",
+  "validTickets": "Platné lístky",
+  "duplicateTickets": "Duplicitné lístky",
+  "invalidTickets": "Neplatné lístky",
+  "remainingTickets": "Zostávajúce lístky",
+  
+  "rowsPerPage": "Riadkov na stránku",
+  "date": "Dátum",
+  "time": "Čas",
+  "invoiceId": "ID faktúry",
+  "lnurlComment": "LNURL komentár",
+  
+  "scanHistory": "História skenovania",
+  "exportHistory": "Exportovať históriu",
+  "clearHistory": "Vymazať históriu",
+  
+  "validTicket": "Platný lístok",
+  "invalidTicket": "Neplatný lístok",
+  "duplicateTicket": "Duplicitný lístok",
+  "ticketNotFound": "Lístok nenájdený",
+  
+  "fileLoaded": "Súbor úspešne načítaný",
+  "fileError": "Chyba pri načítavaní súboru",
+  "processingFile": "Spracovanie súboru...",
+  
+  "scannerStarted": "Skener spustený",
+  "scannerStopped": "Skener zastavený",
+  "cameraError": "Prístup k kamere zamietnutý alebo nie je k dispozícii",
+  
+  "exportComplete": "Export dokončený",
+  "historyCleared": "História vymazaná",
+  "noDataToExport": "Žiadne dáta na export"
+}

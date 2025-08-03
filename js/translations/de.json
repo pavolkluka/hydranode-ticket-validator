@@ -1,0 +1,50 @@
+{
+  "appTitle": "Hydranode Ticket-Validator",
+  "language": "Sprache",
+  "theme": "Design",
+  "lightMode": "Hell",
+  "darkMode": "Dunkel",
+  
+  "chooseFile": "Datei auswählen",
+  "supportedFormats": "(Unterstützte .xls-Datei: Verwenden Sie den exportierten Bericht für den Shop.)",
+  
+  "startScanner": "Scanner starten",
+  "stopScanner": "Scanner stoppen",
+  "enterTicketId": "Ticket-ID manuell eingeben",
+  "submit": "Senden",
+  "ok": "OK",
+  
+  "ticketStatistics": "Ticket-Statistiken",
+  "totalTickets": "Tickets gesamt",
+  "validTickets": "Gültige Tickets",
+  "duplicateTickets": "Doppelte Tickets",
+  "invalidTickets": "Ungültige Tickets",
+  "remainingTickets": "Verbleibende Tickets",
+  
+  "rowsPerPage": "Zeilen pro Seite",
+  "date": "Datum",
+  "time": "Zeit",
+  "invoiceId": "Rechnungs-ID",
+  "lnurlComment": "LNURL Kommentar",
+  
+  "scanHistory": "Scan-Verlauf",
+  "exportHistory": "Verlauf exportieren",
+  "clearHistory": "Verlauf löschen",
+  
+  "validTicket": "Gültiges Ticket",
+  "invalidTicket": "Ungültiges Ticket",
+  "duplicateTicket": "Doppeltes Ticket",
+  "ticketNotFound": "Ticket nicht gefunden",
+  
+  "fileLoaded": "Datei erfolgreich geladen",
+  "fileError": "Fehler beim Laden der Datei",
+  "processingFile": "Datei wird verarbeitet...",
+  
+  "scannerStarted": "Scanner gestartet",
+  "scannerStopped": "Scanner gestoppt",
+  "cameraError": "Kamera-Zugriff verweigert oder nicht verfügbar",
+  
+  "exportComplete": "Export abgeschlossen",
+  "historyCleared": "Verlauf gelöscht",
+  "noDataToExport": "Keine Daten zum Exportieren"
+}

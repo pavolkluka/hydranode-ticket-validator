@@ -960,7 +960,6 @@ async function cleanupScanner() {
         debugLog('Error during scanner cleanup', { error: error.message });
     }
 }
-        });
         
 async function stopScanner() {
     await cleanupScanner();
@@ -973,7 +972,7 @@ async function stopScanner() {
  * Scan QR codes from video stream with enhanced error handling
  */
 function scanQRCode() {
-    if (\!AppState.isScanning) {
+    if (!AppState.isScanning) {
         return;
     }
     
@@ -987,7 +986,7 @@ function scanQRCode() {
         lastScanTime = now;
         
         // Validate video element and dimensions
-        if (\!elements.qrVideo || \!elements.qrVideo.srcObject) {
+        if (!elements.qrVideo || !elements.qrVideo.srcObject) {
             debugLog('Video element or source not available, stopping scan');
             return;
         }
@@ -996,7 +995,7 @@ function scanQRCode() {
         const videoHeight = elements.qrVideo.videoHeight;
         
         // Ensure valid dimensions before canvas operations
-        if (\!videoWidth || \!videoHeight || videoWidth <= 0 || videoHeight <= 0) {
+        if (!videoWidth || !videoHeight || videoWidth <= 0 || videoHeight <= 0) {
             debugLog('Invalid video dimensions, skipping frame', { 
                 width: videoWidth, 
                 height: videoHeight 
@@ -1009,7 +1008,7 @@ function scanQRCode() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        if (\!ctx) {
+        if (!ctx) {
             debugLog('Failed to get 2D context, skipping frame');
             scannerAnimationId = requestAnimationFrame(scanQRCode);
             return;

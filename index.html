@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="QR Code Ticket Validator for Hydranode Platform">
+    <title>Hydranode Ticket Validator</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-light-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-light-192x192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <img src="logos/hydranode-horizontal-light.png" alt="Hydranode" class="logo" id="logo">
+                <div class="header-controls">
+                    <button class="btn-icon" id="themeToggle" title="Toggle theme">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                    <select id="languageSelect" class="language-select">
+                        <option value="en">EN</option>
+                        <option value="sk">SK</option>
+                        <option value="cz">CZ</option>
+                        <option value="de">DE</option>
+                        <option value="es">ES</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section" id="welcomeSection" style="display: none;">
+                <div class="welcome-card">
+                    <h2 class="welcome-title" data-i18n="welcome"></h2>
+                    <p class="welcome-message" id="welcomeMessage"></p>
+                </div>
+            </section>
+
+            <!-- Setup Section -->
+            <section class="setup-section" id="setupSection">
+                <div class="setup-card">
+                    <h2 class="setup-title" data-i18n="setup_title">Setup Configuration</h2>
+                    
+                    <!-- Mode Selection -->
+                    <div class="mode-selector">
+                        <h3 data-i18n="mode_title">Select Mode</h3>
+                        <div class="mode-options">
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="online" checked>
+                                <span class="mode-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        <path d="M12 5.57a8 8 0 0 1 0 12.86"></path>
+                                        <path d="M8 7.85a12 12 0 0 1 0 8.3"></path>
+                                    </svg>
+                                    <span data-i18n="mode_online">Online (API)</span>
+                                </span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="offline">
+                                <span class="mode-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                    </svg>
+                                    <span data-i18n="mode_offline">Offline (XLS)</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Online Mode Configuration -->
+                    <div class="config-section" id="onlineConfig">
+                        <h3 data-i18n="api_token_title">API Token</h3>
+                        <div class="input-group">
+                            <input type="password" id="apiToken" placeholder="Enter your API token..." data-i18n-placeholder="api_token_placeholder">
+                            <button type="button" class="btn-icon" id="toggleApiToken" title="Toggle visibility">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="btn-primary" id="validateToken" data-i18n="validate_token">Validate Token</button>
+                    </div>
+
+                    <!-- Offline Mode Configuration -->
+                    <div class="config-section" id="offlineConfig" style="display: none;">
+                        <h3 data-i18n="xls_file_title">XLS File Upload</h3>
+                        <div class="file-upload">
+                            <input type="file" id="xlsFile" accept=".xls,.xlsx" style="display: none;">
+                            <button class="btn-secondary" id="selectFileBtn" data-i18n="select_file">Select XLS File</button>
+                            <div class="file-info" id="fileInfo" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Store Selection -->
+            <section class="store-section" id="storeSection" style="display: none;">
+                <div class="store-card">
+                    <h3 data-i18n="select_store">Select Store</h3>
+                    <select id="storeSelect" class="store-select">
+                        <option value="" data-i18n="choose_store">Choose a store...</option>
+                    </select>
+                    <button class="btn-primary" id="loadInvoices" data-i18n="load_invoices">Load Invoices</button>
+                </div>
+            </section>
+
+            <!-- Scanner Section -->
+            <section class="scanner-section" id="scannerSection" style="display: none;">
+                <div class="scanner-card">
+                    <h3 data-i18n="qr_scanner">QR Code Scanner</h3>
+                    
+                    <!-- Statistics -->
+                    <div class="statistics" id="statistics">
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <span class="stat-value" id="totalTickets">0</span>
+                                <span class="stat-label" data-i18n="total_tickets">Total Tickets</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="scannedTickets">0</span>
+                                <span class="stat-label" data-i18n="scanned_tickets">Scanned</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="validTickets">0</span>
+                                <span class="stat-label" data-i18n="valid_tickets">Valid</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="invalidTickets">0</span>
+                                <span class="stat-label" data-i18n="invalid_tickets">Invalid</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scanner Controls -->
+                    <div class="scanner-controls">
+                        <button class="btn-primary" id="startScanner" data-i18n="start_scanner">Start Scanner</button>
+                        <button class="btn-secondary" id="stopScanner" data-i18n="stop_scanner" style="display: none;">Stop Scanner</button>
+                    </div>
+
+                    <!-- Video Preview -->
+                    <div class="video-container" id="videoContainer" style="display: none;">
+                        <video id="qrVideo" autoplay playsinline></video>
+                        <div class="scan-overlay">
+                            <div class="scan-frame"></div>
+                        </div>
+                    </div>
+
+                    <!-- Export Controls -->
+                    <div class="export-controls">
+                        <button class="btn-secondary" id="exportData" data-i18n="export_data">Export Scan Data</button>
+                        <button class="btn-secondary" id="resetData" data-i18n="reset_data">Reset Data</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Debug Section -->
+            <section class="debug-section" id="debugSection">
+                <div class="debug-card">
+                    <div class="debug-header">
+                        <h3 data-i18n="debug_logs">Debug Logs</h3>
+                        <label class="debug-toggle">
+                            <input type="checkbox" id="debugEnabled">
+                            <span class="debug-slider"></span>
+                        </label>
+                    </div>
+                    <div class="debug-controls">
+                        <button class="btn-secondary" id="exportLogs" data-i18n="export_logs">Export Logs</button>
+                        <button class="btn-secondary" id="clearLogs" data-i18n="clear_logs">Clear Logs</button>
+                    </div>
+                    <div class="debug-output" id="debugOutput"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text" data-i18n="loading">Loading...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>

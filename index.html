@@ -35,115 +35,134 @@
         </header>
 
         <main class="main-container">
-            <section class="file-upload">
-                <div class="upload-zone" id="dropZone">
-                    <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input">
+            <section class="file-upload" aria-labelledby="upload-heading">
+                <h2 id="upload-heading" class="sr-only">File Upload</h2>
+                <div class="upload-zone" id="dropZone" role="button" tabindex="0" aria-describedby="upload-instructions">
+                    <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input" aria-describedby="supported-formats">
                     <label for="fileInput" class="custom-file-upload">
                         Choose File
                     </label>
-                    <span class="supported-formats">(Supported .xls file: use exported report for store.)</span>
-                    <div id="fileInfo" class="file-info"></div>
+                    <span id="supported-formats" class="supported-formats">(Supported .xls file: use exported report for store.)</span>
+                    <div id="fileInfo" class="file-info" role="status" aria-live="polite"></div>
                 </div>
             </section>
 
-            <section class="scanner-section">
+            <section class="scanner-section" aria-labelledby="scanner-heading">
+                <h2 id="scanner-heading" class="sr-only">QR Code Scanner</h2>
                 <div class="scanner-container">
-                    <div class="video-container">
-                        <video id="qrVideo" playsinline></video>
-                        <canvas id="qrCanvas" class="qr-overlay"></canvas>
+                    <div class="video-container" role="img" aria-label="Camera viewfinder for QR code scanning">
+                        <video id="qrVideo" playsinline aria-label="QR code scanner camera feed"></video>
+                        <canvas id="qrCanvas" class="qr-overlay" aria-hidden="true"></canvas>
+                        <div class="scanner-overlay" aria-hidden="true"></div>
                     </div>
-                    <div class="scanner-controls">
-                        <button id="startScan" class="control-button">Start Scanner</button>
-                        <button id="stopScan" class="control-button" disabled>Stop Scanner</button>
+                    <div class="scanner-controls" role="group" aria-labelledby="scanner-controls-heading">
+                        <h3 id="scanner-controls-heading" class="sr-only">Scanner Controls</h3>
+                        <button id="startScan" class="control-button" aria-describedby="scanner-status">Start Scanner</button>
+                        <button id="stopScan" class="control-button" disabled aria-describedby="scanner-status">Stop Scanner</button>
                     </div>
-                    <div class="manual-entry">
-                        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID manually">
-                        <button id="submitManual" class="control-button">Submit</button>
+                    <div class="manual-entry" role="group" aria-labelledby="manual-entry-heading">
+                        <h3 id="manual-entry-heading" class="sr-only">Manual Ticket Entry</h3>
+                        <label for="manualTicketId" class="sr-only">Enter Ticket ID manually</label>
+                        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID manually" aria-describedby="manual-entry-help">
+                        <button id="submitManual" class="control-button" aria-describedby="manual-entry-help">Submit</button>
+                        <div id="manual-entry-help" class="sr-only">Enter a valid Base58 ticket ID (22-44 characters)</div>
                     </div>
                 </div>
                 
-                <!-- New Modal Message Display -->
-                <div id="scanMessageModal" class="scan-message-modal">
+                <!-- Modal Message Display -->
+                <div id="scanMessageModal" class="scan-message-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="scan-result">
                     <div class="modal-content">
-                        <div id="scanData" class="scan-data"></div>
-                        <div id="scanResult" class="scan-result"></div>
-                        <button id="closeModal" class="control-button">OK</button>
+                        <h2 id="modal-title" class="sr-only">Scan Result</h2>
+                        <div id="scanData" class="scan-data" role="status"></div>
+                        <div id="scanResult" class="scan-result" role="status" aria-live="assertive"></div>
+                        <button id="closeModal" class="control-button" aria-label="Close scan result modal">OK</button>
                     </div>
                 </div>
             </section>
 
-            <section class="data-statistics">
-                <h2 class="mb-4">Ticket Statistics</h2>
-                <div class="statistics-grid">
-                    <div class="stat-card total">
+            <section class="data-statistics" aria-labelledby="stats-heading">
+                <h2 id="stats-heading" class="mb-4">Ticket Statistics</h2>
+                <div class="statistics-grid" role="group" aria-labelledby="stats-heading">
+                    <div class="stat-card total" role="status">
                         <div class="stat-label">Total Tickets</div>
-                        <div class="stat-value" id="totalTickets">0</div>
+                        <div class="stat-value" id="totalTickets" aria-label="Total tickets: 0">0</div>
                     </div>
-                    <div class="stat-card valid">
+                    <div class="stat-card valid" role="status">
                         <div class="stat-label">Valid Tickets</div>
-                        <div class="stat-value" id="validTickets">0</div>
+                        <div class="stat-value" id="validTickets" aria-label="Valid tickets: 0">0</div>
                     </div>
-                    <div class="stat-card duplicate">
+                    <div class="stat-card duplicate" role="status">
                         <div class="stat-label">Duplicate Tickets</div>
-                        <div class="stat-value" id="duplicateTickets">0</div>
+                        <div class="stat-value" id="duplicateTickets" aria-label="Duplicate tickets: 0">0</div>
                     </div>
-                    <div class="stat-card invalid">
+                    <div class="stat-card invalid" role="status">
                         <div class="stat-label">Invalid Tickets</div>
-                        <div class="stat-value" id="invalidTickets">0</div>
+                        <div class="stat-value" id="invalidTickets" aria-label="Invalid tickets: 0">0</div>
                     </div>
-                    <div class="stat-card remaining">
+                    <div class="stat-card remaining" role="status">
                         <div class="stat-label">Remaining Tickets</div>
-                        <div class="stat-value" id="remainingTickets">0</div>
+                        <div class="stat-value" id="remainingTickets" aria-label="Remaining tickets: 0">0</div>
                     </div>
                 </div>
             </section>
 
-            <section class="data-display">
-                <div class="metadata-panel">
-                    <div id="clientInfo"></div>
-                    <div id="storeInfo"></div>
+            <section class="data-display" aria-labelledby="data-heading">
+                <h2 id="data-heading" class="sr-only">Ticket Data Display</h2>
+                <div class="metadata-panel" role="complementary" aria-labelledby="metadata-heading">
+                    <h3 id="metadata-heading" class="sr-only">File Information</h3>
+                    <div id="clientInfo" role="status"></div>
+                    <div id="storeInfo" role="status"></div>
                 </div>
 
-                <div class="table-controls">
+                <div class="table-controls" role="group" aria-labelledby="table-controls-heading">
+                    <h3 id="table-controls-heading" class="sr-only">Table Controls</h3>
                     <div class="rows-per-page">
                         <label for="rowsPerPage">Rows per page:</label>
-                        <select id="rowsPerPage">
+                        <select id="rowsPerPage" aria-describedby="pagination-help">
                             <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="50">50</option>
                         </select>
                     </div>
-                    <div class="pagination" id="pagination"></div>
+                    <div class="pagination" id="pagination" role="navigation" aria-label="Table pagination"></div>
+                    <div id="pagination-help" class="sr-only">Use pagination controls to navigate through ticket data</div>
                 </div>
 
-                <div class="table-container">
-                    <table id="dataTable">
+                <div class="table-container" role="region" aria-labelledby="table-heading" tabindex="0">
+                    <h3 id="table-heading" class="sr-only">Ticket Data Table</h3>
+                    <table id="dataTable" role="table" aria-describedby="table-description">
+                        <caption class="sr-only">Ticket validation data with date, time, invoice ID, and comments</caption>
                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Invoice ID</th>
-                                <th>LNURL Comment</th>
+                            <tr role="row">
+                                <th role="columnheader" tabindex="0" aria-sort="none">Date</th>
+                                <th role="columnheader" tabindex="0" aria-sort="none">Time</th>
+                                <th role="columnheader" tabindex="0" aria-sort="none">Invoice ID</th>
+                                <th role="columnheader" tabindex="0" aria-sort="none">LNURL Comment</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody"></tbody>
+                        <tbody id="tableBody" role="rowgroup"></tbody>
                     </table>
+                    <div id="table-description" class="sr-only">Table showing ticket validation data. Use arrow keys to navigate.</div>
                 </div>
             </section>
 
-            <section class="scan-history">
-                <h2>Scan History</h2>
-                <div class="history-controls">
-                    <button id="exportHistory" class="control-button">Export History</button>
-                    <button id="clearHistory" class="control-button">Clear History</button>
+            <section class="scan-history" aria-labelledby="history-heading">
+                <h2 id="history-heading">Scan History</h2>
+                <div class="history-controls" role="group" aria-labelledby="history-controls-heading">
+                    <h3 id="history-controls-heading" class="sr-only">History Controls</h3>
+                    <button id="exportHistory" class="control-button" aria-describedby="export-help">Export History</button>
+                    <button id="clearHistory" class="control-button" aria-describedby="clear-help">Clear History</button>
+                    <div id="export-help" class="sr-only">Export scan history as CSV file</div>
+                    <div id="clear-help" class="sr-only">Clear all scan history data</div>
                 </div>
-                <div id="scanHistory" class="history-list"></div>
+                <div id="scanHistory" class="history-list" role="log" aria-labelledby="history-heading" aria-live="polite"></div>
             </section>
         </main>
     </div>
 
     <script src="js/main.js"></script>
+    <script src="js/ui-enhancements.js"></script>
     <!-- <script lang="text/javascript">
     </script> -->
     <script src="js/scanner.js"></script>

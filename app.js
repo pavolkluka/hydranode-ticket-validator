@@ -25,6 +25,11 @@ const AppState = {
     currentLanguage: 'en'
 };
 
+// Global variables for scanner management
+let scannerAnimationId = null;
+let lastScanTime = 0;
+const SCAN_FRAME_LIMIT = 60; // Max 60 FPS
+
 // API Configuration
 const API_CONFIG = {
     baseURL: 'https://api.getpostman.com/collections',
@@ -808,10 +813,12 @@ function generateBase58Id() {
 }
 
 /**
- * Start QR code scanner
+ * Start QR code scanner with proper video metadata loading
  */
 async function startScanner() {
     try {
+        debugLog('Starting camera initialization...');
+        
         const stream = await navigator.mediaDevices.getUserMedia({
             video: { 
                 facingMode: 'environment',
@@ -820,65 +827,243 @@ async function startScanner() {
             }
         });
         
+        debugLog('Media stream obtained, setting up video element...');
+        
+        // Set the stream to video element
         elements.qrVideo.srcObject = stream;
+        
+        // Wait for video metadata to load with timeout
+        await waitForVideoMetadata(elements.qrVideo, 10000);
+        
+        // Validate video dimensions
+        if (elements.qrVideo.videoWidth === 0 || elements.qrVideo.videoHeight === 0) {
+            throw new Error('Invalid video dimensions: ' + elements.qrVideo.videoWidth + 'x' + elements.qrVideo.videoHeight);
+        }
+        
+        debugLog('Video metadata loaded successfully', {
+            width: elements.qrVideo.videoWidth,
+            height: elements.qrVideo.videoHeight
+        });
+        
+        // Update UI
         elements.videoContainer.style.display = 'block';
         elements.startScanner.style.display = 'none';
         elements.stopScanner.style.display = 'inline-block';
         
+        // Start scanning
         AppState.isScanning = true;
         scanQRCode();
         
         showToast('success', getText('scanner_started'));
-        debugLog('QR scanner started');
+        debugLog('QR scanner started successfully');
         
     } catch (error) {
-        debugLog('Failed to start camera', { error: error.message });
-        showToast('error', getText('camera_error'));
+        debugLog('Failed to start camera', { 
+            error: error.message, 
+            name: error.name,
+            stack: error.stack 
+        });
+        
+        // Clean up on error
+        await cleanupScanner();
+        
+        // Show appropriate error message
+        if (error.name === 'NotAllowedError') {
+            showToast('error', getText('camera_error'));
+        } else if (error.name === 'NotFoundError') {
+            showToast('error', 'No camera found on this device');
+        } else if (error.message.includes('timeout')) {
+            showToast('error', 'Camera initialization timeout');
+        } else if (error.message.includes('Invalid video dimensions')) {
+            showToast('error', 'Camera failed to provide valid video');
+        } else {
+            showToast('error', 'Camera error: ' + error.message);
+        }
     }
 }
 
 /**
- * Stop QR code scanner
+ * Wait for video metadata to load with timeout
  */
-function stopScanner() {
-    AppState.isScanning = false;
-    
-    if (elements.qrVideo.srcObject) {
-        const tracks = elements.qrVideo.srcObject.getTracks();
-        tracks.forEach(track => track.stop());
-        elements.qrVideo.srcObject = null;
+function waitForVideoMetadata(video, timeout) {
+    timeout = timeout || 10000;
+    return new Promise(function(resolve, reject) {
+        // If metadata is already loaded
+        if (video.readyState >= video.HAVE_METADATA) {
+            resolve();
+            return;
+        }
+        
+        let timeoutId;
+        
+        const onMetadataLoaded = function() {
+            clearTimeout(timeoutId);
+            video.removeEventListener('loadedmetadata', onMetadataLoaded);
+            video.removeEventListener('error', onError);
+            resolve();
+        };
+        
+        const onError = function(event) {
+            clearTimeout(timeoutId);
+            video.removeEventListener('loadedmetadata', onMetadataLoaded);
+            video.removeEventListener('error', onError);
+            reject(new Error('Video metadata loading failed: ' + (event.message || 'Unknown error')));
+        };
+        
+        const onTimeout = function() {
+            video.removeEventListener('loadedmetadata', onMetadataLoaded);
+            video.removeEventListener('error', onError);
+            reject(new Error('Video metadata loading timeout after ' + timeout + 'ms'));
+        };
+        
+        video.addEventListener('loadedmetadata', onMetadataLoaded);
+        video.addEventListener('error', onError);
+        timeoutId = setTimeout(onTimeout, timeout);
+        
+        // Start playing the video to trigger metadata loading
+        video.play().catch(function(err) {
+            debugLog('Video play failed during metadata loading', { error: err.message });
+        });
+    });
+}
+
+/**
+ * Clean up scanner resources
+ */
+async function cleanupScanner() {
+    try {
+        // Cancel animation frame
+        if (scannerAnimationId) {
+            cancelAnimationFrame(scannerAnimationId);
+            scannerAnimationId = null;
+        }
+        
+        // Stop video stream
+        if (elements.qrVideo && elements.qrVideo.srcObject) {
+            const tracks = elements.qrVideo.srcObject.getTracks();
+            tracks.forEach(function(track) {
+                track.stop();
+                debugLog('Video track stopped', { kind: track.kind, label: track.label });
+            });
+            elements.qrVideo.srcObject = null;
+        }
+        
+        // Reset UI state
+        AppState.isScanning = false;
+        elements.videoContainer.style.display = 'none';
+        elements.startScanner.style.display = 'inline-block';
+        elements.stopScanner.style.display = 'none';
+        
+        debugLog('Scanner cleanup completed');
+        
+    } catch (error) {
+        debugLog('Error during scanner cleanup', { error: error.message });
     }
-    
-    elements.videoContainer.style.display = 'none';
-    elements.startScanner.style.display = 'inline-block';
-    elements.stopScanner.style.display = 'none';
-    
+}
+        });
+        
+async function stopScanner() {
+    await cleanupScanner();
     showToast('info', getText('scanner_stopped'));
     debugLog('QR scanner stopped');
 }
 
+
 /**
- * Scan QR codes from video stream
+ * Scan QR codes from video stream with enhanced error handling
  */
 function scanQRCode() {
-    if (!AppState.isScanning) return;
-    
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    canvas.width = elements.qrVideo.videoWidth;
-    canvas.height = elements.qrVideo.videoHeight;
-    
-    ctx.drawImage(elements.qrVideo, 0, 0);
-    
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-    
-    if (code) {
-        handleQRCodeDetected(code.data);
+    if (\!AppState.isScanning) {
+        return;
     }
     
-    requestAnimationFrame(scanQRCode);
+    try {
+        // Frame rate limiting
+        const now = performance.now();
+        if (now - lastScanTime < (1000 / SCAN_FRAME_LIMIT)) {
+            scannerAnimationId = requestAnimationFrame(scanQRCode);
+            return;
+        }
+        lastScanTime = now;
+        
+        // Validate video element and dimensions
+        if (\!elements.qrVideo || \!elements.qrVideo.srcObject) {
+            debugLog('Video element or source not available, stopping scan');
+            return;
+        }
+        
+        const videoWidth = elements.qrVideo.videoWidth;
+        const videoHeight = elements.qrVideo.videoHeight;
+        
+        // Ensure valid dimensions before canvas operations
+        if (\!videoWidth || \!videoHeight || videoWidth <= 0 || videoHeight <= 0) {
+            debugLog('Invalid video dimensions, skipping frame', { 
+                width: videoWidth, 
+                height: videoHeight 
+            });
+            scannerAnimationId = requestAnimationFrame(scanQRCode);
+            return;
+        }
+        
+        // Create canvas and context
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (\!ctx) {
+            debugLog('Failed to get 2D context, skipping frame');
+            scannerAnimationId = requestAnimationFrame(scanQRCode);
+            return;
+        }
+        
+        // Set canvas dimensions
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+        
+        // Draw video frame to canvas
+        ctx.drawImage(elements.qrVideo, 0, 0, videoWidth, videoHeight);
+        
+        // Get image data for QR processing
+        let imageData;
+        try {
+            imageData = ctx.getImageData(0, 0, videoWidth, videoHeight);
+        } catch (error) {
+            debugLog('Failed to get image data from canvas', { 
+                error: error.message,
+                width: videoWidth,
+                height: videoHeight
+            });
+            scannerAnimationId = requestAnimationFrame(scanQRCode);
+            return;
+        }
+        
+        // Attempt QR code detection
+        try {
+            const code = jsQR(imageData.data, videoWidth, videoHeight, {
+                inversionAttempts: "dontInvert"
+            });
+            
+            if (code && code.data) {
+                debugLog('QR code detected in frame', { 
+                    data: code.data.substring(0, 50) + '...',
+                    location: code.location 
+                });
+                handleQRCodeDetected(code.data);
+            }
+        } catch (error) {
+            debugLog('Error during QR code detection', { error: error.message });
+        }
+        
+    } catch (error) {
+        debugLog('Unexpected error in scanQRCode', { 
+            error: error.message, 
+            stack: error.stack 
+        });
+    }
+    
+    // Continue scanning if still active
+    if (AppState.isScanning) {
+        scannerAnimationId = requestAnimationFrame(scanQRCode);
+    }
 }
 
 /**

@@ -38,7 +38,7 @@ const API_CONFIG = {
 
 // QR Code validation patterns
 const QR_PATTERNS = {
-    ticketURL: /^https:\/\/ticket-validator\.org\/btcpay\/i\/([A-Za-z0-9]+)\/receipt$/,
+    ticketURL: /^https:\/\/hydranode\.org\/btcpay\/i\/([A-Za-z0-9]+)\/receipt$/,
     base58: /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/
 };
 
@@ -1077,19 +1077,34 @@ function handleQRCodeDetected(qrData) {
     if (!match) {
         showScanFeedback('error');
         showToast('error', getText('ticket_invalid'));
-        debugLog('Invalid QR code format', { data: qrData });
+        debugLog('Invalid QR code format', { 
+            data: qrData, 
+            pattern: QR_PATTERNS.ticketURL.toString(),
+            reason: 'URL format does not match expected pattern'
+        });
         return;
     }
     
     const ticketId = match[1];
+    debugLog('QR code format validated successfully', { 
+        data: qrData,
+        ticketId: ticketId,
+        pattern: QR_PATTERNS.ticketURL.toString()
+    });
     
     // Validate Base58 format
     if (!isValidBase58(ticketId)) {
         showScanFeedback('error');
         showToast('error', getText('ticket_invalid'));
-        debugLog('Invalid Base58 ticket ID', { ticketId });
+        debugLog('Invalid Base58 ticket ID', { 
+            ticketId,
+            base58Pattern: QR_PATTERNS.base58.toString(),
+            reason: 'Ticket ID contains invalid Base58 characters'
+        });
         return;
     }
+    
+    debugLog('Base58 validation passed', { ticketId });
     
     // Check if ticket exists in our dataset
     const ticket = AppState.invoices.find(inv => inv.invoice_id === ticketId);

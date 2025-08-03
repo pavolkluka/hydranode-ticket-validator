@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1976d2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#42a5f5;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="192" height="192" fill="url(#bg-gradient)" rx="32"/>
+  
+  <!-- Icon Symbol -->
+  <g transform="translate(96, 96)">
+    <!-- Main hexagon -->
+    <polygon points="-30,-15 -15,-26 15,-26 30,-15 30,15 15,26 -15,26 -30,15" 
+             fill="white" 
+             stroke="#1565c0" 
+             stroke-width="3"/>
+    
+    <!-- Inner network pattern -->
+    <circle cx="0" cy="0" r="8" fill="#1976d2"/>
+    <circle cx="-15" cy="-10" r="3" fill="#42a5f5"/>
+    <circle cx="15" cy="-10" r="3" fill="#42a5f5"/>
+    <circle cx="-15" cy="10" r="3" fill="#42a5f5"/>
+    <circle cx="15" cy="10" r="3" fill="#42a5f5"/>
+    
+    <!-- Connection lines -->
+    <line x1="0" y1="0" x2="-15" y2="-10" stroke="#1976d2" stroke-width="2"/>
+    <line x1="0" y1="0" x2="15" y2="-10" stroke="#1976d2" stroke-width="2"/>
+    <line x1="0" y1="0" x2="-15" y2="10" stroke="#1976d2" stroke-width="2"/>
+    <line x1="0" y1="0" x2="15" y2="10" stroke="#1976d2" stroke-width="2"/>
+  </g>
+</svg>

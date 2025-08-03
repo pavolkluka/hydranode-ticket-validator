@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hydranode Ticket Validator - A secure web application for ticket validation">
+    <meta name="theme-color" content="#1976d2">
+    <title>Hydranode Ticket Validator</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body data-theme="light">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="logos/hydranode-logo.svg" alt="Hydranode" class="logo" />
+                    <h1 class="app-title" data-i18n="app.title">Hydranode Ticket Validator</h1>
+                </div>
+                
+                <div class="controls">
+                    <!-- Language Selector -->
+                    <div class="language-selector">
+                        <select id="languageSelect" aria-label="Select Language">
+                            <option value="en">English</option>
+                            <option value="cz">Čeština</option>
+                            <option value="sk">Slovenčina</option>
+                            <option value="de">Deutsch</option>
+                            <option value="es">Español</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                        <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <h2 data-i18n="welcome.title">Welcome to Hydranode Ticket Validator</h2>
+                <p data-i18n="welcome.description">A secure and reliable web application for validating Hydranode tickets. Choose your preferred language and theme for the best experience.</p>
+                
+                <div class="warning-notice">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-content">
+                        <h3 data-i18n="warning.title">Development Notice</h3>
+                        <p data-i18n="warning.message">This application is currently in development phase. Features, security, and stability are still being refined. Use at your own risk.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ticket Validation Section -->
+            <section class="validation-section">
+                <div class="card">
+                    <h3 data-i18n="validation.title">Ticket Validation</h3>
+                    <form id="ticketForm" class="ticket-form">
+                        <div class="form-group">
+                            <label for="ticketInput" data-i18n="validation.label">Enter Ticket ID:</label>
+                            <input 
+                                type="text" 
+                                id="ticketInput" 
+                                class="form-input" 
+                                placeholder="Enter your ticket ID here..."
+                                data-i18n-placeholder="validation.placeholder"
+                                required
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-primary" data-i18n="validation.submit">
+                            Validate Ticket
+                        </button>
+                    </form>
+                    
+                    <div id="validationResult" class="validation-result" style="display: none;">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features-section">
+                <h3 data-i18n="features.title">Features</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h4 data-i18n="features.security.title">Secure Validation</h4>
+                        <p data-i18n="features.security.description">Advanced security protocols ensure your tickets are validated safely and securely.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h4 data-i18n="features.multilingual.title">Multi-language Support</h4>
+                        <p data-i18n="features.multilingual.description">Available in multiple languages for a better user experience.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h4 data-i18n="features.themes.title">Theme Options</h4>
+                        <p data-i18n="features.themes.description">Choose between light and dark themes to suit your preferences.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h4 data-i18n="features.responsive.title">Responsive Design</h4>
+                        <p data-i18n="features.responsive.description">Works seamlessly across all devices and screen sizes.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <p data-i18n="footer.copyright">&copy; 2024 Hydranode. All rights reserved.</p>
+            <p data-i18n="footer.version">Version 1.0.0 - Development</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/i18n.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/validator.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('SW registered: ', registration))
+                    .catch(registrationError => console.log('SW registration failed: ', registrationError));
+            });
+        }
+    </script>
+</body>
+</html>

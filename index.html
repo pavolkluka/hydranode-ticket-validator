@@ -3,217 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="QR Code Ticket Validator for Hydranode Platform">
     <title>Hydranode Ticket Validator</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-light-192x192.png">
-    <link rel="apple-touch-icon" href="icons/icon-light-192x192.png">
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- External Libraries -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <meta name="title" content="Scan and verify ticket for your event with Hydranode Ticket Validator!">
+    <meta name="description" content="Hydranode Ticket Validator is a tool that allows you to verify whether a ticket is valid by simply scanning a QR code.">
+    <meta name="theme-color" content="#f8c423">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Ticket Validator">
+    <link rel="manifest" href="/hydranode-ticket-validator/manifest.json">
+    <link rel="icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAEUAAABCCAIAAACO6ozGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAINElEQVRoge2ZW0xU6R3Av3O/DMNcwAVmULkMKOWyCMKAVsSuqzY2bfrQbOOTaZqYNGls+uLTPvStadMak0192HaTbTfNJq5p2k3V1riyLFJp5S4XmWEGhnFkcGBmYObcL32gFRxm5nwHMTbN/J7IN//8z/md7/4HgAIFChQoUKBAgZdB3vQLZKHaRfz8R6Xf6SkyjBQk/aPPkz+99vxFC/o6X2yXHCjDDx0gYSJTvDYwzm9v+Z/zwTBQ7SKqXQRMMC/oo0/E7S34Lh6Joujhw4cbGxsNI2Ox2P37900lL7ZgDVUkRUJNhGBEDkXl7S278bHZbBcuXLh48aJh5M2bN836lBSjrXUUTKSmgy8epVXtpcbd+JSXlx89etTtdhtGzszMmE3uLMaaa6F8dB30jfAZjbuZPy6XC2aw6bp+7949U5lJAmmupRzFGEzwSlwZnRMzGk37oCgqy/KzZ89EMTNXBlNTU36/31RyhkK6mmgEbhO5PZgWZT2j0fR40zStv7/f6/W6XK6enp6zZ8/29vba7XaSJEmSxLCtT3v37l1dz3xeflga7W6mIYNvDaZ3Nu7BfkqSZGdn54kTJ7q7u2tqaux2u8PhoGn6/Pnzd+7cMZWqu4m+/5v9MJFpXjv43WCK0zLazfUPgoASG1bmxKKrajylqioAAEiSNDAwMDAwQBDE/v3729vb29vba2trHz58aCo5AOAbR1nIyPsj/E4ZYNYHx5BvHbd8/12rb0n2h6VgRAlG5EBETvMaAECW5UAgEAgEbty4YbPZksmkqeQAgHc6YH3u/SvLYANmfUgCOddl6W1je9sAL+rLq0p4RVlakX0heXpBnA5KoWVlc47uQmafA4PceWRFfzAhZP3JnA+Bg+MtzObfDIX892DCbHDaalJdTarhqDIxL47Mio9mhecJ1VTyk0cYloZab6eCUiSmZP3JnE9bPV1qz7I5WFnUyqJVFURrPXink+UEPS1oMwFpYILvH+UnA6IoGS90549bIF+jf5TnxewJzfmc7mTzbw4YCooYtIgBAGBV5cS5boum66tJrW+E+/sQd+9ROrqm5lrDz3mNLwib9I9ygphlMQCmfBAEnIaer5vxCAJQgJQ5sfdOW987bQUATPjFvhH+yxFu+IkoSJoo6aKsaxrwNtJ2K9Rg8y/Ji8uKml3HjI+rFG/xQM3XPLR4qBYP9ePv2eMb2qNpYWiaH54Vw8+V88cskMeCqaCYSOWcmSZ8znhNdE5+EAQ4i9EzXeyZLlZW9GBEtsCtBAAAf1jeSOfoHVM+3+yCna+mIHCkHu42CgDYlE8LOVcX2K9SbEE7G2FPVq+P8IoSiMiy8so+RxsoWxHUMf618mRRerqSfefZBNanp5XF37wOmF2Uwnvic6KVwbE3XNyKr6u+JTkt5FwMAKRPUw3lKsUh19PXRyiq+Jak/DFQPp2NdLHFOFJV9Twz9dVZiiq+JTl/jPF6jWNIRwNlZQ18VA1M+KWhaf5gOeEqxSvfwktseznhRFn3h6Vnq/kmD4Dxce/D6w+QJGEw2lK89qcvU1c/jZc5sRoXUesmql1ErZusrSSqKgjIs0weYgl13GdQsQAwPg1V5FsO4y+d3FBH5wRZ0cMrSnhF6R/jSQKpKMErSjH3PvzwQbK1nm47RFWU4Oiu1FaT6oR/L3yaPWR5iXFYIqWNvVw9kmR9cVleXJZRBLAM6rSiThtWV0l4G5nuJrrZQxn2+Qs0DSxFFV/YYPIAQx9nMdZwkCpiDD6pourTQSmWzH5M1HSQ4rQUp4WiyuN56dY/OJpESmzYySNMbxvbc4TZl+1OtR1e1IafCNKO6tRODHyqKvCqCuOVWpL1gXEepjilqLrC62kerCbVuZD04Z+TAIDmWup0B/Nup+VEK4MiAEGQzbvGCzhBH5rMfsHOwNCHqKowLvXzov5gIrP0Cs/kvDg5L179NGGh0Y4G+vjbdFcTXeMmi1mUpRGWRpMp7Z8zr+xD4Ei1iyhzGi8GYz5xZsFgp8tMThBWq5XjOEHYetG0oPWNcn2jHADAXYq3HqLaDtGtddRcSNrIVp3aST6fMifWVENheY85vKh/Mcz98pM1OIst3G73pUuXYrGY3+9fXFwMhUJray8leRpTnsaUvz5IAwAcVtitLJ9PeQneWJPvZvIspvzh9vpv/5IMRQ22uQwwDGtqarp8+TJBEMvLy/Pz8/Pz8z6fb3Z2dmZmZmFhIaM4Ht+ALRXl9MFQcKAMr9uf02dsTvzgs8TnA6lkCmokbIeiqI6ODoZhAACVlZWVlZUnT57kOC4SiUQikYWFhcnJyeHh4fHx8Xg8bqoIntOniEFb6yiGyjLYZEX/20PuV39cG50TBYhC1E5omvZ6vRmNLMt6PB6Px3Ps2LGNjY1EIhGPxx8/fnzt2rWRkRHIzDl9iovQjmwX0jSv/f72+i8+WYuuqZrpjvkPVqt1p8/WO+G4w+FwOBzV1dUtLS3Xr1+Hz5zTx2HFvF9jtrfoOkhsaO9/GPvo83VNe6VzdFdXl91uh4lMpVJDQ0PwmbP74BjSWkex9NZgEyV9KiD+5OpzyH0gP6dOnYKM7Ovr24P5g2Pg629vDbbomnprMP2z360uGx3XYSAIoqenBzLY7H+QsvvQJHK8hQUAaBqYDoof31r/+Nb6eu6qlynq6+vr6upgIjmOGxwcNJU8u8/hKrLaRQiS/tUY/8Fnia/GOC53ycssgiBcuXIFJjKdTgeDwT145Ps/cK7crv315X0NVeQbL4PsAXeuun/4bdveXpjfJC111P9DtxQoUKBAgQIFdsW/ATWbYJkr7y4hAAAAAElFTkSuQmCC">
+    <!-- Main CSS Style -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- <style type="text/css">
+    </style> -->
+    <!-- JavaScript Libraries -->
+    <!-- SheetJS from CDN: use version 0.20.3 -->
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
+    <!-- jsQR from JSDelvr: user version 1.4.0 -->
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" integrity="sha384-7+6NtuEPG8SPa+HRop4AdiOIt8o2Pn7Mx7kG6WU6DP+bGLL38Nx5/WYqIgAUQKpP" crossorigin="anonymous" defer></script>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <img src="logos/hydranode-horizontal-light.png" alt="Hydranode" class="logo" id="logo">
-                <div class="header-controls">
-                    <button class="btn-icon" id="themeToggle" title="Toggle theme">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                        </svg>
-                    </button>
-                    <select id="languageSelect" class="language-select">
-                        <option value="en">EN</option>
-                        <option value="sk">SK</option>
-                        <option value="cz">CZ</option>
-                        <option value="de">DE</option>
-                        <option value="es">ES</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Hydranode Ticket Validator</h1>
+            <!-- <p>A simple web-based application using HTML, JavaScript libraries for Hydranode Ticket validation.</p>
+            <strong>Warning: Application in Development</strong>
+            <p>
+                This application is currently in the development phase. Features, security, and stability are still being refined.
+                Use this application at your own risk—there may be bugs, incomplete functionality, or potential security risks.
+            <p> -->
+        </header>
 
-    <!-- Main Content -->
-    <main class="main">
-        <div class="container">
-            <!-- Welcome Section -->
-            <section class="welcome-section" id="welcomeSection" style="display: none;">
-                <div class="welcome-card">
-                    <h2 class="welcome-title" data-i18n="welcome"></h2>
-                    <p class="welcome-message" id="welcomeMessage"></p>
+        <main class="main-container">
+            <section class="file-upload">
+                <div class="upload-zone" id="dropZone">
+                    <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input">
+                    <label for="fileInput" class="custom-file-upload">
+                        Choose File
+                    </label>
+                    <span class="supported-formats">(Supported .xls file: use exported report for store.)</span>
+                    <div id="fileInfo" class="file-info"></div>
                 </div>
             </section>
 
-            <!-- Setup Section -->
-            <section class="setup-section" id="setupSection">
-                <div class="setup-card">
-                    <h2 class="setup-title" data-i18n="setup_title">Setup Configuration</h2>
-                    
-                    <!-- Mode Selection -->
-                    <div class="mode-selector">
-                        <h3 data-i18n="mode_title">Select Mode</h3>
-                        <div class="mode-options">
-                            <label class="mode-option">
-                                <input type="radio" name="mode" value="online" checked>
-                                <span class="mode-label">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                        <path d="M12 5.57a8 8 0 0 1 0 12.86"></path>
-                                        <path d="M8 7.85a12 12 0 0 1 0 8.3"></path>
-                                    </svg>
-                                    <span data-i18n="mode_online">Online (API)</span>
-                                </span>
-                            </label>
-                            <label class="mode-option">
-                                <input type="radio" name="mode" value="offline">
-                                <span class="mode-label">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                                        <polyline points="14,2 14,8 20,8"></polyline>
-                                    </svg>
-                                    <span data-i18n="mode_offline">Offline (XLS)</span>
-                                </span>
-                            </label>
-                        </div>
+            <section class="scanner-section">
+                <div class="scanner-container">
+                    <div class="video-container">
+                        <video id="qrVideo" playsinline></video>
+                        <canvas id="qrCanvas" class="qr-overlay"></canvas>
                     </div>
-
-                    <!-- Online Mode Configuration -->
-                    <div class="config-section" id="onlineConfig">
-                        <h3 data-i18n="api_token_title">API Token</h3>
-                        <div class="input-group">
-                            <input type="password" id="apiToken" placeholder="Enter your API token..." data-i18n-placeholder="api_token_placeholder">
-                            <button type="button" class="btn-icon" id="toggleApiToken" title="Toggle visibility">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                        </div>
-                        <button class="btn-primary" id="validateToken" data-i18n="validate_token">Validate Token</button>
-                    </div>
-
-                    <!-- Offline Mode Configuration -->
-                    <div class="config-section" id="offlineConfig" style="display: none;">
-                        <h3 data-i18n="xls_file_title">XLS File Upload</h3>
-                        <div class="file-upload">
-                            <input type="file" id="xlsFile" accept=".xls,.xlsx" style="display: none;">
-                            <button class="btn-secondary" id="selectFileBtn" data-i18n="select_file">Select XLS File</button>
-                            <div class="file-info" id="fileInfo" style="display: none;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Store Selection -->
-            <section class="store-section" id="storeSection" style="display: none;">
-                <div class="store-card">
-                    <h3 data-i18n="select_store">Select Store</h3>
-                    <select id="storeSelect" class="store-select">
-                        <option value="" data-i18n="choose_store">Choose a store...</option>
-                    </select>
-                    <button class="btn-primary" id="loadInvoices" data-i18n="load_invoices">Load Invoices</button>
-                </div>
-            </section>
-
-            <!-- Scanner Section -->
-            <section class="scanner-section" id="scannerSection" style="display: none;">
-                <div class="scanner-card">
-                    <h3 data-i18n="qr_scanner">QR Code Scanner</h3>
-                    
-                    <!-- Statistics -->
-                    <div class="statistics" id="statistics">
-                        <div class="stat-grid">
-                            <div class="stat-item">
-                                <span class="stat-value" id="totalTickets">0</span>
-                                <span class="stat-label" data-i18n="total_tickets">Total Tickets</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-value" id="scannedTickets">0</span>
-                                <span class="stat-label" data-i18n="scanned_tickets">Scanned</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-value" id="validTickets">0</span>
-                                <span class="stat-label" data-i18n="valid_tickets">Valid</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-value" id="invalidTickets">0</span>
-                                <span class="stat-label" data-i18n="invalid_tickets">Invalid</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Scanner Controls -->
                     <div class="scanner-controls">
-                        <button class="btn-primary" id="startScanner" data-i18n="start_scanner">Start Scanner</button>
-                        <button class="btn-secondary" id="stopScanner" data-i18n="stop_scanner" style="display: none;">Stop Scanner</button>
+                        <button id="startScan" class="control-button">Start Scanner</button>
+                        <button id="stopScan" class="control-button" disabled>Stop Scanner</button>
                     </div>
-
-                    <!-- Video Preview -->
-                    <div class="video-container" id="videoContainer" style="display: none;">
-                        <video id="qrVideo" autoplay playsinline></video>
-                        <div class="scan-overlay">
-                            <div class="scan-frame"></div>
-                        </div>
+                    <div class="manual-entry">
+                        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID manually">
+                        <button id="submitManual" class="control-button">Submit</button>
                     </div>
-
-                    <!-- Export Controls -->
-                    <div class="export-controls">
-                        <button class="btn-secondary" id="exportData" data-i18n="export_data">Export Scan Data</button>
-                        <button class="btn-secondary" id="resetData" data-i18n="reset_data">Reset Data</button>
+                </div>
+                
+                <!-- New Modal Message Display -->
+                <div id="scanMessageModal" class="scan-message-modal">
+                    <div class="modal-content">
+                        <div id="scanData" class="scan-data"></div>
+                        <div id="scanResult" class="scan-result"></div>
+                        <button id="closeModal" class="control-button">OK</button>
                     </div>
                 </div>
             </section>
 
-            <!-- Debug Section -->
-            <section class="debug-section" id="debugSection">
-                <div class="debug-card">
-                    <div class="debug-header">
-                        <h3 data-i18n="debug_logs">Debug Logs</h3>
-                        <label class="debug-toggle">
-                            <input type="checkbox" id="debugEnabled">
-                            <span class="debug-slider"></span>
-                        </label>
+            <section class="data-statistics">
+                <h2 class="mb-4">Ticket Statistics</h2>
+                <div class="statistics-grid">
+                    <div class="stat-card total">
+                        <div class="stat-label">Total Tickets</div>
+                        <div class="stat-value" id="totalTickets">0</div>
                     </div>
-                    <div class="debug-controls">
-                        <button class="btn-secondary" id="exportLogs" data-i18n="export_logs">Export Logs</button>
-                        <button class="btn-secondary" id="clearLogs" data-i18n="clear_logs">Clear Logs</button>
+                    <div class="stat-card valid">
+                        <div class="stat-label">Valid Tickets</div>
+                        <div class="stat-value" id="validTickets">0</div>
                     </div>
-                    <div class="debug-output" id="debugOutput"></div>
+                    <div class="stat-card duplicate">
+                        <div class="stat-label">Duplicate Tickets</div>
+                        <div class="stat-value" id="duplicateTickets">0</div>
+                    </div>
+                    <div class="stat-card invalid">
+                        <div class="stat-label">Invalid Tickets</div>
+                        <div class="stat-value" id="invalidTickets">0</div>
+                    </div>
+                    <div class="stat-card remaining">
+                        <div class="stat-label">Remaining Tickets</div>
+                        <div class="stat-value" id="remainingTickets">0</div>
+                    </div>
                 </div>
             </section>
-        </div>
-    </main>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+            <section class="data-display">
+                <div class="metadata-panel">
+                    <div id="clientInfo"></div>
+                    <div id="storeInfo"></div>
+                </div>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-        <div class="loading-spinner"></div>
-        <p class="loading-text" data-i18n="loading">Loading...</p>
+                <div class="table-controls">
+                    <div class="rows-per-page">
+                        <label for="rowsPerPage">Rows per page:</label>
+                        <select id="rowsPerPage">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Invoice ID</th>
+                                <th>LNURL Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="scan-history">
+                <h2>Scan History</h2>
+                <div class="history-controls">
+                    <button id="exportHistory" class="control-button">Export History</button>
+                    <button id="clearHistory" class="control-button">Clear History</button>
+                </div>
+                <div id="scanHistory" class="history-list"></div>
+            </section>
+        </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="app.js"></script>
+    <script src="js/main.js"></script>
+    <!-- <script lang="text/javascript">
+    </script> -->
+    <script src="js/scanner.js"></script>
+    <!-- <script type="text/javascript">
+    </script> -->
+    <!-- Service Worker (PWA) -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/hydranode-ticket-validator/js/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+</script>
 </body>
 </html>

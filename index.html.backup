@@ -18,7 +18,7 @@
     <!-- SheetJS from CDN: use version 0.20.3 -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
     <!-- jsQR from JSDelvr: user version 1.4.0 -->
-    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" crossorigin="anonymous" defer></script>
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" integrity="sha384-7+6NtuEPG8SPa+HRop4AdiOIt8o2Pn7Mx7kG6WU6DP+bGLL38Nx5/WYqIgAUQKpP" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <div class="container">
@@ -225,38 +225,20 @@
     // Initialize PWA components
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize icons - use proper app logo
-        // Initialize icons with proper checks - ensure IconLibrary is available
-        function initializeIcons() {
-            if (typeof IconLibrary === 'undefined' || !window.IconLibrary) {
-                console.log('IconLibrary not ready, retrying in 100ms...');
-                setTimeout(initializeIcons, 100);
-                return;
-            }
-            
-            try {
-                document.getElementById('appIcon').innerHTML = IconLibrary.getIcon('appLogo', '32');
-                document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
-                document.getElementById('uploadIcon').innerHTML = IconLibrary.getIcon('upload', '16');
-                document.getElementById('languageIcon').innerHTML = IconLibrary.getIcon('language', '16');
-                document.getElementById('themeIcon').innerHTML = IconLibrary.getIcon('sun', '16');
-                document.getElementById('statusIcon').innerHTML = IconLibrary.getIcon('warning', '16');
-                document.getElementById('scannerIcon').innerHTML = IconLibrary.getIcon('scanner', '20');
-                document.getElementById('playIcon').innerHTML = IconLibrary.getIcon('play', '16');
-                document.getElementById('stopIcon').innerHTML = IconLibrary.getIcon('stop', '16');
-                document.getElementById('chartIcon').innerHTML = IconLibrary.getIcon('chart', '20');
-                document.getElementById('historyIcon').innerHTML = IconLibrary.getIcon('history', '20');
-                document.getElementById('exportIcon').innerHTML = IconLibrary.getIcon('export', '14');
-                document.getElementById('trashIcon').innerHTML = IconLibrary.getIcon('trash', '14');
-                document.getElementById('databaseIcon').innerHTML = IconLibrary.getIcon('database', '20');
-            } catch (error) {
-                console.error('Error initializing icons:', error);
-                // Retry after a delay
-                setTimeout(initializeIcons, 200);
-            }
-        }
-        
-        // Start icon initialization
-        initializeIcons();
+        document.getElementById('appIcon').innerHTML = IconLibrary.getIcon('appLogo', '32');
+        document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
+        document.getElementById('uploadIcon').innerHTML = IconLibrary.getIcon('upload', '16');
+        document.getElementById('languageIcon').innerHTML = IconLibrary.getIcon('language', '16');
+        document.getElementById('themeIcon').innerHTML = IconLibrary.getIcon('sun', '16');
+        document.getElementById('statusIcon').innerHTML = IconLibrary.getIcon('warning', '16');
+        document.getElementById('scannerIcon').innerHTML = IconLibrary.getIcon('scanner', '20');
+        document.getElementById('playIcon').innerHTML = IconLibrary.getIcon('play', '16');
+        document.getElementById('stopIcon').innerHTML = IconLibrary.getIcon('stop', '16');
+        document.getElementById('chartIcon').innerHTML = IconLibrary.getIcon('chart', '20');
+        document.getElementById('historyIcon').innerHTML = IconLibrary.getIcon('history', '20');
+        document.getElementById('exportIcon').innerHTML = IconLibrary.getIcon('export', '14');
+        document.getElementById('trashIcon').innerHTML = IconLibrary.getIcon('trash', '14');
+        document.getElementById('databaseIcon').innerHTML = IconLibrary.getIcon('database', '20');
         
         // Initialize options menu functionality
         initializeOptionsMenu();
@@ -272,84 +254,54 @@
         const optionsButton = document.getElementById('optionsButton');
         const optionsMenu = document.getElementById('optionsMenu');
         
-        if (!optionsButton || !optionsMenu) {
-            console.warn('Options menu elements not found');
-            return;
-        }
-        
         optionsButton.addEventListener('click', function(e) {
             e.stopPropagation();
             optionsMenu.classList.toggle('active');
             
-            // Use proper initialization checks for IconLibrary
-            if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                document.getElementById('optionsIcon').innerHTML = 
-                    optionsMenu.classList.contains('active') ? 
-                    IconLibrary.getIcon('close', '20') : 
-                    IconLibrary.getIcon('menu', '20');
-            }
+            const icon = ThemeManager.isDarkTheme() ? 'close' : 'close';
+            document.getElementById('optionsIcon').innerHTML = 
+                optionsMenu.classList.contains('active') ? 
+                IconLibrary.getIcon('close', '20') : 
+                IconLibrary.getIcon('menu', '20');
         });
         
         // Close menu when clicking outside
         document.addEventListener('click', function(e) {
             if (!optionsMenu.contains(e.target) && e.target !== optionsButton) {
                 optionsMenu.classList.remove('active');
-                if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                    document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
-                }
+                document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
             }
         });
     }
+    
     function initializeThemeToggle() {
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const themeText = document.getElementById('themeToggleText');
         
-        if (!themeToggle || !themeIcon || !themeText) {
-            console.warn('Theme toggle elements not found');
-            return;
-        }
-        
         themeToggle.addEventListener('click', function() {
-            if (typeof ThemeManager !== 'undefined' && window.ThemeManager) {
-                const newTheme = ThemeManager.toggleTheme();
-                updateThemeUI(newTheme);
-            }
+            const newTheme = ThemeManager.toggleTheme();
+            updateThemeUI(newTheme);
         });
         
         // Initialize theme UI
-        if (typeof ThemeManager !== 'undefined' && window.ThemeManager) {
-            updateThemeUI(ThemeManager.getCurrentTheme());
-        }
+        updateThemeUI(ThemeManager.getCurrentTheme());
         
         function updateThemeUI(theme) {
             const isDark = theme === 'dark';
-            if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                themeIcon.innerHTML = IconLibrary.getIcon(isDark ? 'moon' : 'sun', '16');
-            }
-            if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
-                themeText.textContent = isDark ? LanguageManager.get('lightMode') : LanguageManager.get('darkMode');
-            }
+            themeIcon.innerHTML = IconLibrary.getIcon(isDark ? 'moon' : 'sun', '16');
+            themeText.textContent = isDark ? LanguageManager.get('lightMode') : LanguageManager.get('darkMode');
         }
     }
     
     function initializeLanguageSelector() {
         const languageSelect = document.getElementById('languageSelect');
         
-        if (!languageSelect) {
-            console.warn('Language selector element not found');
-            return;
-        }
-        
         // Set current language
-        if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
-            languageSelect.value = LanguageManager.getCurrentLanguage();
-        }
+        languageSelect.value = LanguageManager.getCurrentLanguage();
         
         languageSelect.addEventListener('change', function() {
-            if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
-                LanguageManager.setLanguage(this.value);
-            }
+            LanguageManager.setLanguage(this.value);
         });
     }
     

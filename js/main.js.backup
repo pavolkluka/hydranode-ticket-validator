@@ -24,17 +24,10 @@ let dataAvailable = false;
 let dataAvailabilityCallbacks = [];
 
 // Event Listeners
-// Event Listeners - with null checks
-if (fileInput) {
-    fileInput.addEventListener('change', handleFileSelect);
-}
-if (dropZone) {
-    dropZone.addEventListener('dragover', handleDragOver);
-    dropZone.addEventListener('drop', handleDrop);
-}
-if (rowsPerPageSelect) {
-    rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
-}
+fileInput.addEventListener('change', handleFileSelect);
+dropZone.addEventListener('dragover', handleDragOver);
+dropZone.addEventListener('drop', handleDrop);
+rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
 
 // Function to check file signature
 async function checkFileSignature(file) {
@@ -288,18 +281,19 @@ async function handleFileSelect(event) {
 function handleDragOver(event) {
     event.preventDefault();
     event.stopPropagation();
-    if (dropZone) dropZone.classList.add('dragover');
+    dropZone.classList.add('dragover');
+}
 
 // Update the handleDrop function to handle async validation
 async function handleDrop(event) {
     event.preventDefault();
     event.stopPropagation();
-    if (dropZone) dropZone.classList.remove('dragover');
+    dropZone.classList.remove('dragover');
     
     const file = event.dataTransfer.files[0];
     if (!file) return;
     
-    if (fileInput) fileInput.files = event.dataTransfer.files;
+    fileInput.files = event.dataTransfer.files;
     await handleFileSelect({ target: { files: [file] } });
 }
 

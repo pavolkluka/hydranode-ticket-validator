@@ -372,16 +372,21 @@ function updateDataAvailabilityUI(availability) {
     // Update scanner controls
     updateScannerAvailability(availability.available);
     
-    // Update data status indicator
-    updateDataStatusIndicator(availability);
+    // Update compact data status indicator
+    updateCompactDataStatusIndicator(availability);
     
     // Update metadata panel
     if (availability.available) {
-        clientInfo.innerHTML = `<strong>Client ID:</strong> ${availability.clientId || 'N/A'}`;
-        storeInfo.innerHTML = `<strong>Store Name:</strong> ${availability.storeName || 'N/A'}`;
+        clientInfo.innerHTML = `<strong data-i18n="clientId">Client ID:</strong> ${availability.clientId || 'N/A'}`;
+        storeInfo.innerHTML = `<strong data-i18n="storeName">Store Name:</strong> ${availability.storeName || 'N/A'}`;
     } else {
-        clientInfo.innerHTML = '<strong>Status:</strong> <span class="data-status-unavailable">No XLS data loaded</span>';
-        storeInfo.innerHTML = '<strong>Action:</strong> Please upload a valid XLS file to begin';
+        clientInfo.innerHTML = `<strong data-i18n="status">Status:</strong> <span class="data-status-unavailable" data-i18n="noDataLoaded">No XLS data loaded</span>`;
+        storeInfo.innerHTML = `<strong data-i18n="action">Action:</strong> <span data-i18n="pleaseUpload">Please upload a valid XLS file to begin</span>`;
+    }
+    
+    // Re-apply language translations after updating content
+    if (typeof window.LanguageManager !== 'undefined') {
+        window.LanguageManager.updateUI();
     }
 }
 
@@ -393,60 +398,57 @@ function updateScannerAvailability(available) {
     
     if (startButton) {
         startButton.disabled = !available;
-        startButton.title = available ? 
-            'Start camera scanner' : 
-            'Upload XLS data first to enable scanning';
+        if (available) {
+            startButton.title = window.LanguageManager ? window.LanguageManager.get('startScanner') : 'Start Scanner';
+        } else {
+            startButton.title = window.LanguageManager ? window.LanguageManager.get('noDataLoaded') : 'Upload XLS data first';
+        }
     }
     
     if (manualInput) {
         manualInput.disabled = !available;
-        manualInput.placeholder = available ? 
-            'Enter Ticket ID manually' : 
-            'Upload XLS data first';
+        if (available) {
+            manualInput.setAttribute('data-i18n', 'enterTicketId');
+            manualInput.placeholder = window.LanguageManager ? window.LanguageManager.get('enterTicketId') : 'Enter Ticket ID manually';
+        } else {
+            manualInput.removeAttribute('data-i18n');
+            manualInput.placeholder = window.LanguageManager ? window.LanguageManager.get('noDataLoaded') : 'Upload XLS data first';
+        }
     }
     
     if (submitManual) {
         submitManual.disabled = !available;
-        submitManual.title = available ? 
-            'Submit manual ticket ID' : 
-            'Upload XLS data first to enable manual entry';
+        if (available) {
+            submitManual.title = window.LanguageManager ? window.LanguageManager.get('submitTicket') : 'Submit';
+        } else {
+            submitManual.title = window.LanguageManager ? window.LanguageManager.get('noDataLoaded') : 'Upload XLS data first';
+        }
     }
 }
 
-function updateDataStatusIndicator(availability) {
-    // Create or update a data status indicator
-    let statusIndicator = document.getElementById('dataStatusIndicator');
+function updateCompactDataStatusIndicator(availability) {
+    // Update the compact data status indicator
+    const statusCompact = document.getElementById('dataStatusCompact');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
     
-    if (!statusIndicator) {
-        statusIndicator = document.createElement('div');
-        statusIndicator.id = 'dataStatusIndicator';
-        statusIndicator.className = 'data-status-indicator';
-        
-        // Insert after the file upload section
-        const fileUploadSection = document.querySelector('.file-upload');
-        if (fileUploadSection && fileUploadSection.parentNode) {
-            fileUploadSection.parentNode.insertBefore(statusIndicator, fileUploadSection.nextSibling);
+    if (statusCompact && statusIcon && statusText) {
+        if (availability.available) {
+            statusCompact.className = 'data-status-compact available';
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('check', '16') : '✓';
+            statusText.setAttribute('data-i18n', 'dataAvailable');
+            statusText.setAttribute('data-i18n-params', JSON.stringify({count: availability.validTicketCount}));
+        } else {
+            statusCompact.className = 'data-status-compact unavailable';
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('warning', '16') : '⚠';
+            statusText.setAttribute('data-i18n', 'dataUnavailable');
+            statusText.removeAttribute('data-i18n-params');
         }
-    }
-    
-    if (availability.available) {
-        statusIndicator.className = 'data-status-indicator available';
-        statusIndicator.innerHTML = `
-            <div class="status-icon">✓</div>
-            <div class="status-content">
-                <div class="status-title">XLS Data Loaded</div>
-                <div class="status-details">${availability.validTicketCount} valid tickets available</div>
-            </div>
-        `;
-    } else {
-        statusIndicator.className = 'data-status-indicator unavailable';
-        statusIndicator.innerHTML = `
-            <div class="status-icon">⚠</div>
-            <div class="status-content">
-                <div class="status-title">No XLS Data</div>
-                <div class="status-details">Upload an XLS file to enable ticket validation</div>
-            </div>
-        `;
+        
+        // Update language content
+        if (typeof window.LanguageManager !== 'undefined') {
+            window.LanguageManager.updateUI();
+        }
     }
 }
 
@@ -464,4 +466,21 @@ function getDataAvailabilityInfo() {
 document.addEventListener('DOMContentLoaded', function() {
     // Set initial data availability state
     updateDataAvailability();
+    
+    // Register language change callback
+    if (typeof window.LanguageManager !== 'undefined') {
+        window.LanguageManager.registerCallback(function(language) {
+            // Update placeholders and titles when language changes
+            updateDataAvailability();
+        });
+    }
+    
+    // Register theme change callback for icon updates
+    if (typeof window.ThemeManager !== 'undefined') {
+        window.ThemeManager.registerCallback(function(theme) {
+            // Update status icons when theme changes
+            const availability = checkDataAvailability();
+            updateCompactDataStatusIndicator(availability);
+        });
+    }
 });

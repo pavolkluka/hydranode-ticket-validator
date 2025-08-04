@@ -251,30 +251,65 @@ function processScan(ticketId) {
 
 // UI Update Functions
 function updateScanResult(message, status) {
-    scanResult.textContent = message;
+    // Use language manager for localized messages if available
+    const localizedMessage = getLocalizedScanMessage(message, status);
+    
+    scanResult.textContent = localizedMessage;
     scanResult.className = `scan-result ${status}`;
     scanData.className = `scan-data ${status}`;
     scanMessageModal.classList.add('active');
 }
 
+function getLocalizedScanMessage(message, status) {
+    if (typeof window.LanguageManager === 'undefined') {
+        return message;
+    }
+    
+    // Map common messages to translation keys
+    const messageMap = {
+        'Ticket validated successfully': 'validTicket',
+        'Invalid ticket': 'invalidTicket',
+        'Ticket already scanned': 'duplicateTicket',
+        'No XLS data loaded. Please upload a valid XLS file first.': 'noDataLoaded',
+        'Invalid ticket ID format': 'invalidFormat',
+        'Ticket not found in database': 'ticketNotFound'
+    };
+    
+    const key = messageMap[message];
+    return key ? window.LanguageManager.get(key) : message;
+}
+
 function getStatusText(status) {
+    if (typeof window.LanguageManager !== 'undefined') {
+        return window.LanguageManager.get(status) || status;
+    }
+    
     const statusMapping = {
         valid: 'Valid',
         invalid: 'Invalid',
         duplicate: 'Duplicate'
     };
     
-    return statusMapping[status];
+    return statusMapping[status] || status;
 }
 
 function updateHistoryDisplay() {
-    historyList.innerHTML = scanHistory.map(scan => `
-        <div class="history-item">
-            <span class="ticket-id">${scan.ticketId}</span>
-            <span class="status-badge ${scan.status}">${getStatusText(scan.status)}</span>
-            <span class="timestamp">${new Date(scan.timestamp).toLocaleString()}</span>
-        </div>
-    `).join('');
+    if (scanHistory.length === 0) {
+        historyList.innerHTML = `<div class="no-data" data-i18n="noScansYet">No scans yet</div>`;
+    } else {
+        historyList.innerHTML = scanHistory.map(scan => `
+            <div class="history-item">
+                <span class="ticket-id">${scan.ticketId}</span>
+                <span class="status-badge ${scan.status}">${getStatusText(scan.status)}</span>
+                <span class="timestamp">${new Date(scan.timestamp).toLocaleString()}</span>
+            </div>
+        `).join('');
+    }
+    
+    // Update language content
+    if (typeof window.LanguageManager !== 'undefined') {
+        window.LanguageManager.updateUI();
+    }
 }
 
 // History Management Functions
@@ -287,10 +322,15 @@ function saveScanHistory() {
 }
 
 function clearScanHistory() {
-    if (confirm('Are you sure you want to clear the scan history?')) {
+    const confirmMessage = typeof window.LanguageManager !== 'undefined' ? 
+        window.LanguageManager.get('confirmClearHistory') || 'Are you sure you want to clear the scan history?' :
+        'Are you sure you want to clear the scan history?';
+        
+    if (confirm(confirmMessage)) {
         scanHistory = [];
         saveScanHistory();
         updateHistoryDisplay();
+        updateStatistics();
     }
 }
 
@@ -325,6 +365,14 @@ document.addEventListener('DOMContentLoaded', function() {
         registerDataAvailabilityCallback(function(available, availabilityInfo) {
             console.log('Data availability changed:', available, availabilityInfo);
             // The main.js already handles UI updates, but we can add scanner-specific logic here if needed
+        });
+    }
+    
+    // Register language change callback
+    if (typeof window.LanguageManager !== 'undefined') {
+        window.LanguageManager.registerCallback(function(language) {
+            // Update history display when language changes
+            updateHistoryDisplay();
         });
     }
 });

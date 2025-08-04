@@ -19,6 +19,10 @@ const XLS_SIGNATURE = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
 // Default value for scan status
 scanStatus = "pending";
 
+// Data availability status
+let dataAvailable = false;
+let dataAvailabilityCallbacks = [];
+
 // Event Listeners
 fileInput.addEventListener('change', handleFileSelect);
 dropZone.addEventListener('dragover', handleDragOver);
@@ -135,9 +139,8 @@ function formatDate(date) {
 function updateDisplay(processedData) {
     currentData = processedData;
     
-    // Update metadata
-    clientInfo.innerHTML = `<strong>Client ID:</strong> ${processedData.clientId}`;
-    storeInfo.innerHTML = `<strong>Store Name:</strong> ${processedData.storeName}`;
+    // Update data availability status
+    updateDataAvailability();
     
     // Update table
     updateTable();
@@ -307,3 +310,158 @@ function changePage(page) {
     updateTable();
     updatePagination();
 }
+
+// Data Availability Functions
+function checkDataAvailability() {
+    const hasData = currentData && 
+                   currentData.data && 
+                   Array.isArray(currentData.data) && 
+                   currentData.data.length > 0;
+    
+    const hasValidTickets = hasData && currentData.data.some(row => 
+        row.invoiceId && row.invoiceId.trim() !== ''
+    );
+    
+    return {
+        available: hasValidTickets,
+        ticketCount: hasData ? currentData.data.length : 0,
+        validTicketCount: hasData ? currentData.data.filter(row => 
+            row.invoiceId && row.invoiceId.trim() !== ''
+        ).length : 0,
+        clientId: currentData?.clientId || null,
+        storeName: currentData?.storeName || null
+    };
+}
+
+function updateDataAvailability() {
+    const availability = checkDataAvailability();
+    const wasAvailable = dataAvailable;
+    dataAvailable = availability.available;
+    
+    // Update UI elements to reflect data availability
+    updateDataAvailabilityUI(availability);
+    
+    // Notify callbacks if status changed
+    if (wasAvailable !== dataAvailable) {
+        dataAvailabilityCallbacks.forEach(callback => {
+            try {
+                callback(dataAvailable, availability);
+            } catch (error) {
+                console.error('Error in data availability callback:', error);
+            }
+        });
+    }
+    
+    return availability;
+}
+
+function registerDataAvailabilityCallback(callback) {
+    if (typeof callback === 'function') {
+        dataAvailabilityCallbacks.push(callback);
+    }
+}
+
+function removeDataAvailabilityCallback(callback) {
+    const index = dataAvailabilityCallbacks.indexOf(callback);
+    if (index > -1) {
+        dataAvailabilityCallbacks.splice(index, 1);
+    }
+}
+
+function updateDataAvailabilityUI(availability) {
+    // Update scanner controls
+    updateScannerAvailability(availability.available);
+    
+    // Update data status indicator
+    updateDataStatusIndicator(availability);
+    
+    // Update metadata panel
+    if (availability.available) {
+        clientInfo.innerHTML = `<strong>Client ID:</strong> ${availability.clientId || 'N/A'}`;
+        storeInfo.innerHTML = `<strong>Store Name:</strong> ${availability.storeName || 'N/A'}`;
+    } else {
+        clientInfo.innerHTML = '<strong>Status:</strong> <span class="data-status-unavailable">No XLS data loaded</span>';
+        storeInfo.innerHTML = '<strong>Action:</strong> Please upload a valid XLS file to begin';
+    }
+}
+
+function updateScannerAvailability(available) {
+    const startButton = document.getElementById('startScan');
+    const stopButton = document.getElementById('stopScan');
+    const manualInput = document.getElementById('manualTicketId');
+    const submitManual = document.getElementById('submitManual');
+    
+    if (startButton) {
+        startButton.disabled = !available;
+        startButton.title = available ? 
+            'Start camera scanner' : 
+            'Upload XLS data first to enable scanning';
+    }
+    
+    if (manualInput) {
+        manualInput.disabled = !available;
+        manualInput.placeholder = available ? 
+            'Enter Ticket ID manually' : 
+            'Upload XLS data first';
+    }
+    
+    if (submitManual) {
+        submitManual.disabled = !available;
+        submitManual.title = available ? 
+            'Submit manual ticket ID' : 
+            'Upload XLS data first to enable manual entry';
+    }
+}
+
+function updateDataStatusIndicator(availability) {
+    // Create or update a data status indicator
+    let statusIndicator = document.getElementById('dataStatusIndicator');
+    
+    if (!statusIndicator) {
+        statusIndicator = document.createElement('div');
+        statusIndicator.id = 'dataStatusIndicator';
+        statusIndicator.className = 'data-status-indicator';
+        
+        // Insert after the file upload section
+        const fileUploadSection = document.querySelector('.file-upload');
+        if (fileUploadSection && fileUploadSection.parentNode) {
+            fileUploadSection.parentNode.insertBefore(statusIndicator, fileUploadSection.nextSibling);
+        }
+    }
+    
+    if (availability.available) {
+        statusIndicator.className = 'data-status-indicator available';
+        statusIndicator.innerHTML = `
+            <div class="status-icon">✓</div>
+            <div class="status-content">
+                <div class="status-title">XLS Data Loaded</div>
+                <div class="status-details">${availability.validTicketCount} valid tickets available</div>
+            </div>
+        `;
+    } else {
+        statusIndicator.className = 'data-status-indicator unavailable';
+        statusIndicator.innerHTML = `
+            <div class="status-icon">⚠</div>
+            <div class="status-content">
+                <div class="status-title">No XLS Data</div>
+                <div class="status-details">Upload an XLS file to enable ticket validation</div>
+            </div>
+        `;
+    }
+}
+
+// Function to check if data is available (for external use)
+function isDataAvailable() {
+    return dataAvailable;
+}
+
+// Function to get data availability info (for external use)
+function getDataAvailabilityInfo() {
+    return checkDataAvailability();
+}
+
+// Initialize data availability status on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial data availability state
+    updateDataAvailability();
+});

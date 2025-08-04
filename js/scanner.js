@@ -56,6 +56,12 @@ function drawLine(begin, end, color) {
 // Scanner Functions
 // async function startScanner() {
 function startScanner() {
+    // Check if XLS data is available before starting scanner
+    if (typeof isDataAvailable === 'function' && !isDataAvailable()) {
+        updateScanResult('No XLS data loaded. Please upload a valid XLS file first.', 'invalid');
+        return;
+    }
+    
     try {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
             video.srcObject = stream;
@@ -186,10 +192,15 @@ async function handleScan(qrData) {
 }
 
 function handleManualEntry() {
+    // Check if XLS data is available before processing manual entry
+    if (typeof isDataAvailable === 'function' && !isDataAvailable()) {
+        updateScanResult('No XLS data loaded. Please upload a valid XLS file first.', 'invalid');
+        return;
+    }
+    
     const ticketId = manualInput.value.trim();
     
     if (!ticketId) {
-        
         updateScanResult('Please enter a ticket ID', 'invalid');
         return;
     }
@@ -306,3 +317,14 @@ async function exportScanHistory() {
 
 // Initialize history display
 updateHistoryDisplay();
+
+// Register data availability callback when main.js is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Register callback to update scanner controls when data availability changes
+    if (typeof registerDataAvailabilityCallback === 'function') {
+        registerDataAvailabilityCallback(function(available, availabilityInfo) {
+            console.log('Data availability changed:', available, availabilityInfo);
+            // The main.js already handles UI updates, but we can add scanner-specific logic here if needed
+        });
+    }
+});

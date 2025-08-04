@@ -976,4 +976,176 @@ button:focus {
     white-space: nowrap;
     border: 0;
 }
-EOF < /dev/null
+
+/* Data Availability Status Indicator */
+.data-status-indicator {
+    background: linear-gradient(135deg, var(--card-background) 0%, #2a2f35 100%);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.data-status-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.data-status-indicator.available {
+    border-color: rgba(25, 135, 84, 0.3);
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1), rgba(32, 201, 151, 0.05));
+}
+
+.data-status-indicator.available::before {
+    background: linear-gradient(90deg, var(--success-color), #20c997);
+}
+
+.data-status-indicator.available:hover {
+    border-color: rgba(25, 135, 84, 0.5);
+    box-shadow: 0 8px 20px rgba(25, 135, 84, 0.2);
+    transform: translateY(-2px);
+}
+
+.data-status-indicator.unavailable {
+    border-color: rgba(255, 193, 7, 0.3);
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(253, 126, 20, 0.05));
+}
+
+.data-status-indicator.unavailable::before {
+    background: linear-gradient(90deg, var(--warning-color), #fd7e14);
+}
+
+.data-status-indicator.unavailable:hover {
+    border-color: rgba(255, 193, 7, 0.5);
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.2);
+    transform: translateY(-2px);
+}
+
+.data-status-indicator .status-icon {
+    font-size: 2rem;
+    line-height: 1;
+    min-width: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.data-status-indicator.available .status-icon {
+    color: var(--success-color);
+    text-shadow: 0 0 10px rgba(25, 135, 84, 0.5);
+}
+
+.data-status-indicator.unavailable .status-icon {
+    color: var(--warning-color);
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    animation: warning-pulse 2s ease-in-out infinite;
+}
+
+@keyframes warning-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.data-status-indicator .status-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.data-status-indicator .status-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.data-status-indicator.available .status-title {
+    color: var(--success-color);
+}
+
+.data-status-indicator.unavailable .status-title {
+    color: var(--warning-color);
+}
+
+.data-status-indicator .status-details {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Data status text in metadata panel */
+.data-status-unavailable {
+    color: var(--warning-color);
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+/* Enhanced disabled states for form controls */
+input:disabled,
+button:disabled,
+.control-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+    position: relative;
+}
+
+input:disabled::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Tooltip-like styling for disabled button titles */
+.control-button:disabled:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+/* Responsive adjustments for data status indicator */
+@media (max-width: 768px) {
+    .data-status-indicator {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .data-status-indicator .status-icon {
+        font-size: 1.5rem;
+        min-width: auto;
+    }
+    
+    .data-status-indicator .status-content {
+        align-items: center;
+    }
+}

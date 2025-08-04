@@ -163,6 +163,11 @@ class IconLibrary {
     }
 
     getIcon(name, size = '24', className = '') {
+        // Special handling for app logo - use PNG files from logos directory
+        if (name === 'appLogo') {
+            return this.getAppLogo(size, className);
+        }
+        
         const icon = this.icons[name];
         if (!icon) {
             console.warn(`Icon "${name}" not found`);
@@ -176,6 +181,22 @@ class IconLibrary {
         );
 
         return modifiedIcon;
+    }
+
+    // Get the appropriate app logo based on current theme
+    getAppLogo(size = '32', className = '') {
+        const isDarkTheme = window.ThemeManager ? window.ThemeManager.isDarkTheme() : true;
+        const logoFile = isDarkTheme ? 'hydranode-horizontal-light.png' : 'hydranode-horizontal-dark.png';
+        
+        // For horizontal logos, calculate appropriate dimensions
+        const height = Math.round(size * 0.6); // Better ratio for horizontal logos
+        const maxWidth = Math.round(size * 2.5); // Allow wider logos
+        
+        return `<img src="logos/${logoFile}" 
+                     alt="Hydranode Logo" 
+                     class="app-logo-img ${className}" 
+                     height="${height}" 
+                     style="object-fit: contain; max-width: ${maxWidth}px; height: ${height}px;">`;
     }
 
     getAllIcons() {
@@ -204,6 +225,18 @@ class IconLibrary {
                 element.setAttribute('fill', currentColor);
             });
         });
+
+        // Update app logo for theme change
+        this.updateAppLogo();
+    }
+
+    // Update app logo when theme changes
+    updateAppLogo() {
+        const appIconElement = document.getElementById('appIcon');
+        if (appIconElement) {
+            // Always use the standard size for consistency
+            appIconElement.innerHTML = this.getAppLogo('32');
+        }
     }
 }
 
@@ -214,8 +247,24 @@ const iconLibrary = new IconLibrary();
 window.IconLibrary = iconLibrary;
 
 // Listen for theme changes and update icons
-if (typeof window.ThemeManager !== 'undefined') {
-    window.ThemeManager.registerCallback(() => {
-        iconLibrary.updateThemeIcons();
-    });
+function registerThemeCallback() {
+    if (typeof window.ThemeManager !== 'undefined') {
+        window.ThemeManager.registerCallback(() => {
+            iconLibrary.updateThemeIcons();
+        });
+    } else {
+        // Retry after DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof window.ThemeManager !== 'undefined') {
+                    window.ThemeManager.registerCallback(() => {
+                        iconLibrary.updateThemeIcons();
+                    });
+                }
+            }, 100);
+        });
+    }
 }
+
+// Register the callback
+registerThemeCallback();

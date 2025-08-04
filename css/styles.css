@@ -74,8 +74,9 @@ body {
 }
 
 .app-icon {
-    width: 32px;
+    min-width: 32px;
     height: 32px;
+    max-width: 80px; /* Allow space for horizontal logo */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -85,6 +86,12 @@ body {
     width: 100%;
     height: 100%;
     color: var(--primary-color);
+}
+
+.app-logo-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .app-name {

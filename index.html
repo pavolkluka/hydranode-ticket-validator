@@ -226,27 +226,46 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize icons - use proper app logo
         // Initialize icons with proper checks - ensure IconLibrary is available
+        // Initialize icons with circuit breaker to prevent infinite loops
+        let iconInitAttempts = 0;
+        const maxIconInitAttempts = 3;
+        
         function initializeIcons() {
-            if (typeof IconLibrary === 'undefined' || !window.IconLibrary) {
-                return; // Skip if IconLibrary is not ready
+            iconInitAttempts++;
+            if (iconInitAttempts > maxIconInitAttempts) {
+                console.warn("Icon initialization failed after " + maxIconInitAttempts + " attempts. Stopping retries.");
+                return;
             }
+            
+            if (typeof IconLibrary === "undefined" || !window.IconLibrary) {
+                if (iconInitAttempts < maxIconInitAttempts) {
+                    console.log("IconLibrary not ready, retry attempt " + iconInitAttempts);
+                    setTimeout(initializeIcons, 500 * iconInitAttempts); // Exponential backoff
+                }
+                return;
+            }
+            
             try {
-                document.getElementById('appIcon').innerHTML = IconLibrary.getIcon('appLogo', '32');
-                document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
-                document.getElementById('uploadIcon').innerHTML = IconLibrary.getIcon('upload', '16');
-                document.getElementById('languageIcon').innerHTML = IconLibrary.getIcon('language', '16');
-                document.getElementById('themeIcon').innerHTML = IconLibrary.getIcon('sun', '16');
-                document.getElementById('statusIcon').innerHTML = IconLibrary.getIcon('warning', '16');
-                document.getElementById('scannerIcon').innerHTML = IconLibrary.getIcon('scanner', '20');
-                document.getElementById('playIcon').innerHTML = IconLibrary.getIcon('play', '16');
-                document.getElementById('stopIcon').innerHTML = IconLibrary.getIcon('stop', '16');
-                document.getElementById('chartIcon').innerHTML = IconLibrary.getIcon('chart', '20');
-                document.getElementById('historyIcon').innerHTML = IconLibrary.getIcon('history', '20');
-                document.getElementById('exportIcon').innerHTML = IconLibrary.getIcon('export', '14');
-                document.getElementById('trashIcon').innerHTML = IconLibrary.getIcon('trash', '14');
-                document.getElementById('databaseIcon').innerHTML = IconLibrary.getIcon('database', '20');
+                document.getElementById("appIcon").innerHTML = window.IconLibrary.getIcon("appLogo", "32");
+                document.getElementById("optionsIcon").innerHTML = window.IconLibrary.getIcon("menu", "20");
+                document.getElementById("uploadIcon").innerHTML = window.IconLibrary.getIcon("upload", "16");
+                document.getElementById("languageIcon").innerHTML = window.IconLibrary.getIcon("language", "16");
+                document.getElementById("themeIcon").innerHTML = window.IconLibrary.getIcon("sun", "16");
+                document.getElementById("statusIcon").innerHTML = window.IconLibrary.getIcon("warning", "16");
+                document.getElementById("scannerIcon").innerHTML = window.IconLibrary.getIcon("scanner", "20");
+                document.getElementById("playIcon").innerHTML = window.IconLibrary.getIcon("play", "16");
+                document.getElementById("stopIcon").innerHTML = window.IconLibrary.getIcon("stop", "16");
+                document.getElementById("chartIcon").innerHTML = window.IconLibrary.getIcon("chart", "20");
+                document.getElementById("historyIcon").innerHTML = window.IconLibrary.getIcon("history", "20");
+                document.getElementById("exportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
+                document.getElementById("trashIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
+                document.getElementById("databaseIcon").innerHTML = window.IconLibrary.getIcon("database", "20");
+                console.log("Icons initialized successfully");
             } catch (error) {
-                console.error('Error initializing icons:', error);
+                console.error("Error initializing icons:", error);
+                if (iconInitAttempts < maxIconInitAttempts) {
+                    setTimeout(initializeIcons, 1000 * iconInitAttempts);
+                }
             }
         }
         
@@ -280,8 +299,8 @@
             if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
                 document.getElementById('optionsIcon').innerHTML = 
                     optionsMenu.classList.contains('active') ? 
-                    IconLibrary.getIcon('close', '20') : 
-                    IconLibrary.getIcon('menu', '20');
+                    window.IconLibrary.getIcon('close', '20') : 
+                    window.IconLibrary.getIcon('menu', '20');
             }
         });
         
@@ -290,7 +309,7 @@
             if (!optionsMenu.contains(e.target) && e.target !== optionsButton) {
                 optionsMenu.classList.remove('active');
                 if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                    document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
+                    document.getElementById('optionsIcon').innerHTML = window.IconLibrary.getIcon('menu', '20');
                 }
             }
         });
@@ -307,23 +326,23 @@
         
         themeToggle.addEventListener('click', function() {
             if (typeof ThemeManager !== 'undefined' && window.ThemeManager) {
-                const newTheme = ThemeManager.toggleTheme();
+                const newTheme = window.ThemeManager.toggleTheme();
                 updateThemeUI(newTheme);
             }
         });
         
         // Initialize theme UI
         if (typeof ThemeManager !== 'undefined' && window.ThemeManager) {
-            updateThemeUI(ThemeManager.getCurrentTheme());
+            updateThemeUI(window.ThemeManager.getCurrentTheme());
         }
         
         function updateThemeUI(theme) {
             const isDark = theme === 'dark';
             if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                themeIcon.innerHTML = IconLibrary.getIcon(isDark ? 'moon' : 'sun', '16');
+                themeIcon.innerHTML = window.IconLibrary.getIcon(isDark ? 'moon' : 'sun', '16');
             }
             if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
-                themeText.textContent = isDark ? LanguageManager.get('lightMode') : LanguageManager.get('darkMode');
+                themeText.textContent = isDark ? window.LanguageManager.get('lightMode') : window.LanguageManager.get('darkMode');
             }
         }
     }
@@ -338,12 +357,12 @@
         
         // Set current language
         if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
-            languageSelect.value = LanguageManager.getCurrentLanguage();
+            languageSelect.value = window.LanguageManager.getCurrentLanguage();
         }
         
         languageSelect.addEventListener('change', function() {
             if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
-                LanguageManager.setLanguage(this.value);
+                window.LanguageManager.setLanguage(this.value);
             }
         });
     }

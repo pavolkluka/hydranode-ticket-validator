@@ -290,6 +290,7 @@ function handleDragOver(event) {
     event.stopPropagation();
     if (dropZone) dropZone.classList.add('dragover');
 
+}
 // Update the handleDrop function to handle async validation
 async function handleDrop(event) {
     event.preventDefault();

@@ -18,7 +18,7 @@
     <!-- SheetJS from CDN: use version 0.20.3 -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
     <!-- jsQR from JSDelvr: user version 1.4.0 -->
-    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" crossorigin="anonymous" defer></script>
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" integrity="sha384-7+6NtuEPG8SPa+HRop4AdiOIt8o2Pn7Mx7kG6WU6DP+bGLL38Nx5/WYqIgAUQKpP" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <div class="container">
@@ -228,11 +228,8 @@
         // Initialize icons with proper checks - ensure IconLibrary is available
         function initializeIcons() {
             if (typeof IconLibrary === 'undefined' || !window.IconLibrary) {
-                console.log('IconLibrary not ready, retrying in 100ms...');
-                setTimeout(initializeIcons, 100);
-                return;
+                return; // Skip if IconLibrary is not ready
             }
-            
             try {
                 document.getElementById('appIcon').innerHTML = IconLibrary.getIcon('appLogo', '32');
                 document.getElementById('optionsIcon').innerHTML = IconLibrary.getIcon('menu', '20');
@@ -250,13 +247,11 @@
                 document.getElementById('databaseIcon').innerHTML = IconLibrary.getIcon('database', '20');
             } catch (error) {
                 console.error('Error initializing icons:', error);
-                // Retry after a delay
-                setTimeout(initializeIcons, 200);
             }
         }
         
         // Start icon initialization
-        initializeIcons();
+        setTimeout(initializeIcons, 500);
         
         // Initialize options menu functionality
         initializeOptionsMenu();

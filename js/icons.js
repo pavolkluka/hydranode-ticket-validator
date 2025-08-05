@@ -186,17 +186,20 @@ class IconLibrary {
     // Get the appropriate app logo based on current theme
     getAppLogo(size = '32', className = '') {
         const isDarkTheme = window.ThemeManager ? window.ThemeManager.isDarkTheme() : true;
-        const logoFile = isDarkTheme ? 'hydranode-horizontal-light.png' : 'hydranode-horizontal-dark.png';
         
-        // For horizontal logos, calculate appropriate dimensions
-        const height = Math.round(size * 0.6); // Better ratio for horizontal logos
-        const maxWidth = Math.round(size * 2.5); // Allow wider logos
+        // Use theme-appropriate icons from the icons/ folder
+        // Dark icons for dark theme, light icons for light theme
+        const iconFile = isDarkTheme ? 'icon-dark-192x192.png' : 'icon-light-192x192.png';
         
-        return `<img src="logos/${logoFile}" 
+        // Convert size to number if it's a string
+        const iconSize = typeof size === 'string' ? parseInt(size) : size;
+        
+        return `<img src="icons/${iconFile}" 
                      alt="Hydranode Logo" 
                      class="app-logo-img ${className}" 
-                     height="${height}" 
-                     style="object-fit: contain; max-width: ${maxWidth}px; height: ${height}px;">`;
+                     width="${iconSize}" 
+                     height="${iconSize}" 
+                     style="object-fit: contain; width: ${iconSize}px; height: ${iconSize}px;">`;
     }
 
     getAllIcons() {
@@ -237,6 +240,43 @@ class IconLibrary {
             // Always use the standard size for consistency
             appIconElement.innerHTML = this.getAppLogo('32');
         }
+        
+        // Also update the favicon and apple touch icons
+        this.updateFavicon();
+    }
+
+    // Update favicon based on current theme
+    updateFavicon() {
+        const isDarkTheme = window.ThemeManager ? window.ThemeManager.isDarkTheme() : true;
+        const iconPrefix = isDarkTheme ? 'icon-dark' : 'icon-light';
+        
+        // Update main favicon
+        const favicon = document.getElementById('favicon');
+        if (favicon) {
+            favicon.href = `icons/${iconPrefix}-192x192.png`;
+        }
+        
+        // Update apple touch icons
+        const appleTouchIcon = document.getElementById('appleTouchIcon');
+        if (appleTouchIcon) {
+            appleTouchIcon.href = `icons/${iconPrefix}-192x192.png`;
+        }
+        
+        // Update other apple touch icon sizes
+        const appleTouchIcons = document.querySelectorAll('link[rel="apple-touch-icon"][sizes]');
+        appleTouchIcons.forEach(icon => {
+            const sizes = icon.getAttribute('sizes');
+            if (sizes) {
+                const size = sizes.split('x')[0]; // Get width dimension
+                icon.href = `icons/${iconPrefix}-${size}x${size}.png`;
+            }
+        });
+        
+        // Update any other favicon-related elements
+        const shortcutIcon = document.querySelector('link[rel="shortcut icon"]');
+        if (shortcutIcon) {
+            shortcutIcon.href = `icons/${iconPrefix}-192x192.png`;
+        }
     }
 }
 
@@ -261,10 +301,26 @@ function registerThemeCallback() {
                         iconLibrary.updateThemeIcons();
                     });
                 }
+                // Initialize favicon after theme manager is ready
+                initializeFavicon();
             }, 100);
         });
     }
 }
 
-// Register the callback
+// Initialize favicon on page load
+function initializeFavicon() {
+    if (iconLibrary && iconLibrary.updateFavicon) {
+        iconLibrary.updateFavicon();
+    }
+}
+
+// Initialize favicon immediately if DOM is already loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFavicon);
+} else {
+    initializeFavicon();
+}
+
+// Register theme callback
 registerThemeCallback();

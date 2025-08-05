@@ -23,6 +23,72 @@ try {
 // Base58 validation regex
 const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{22,44}$/;
 
+// Utility function to abbreviate ticket IDs
+function abbreviateTicketId(ticketId) {
+    if (!ticketId || ticketId.length <= 8) {
+        return ticketId;
+    }
+    return `${ticketId.substring(0, 4)}...${ticketId.substring(ticketId.length - 4)}`;
+}
+
+// Utility function to create expandable ticket ID display
+function createExpandableTicketId(ticketId, className = '') {
+    if (!ticketId) return '<span class="ticket-id-error">N/A</span>';
+    
+    const abbreviated = abbreviateTicketId(ticketId);
+    const isAbbreviated = abbreviated !== ticketId;
+    
+    if (!isAbbreviated) {
+        return `<span class="ticket-id ${className}">${ticketId}</span>`;
+    }
+    
+    return `
+        <span class="ticket-id expandable ${className}" 
+              data-full-id="${ticketId}" 
+              data-abbreviated="${abbreviated}"
+              title="Click to expand full ID: ${ticketId}"
+              tabindex="0"
+              role="button"
+              aria-label="Abbreviated ticket ID ${abbreviated}, click to expand full ID">
+            ${abbreviated}
+        </span>
+    `;
+}
+
+// Initialize expandable ticket ID functionality
+function initExpandableTicketIds() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('expandable')) {
+            toggleTicketIdExpansion(e.target);
+        }
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('expandable')) {
+            e.preventDefault();
+            toggleTicketIdExpansion(e.target);
+        }
+    });
+}
+
+function toggleTicketIdExpansion(element) {
+    const fullId = element.dataset.fullId;
+    const abbreviated = element.dataset.abbreviated;
+    const isExpanded = element.classList.contains('expanded');
+    
+    if (isExpanded) {
+        element.textContent = abbreviated;
+        element.classList.remove('expanded');
+        element.title = `Click to expand full ID: ${fullId}`;
+        element.setAttribute('aria-label', `Abbreviated ticket ID ${abbreviated}, click to expand full ID`);
+    } else {
+        element.textContent = fullId;
+        element.classList.add('expanded');
+        element.title = 'Click to collapse to abbreviated form';
+        element.setAttribute('aria-label', `Full ticket ID ${fullId}, click to collapse`);
+    }
+}
+
 // DOM Elements
 const video = document.getElementById('qrVideo');
 const canvas = document.getElementById('qrCanvas');
@@ -263,6 +329,12 @@ function processScan(ticketId) {
     
     // Add to scan history regardless of validity
     scanHistory.unshift(scan);
+    
+    // Update filtered history
+    if (typeof filteredScanHistory !== 'undefined') {
+        filterScanHistory();
+    }
+    
     saveScanHistory();
     
     // Update UI based on validation result
@@ -330,14 +402,25 @@ function getStatusText(status) {
 }
 
 function updateHistoryDisplay() {
+    const historyToShow = typeof filteredScanHistory !== 'undefined' ? filteredScanHistory : scanHistory;
+    
     if (scanHistory.length === 0) {
         historyList.innerHTML = `<div class="no-data" data-i18n="noScansYet">No scans yet</div>`;
+    } else if (historyToShow.length === 0) {
+        historyList.innerHTML = `<div class="no-data" data-i18n="noMatchingScans">No matching scans found</div>`;
     } else {
-        historyList.innerHTML = scanHistory.map(scan => `
-            <div class="history-item">
-                <span class="ticket-id">${scan.ticketId}</span>
-                <span class="status-badge ${scan.status}">${getStatusText(scan.status)}</span>
-                <span class="timestamp">${new Date(scan.timestamp).toLocaleString()}</span>
+        historyList.innerHTML = historyToShow.map(scan => `
+            <div class="history-item" data-status="${scan.status}">
+                <div class="history-item-main">
+                    ${createExpandableTicketId(scan.ticketId, 'history-ticket-id')}
+                    <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
+                </div>
+                <div class="history-item-meta">
+                    <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
+                        ${formatTimestamp(scan.timestamp)}
+                    </span>
+                    <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
+                </div>
             </div>
         `).join('');
     }
@@ -345,6 +428,28 @@ function updateHistoryDisplay() {
     // Update language content
     if (typeof window.LanguageManager !== 'undefined') {
         window.LanguageManager.updateUI();
+    }
+}
+
+// Format timestamp for better display
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 1) {
+        return 'Just now';
+    } else if (diffMins < 60) {
+        return `${diffMins}m ago`;
+    } else if (diffHours < 24) {
+        return `${diffHours}h ago`;
+    } else if (diffDays < 7) {
+        return `${diffDays}d ago`;
+    } else {
+        return date.toLocaleDateString();
     }
 }
 
@@ -371,28 +476,203 @@ function clearScanHistory() {
 }
 
 async function exportScanHistory() {
-    const csv = [
-        ['Ticket ID', 'Timestamp', 'Method'],
-        ...scanHistory.map(scan => [
-            scan.ticketId,
-            new Date(scan.timestamp).toLocaleString(),
-            scan.method
-        ])
-    ].map(row => row.join(',')).join('\n');
+    if (scanHistory.length === 0) {
+        const message = typeof window.LanguageManager !== 'undefined' ? 
+            window.LanguageManager.get('noDataToExport') || 'No scan history data to export' :
+            'No scan history data to export';
+        alert(message);
+        return;
+    }
     
-    const blob = new Blob([csv], { type: 'text/csv' });
+    // Enhanced CSV export with status information
+    const headers = ['Ticket ID', 'Status', 'Timestamp', 'Method', 'Date', 'Time'];
+    const csvData = [
+        headers,
+        ...scanHistory.map(scan => {
+            const date = new Date(scan.timestamp);
+            return [
+                scan.ticketId,
+                scan.status,
+                date.toLocaleString(),
+                scan.method,
+                date.toLocaleDateString(),
+                date.toLocaleTimeString()
+            ];
+        })
+    ];
+    
+    // Create CSV content with proper escaping
+    const csvContent = csvData.map(row => 
+        row.map(field => {
+            // Escape fields containing commas, quotes, or newlines
+            const stringField = String(field || '');
+            if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+                return `"${stringField.replace(/"/g, '""')}"`;
+            }
+            return stringField;
+        }).join(',')
+    ).join('\n');
+    
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `scan-history-${new Date().toISOString()}.csv`;
+    a.download = `scan-history-${new Date().toISOString().split('T')[0]}.csv`;
+    a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    // Show success message
+    if (window.DebugLogger) {
+        window.DebugLogger.info('export', 'Scan history exported successfully', {
+            recordCount: scanHistory.length,
+            filename: a.download
+        });
+    }
+    
+    // Optional: Show user feedback
+    showExportSuccessMessage(scanHistory.length);
 }
 
-// Initialize history display
+function showExportSuccessMessage(recordCount) {
+    let message;
+    if (typeof window.LanguageManager !== 'undefined') {
+        const template = window.LanguageManager.get('exportSuccess');
+        message = template ? template.replace('{count}', recordCount) : `Successfully exported ${recordCount} scan records`;
+    } else {
+        message = `Successfully exported ${recordCount} scan records`;
+    }
+    
+    // Create a simple toast notification
+    const toast = document.createElement('div');
+    toast.className = 'export-toast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--success-color, #22c55e);
+        color: white;
+        padding: 12px 16px;
+        border-radius: var(--border-radius, 8px);
+        box-shadow: var(--shadow-lg);
+        z-index: 10000;
+        font-size: 0.9rem;
+        max-width: 300px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Search and filter functionality
+let filteredScanHistory = [...scanHistory];
+let searchDebounceTimer = null;
+
+function filterScanHistory() {
+    const searchTerm = document.getElementById('historySearch')?.value.toLowerCase() || '';
+    const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+    
+    filteredScanHistory = scanHistory.filter(scan => {
+        const matchesSearch = searchTerm === '' || 
+            scan.ticketId.toLowerCase().includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || scan.status === statusFilter;
+        
+        return matchesSearch && matchesStatus;
+    });
+    
+    updateHistoryDisplay();
+    updateHistoryStats();
+}
+
+function debouncedFilterSearch() {
+    // Clear existing timeout
+    if (searchDebounceTimer) {
+        clearTimeout(searchDebounceTimer);
+    }
+    
+    // Set new timeout for search (300ms delay)
+    searchDebounceTimer = setTimeout(() => {
+        filterScanHistory();
+        
+        // Announce results to screen readers after debounce
+        const visibleCount = filteredScanHistory.length;
+        const totalCount = scanHistory.length;
+        if (window.UIEnhancements && window.UIEnhancements.announceToScreenReader) {
+            window.UIEnhancements.announceToScreenReader(
+                `Showing ${visibleCount} of ${totalCount} scan results`
+            );
+        }
+    }, 300);
+}
+
+function updateHistoryStats() {
+    const visibleCountEl = document.getElementById('visibleCount');
+    const totalCountEl = document.getElementById('totalCount');
+    
+    if (visibleCountEl) visibleCountEl.textContent = filteredScanHistory.length;
+    if (totalCountEl) totalCountEl.textContent = scanHistory.length;
+}
+
+function initSearchAndFilter() {
+    const searchInput = document.getElementById('historySearch');
+    const statusFilter = document.getElementById('statusFilter');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', debouncedFilterSearch);
+        
+        // Add keyboard navigation enhancement
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                filterScanHistory();
+            }
+        });
+    }
+    
+    if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+            filterScanHistory();
+            // Announce filter change to screen readers
+            const selectedText = statusFilter.options[statusFilter.selectedIndex].text;
+            if (window.UIEnhancements && window.UIEnhancements.announceToScreenReader) {
+                window.UIEnhancements.announceToScreenReader(
+                    `Filter changed to ${selectedText}. Showing ${filteredScanHistory.length} results`
+                );
+            }
+        });
+    }
+    
+    // Initial stats update
+    updateHistoryStats();
+}
+
+// Initialize history display and expandable ticket IDs
 updateHistoryDisplay();
+initExpandableTicketIds();
+initSearchAndFilter();
 
 // Register data availability callback when main.js is loaded
 document.addEventListener('DOMContentLoaded', function() {

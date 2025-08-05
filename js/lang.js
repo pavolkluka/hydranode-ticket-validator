@@ -74,6 +74,15 @@ class LanguageManager {
                 scanHistory: 'Scan History',
                 exportHistory: 'Export History',
                 clearHistory: 'Clear History',
+                noDataToExport: 'No scan history data to export',
+                exportSuccess: 'Successfully exported {count} scan records',
+                searchTickets: 'Search ticket IDs...',
+                allStatuses: 'All Statuses',
+                validOnly: 'Valid Only',
+                invalidOnly: 'Invalid Only',
+                duplicateOnly: 'Duplicate Only',
+                showingResults: 'Showing {visible} of {total} scans',
+                noMatchingScans: 'No matching scans found',
                 
                 // Data Display
                 dataDisplay: 'Ticket Data',
@@ -166,6 +175,15 @@ class LanguageManager {
                 scanHistory: 'História skenovania',
                 exportHistory: 'Exportovať históriu',
                 clearHistory: 'Vymazať históriu',
+                noDataToExport: 'Žiadne údaje histórie skenovania na export',
+                exportSuccess: 'Úspešne exportované {count} záznamov skenovania',
+                searchTickets: 'Hľadať ID lístkov...',
+                allStatuses: 'Všetky stavy',
+                validOnly: 'Iba platné',
+                invalidOnly: 'Iba neplatné',
+                duplicateOnly: 'Iba duplicitné',
+                showingResults: 'Zobrazuje sa {visible} z {total} skenov',
+                noMatchingScans: 'Nenašli sa žiadne vyhovujúce skeny',
                 
                 // Data Display
                 dataDisplay: 'Dáta lístkov',
@@ -258,6 +276,15 @@ class LanguageManager {
                 scanHistory: 'Historie skenování',
                 exportHistory: 'Exportovat historii',
                 clearHistory: 'Vymazat historii',
+                noDataToExport: 'Žádná data historie skenování k exportu',
+                exportSuccess: 'Úspěšně exportováno {count} záznamů skenování',
+                searchTickets: 'Hledat ID vstupenek...',
+                allStatuses: 'Všechny stavy',
+                validOnly: 'Pouze platné',
+                invalidOnly: 'Pouze neplatné',
+                duplicateOnly: 'Pouze duplicitní',
+                showingResults: 'Zobrazuje se {visible} z {total} skenů',
+                noMatchingScans: 'Nenalezeny žádné odpovídající skeny',
                 
                 // Data Display
                 dataDisplay: 'Data vstupenek',
@@ -350,6 +377,15 @@ class LanguageManager {
                 scanHistory: 'Historial de escaneo',
                 exportHistory: 'Exportar historial',
                 clearHistory: 'Limpiar historial',
+                noDataToExport: 'No hay datos del historial de escaneo para exportar',
+                exportSuccess: 'Se exportaron exitosamente {count} registros de escaneo',
+                searchTickets: 'Buscar IDs de entradas...',
+                allStatuses: 'Todos los estados',
+                validOnly: 'Solo válidas',
+                invalidOnly: 'Solo inválidas',
+                duplicateOnly: 'Solo duplicadas',
+                showingResults: 'Mostrando {visible} de {total} escaneos',
+                noMatchingScans: 'No se encontraron escaneos coincidentes',
                 
                 // Data Display
                 dataDisplay: 'Datos de entradas',

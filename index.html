@@ -184,16 +184,43 @@
                     <span class="section-icon" id="historyIcon"></span>
                     <span data-i18n="scanHistory">Scan History</span>
                 </h2>
-                <div class="history-controls">
-                    <button id="exportHistory" class="control-button small">
-                        <span class="button-icon" id="exportIcon"></span>
-                        <span data-i18n="exportHistory">Export</span>
-                    </button>
-                    <button id="clearHistory" class="control-button small secondary">
-                        <span class="button-icon" id="trashIcon"></span>
-                        <span data-i18n="clearHistory">Clear</span>
-                    </button>
+                
+                <!-- Enhanced History Controls with Search and Filter -->
+                <div class="history-controls-enhanced">
+                    <div class="history-search-filter">
+                        <div class="search-input-container">
+                            <input type="text" id="historySearch" class="history-search" 
+                                   placeholder="Search ticket IDs..." 
+                                   data-i18n="searchTickets"
+                                   aria-label="Search scan history">
+                            <span class="search-icon" id="searchIcon"></span>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="statusFilter" class="status-filter" aria-label="Filter by status">
+                                <option value="all" data-i18n="allStatuses">All Statuses</option>
+                                <option value="valid" data-i18n="validOnly">Valid Only</option>
+                                <option value="invalid" data-i18n="invalidOnly">Invalid Only</option>
+                                <option value="duplicate" data-i18n="duplicateOnly">Duplicate Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="history-actions">
+                        <button id="exportHistory" class="control-button small">
+                            <span class="button-icon" id="exportIcon"></span>
+                            <span data-i18n="exportHistory">Export</span>
+                        </button>
+                        <button id="clearHistory" class="control-button small secondary">
+                            <span class="button-icon" id="trashIcon"></span>
+                            <span data-i18n="clearHistory">Clear</span>
+                        </button>
+                    </div>
                 </div>
+                
+                <!-- History Statistics -->
+                <div class="history-stats" id="historyStats">
+                    <span class="history-count" data-i18n="showingResults">Showing <span id="visibleCount">0</span> of <span id="totalCount">0</span> scans</span>
+                </div>
+                
                 <div id="scanHistory" class="history-list"></div>
             </section>
 
@@ -293,6 +320,7 @@
                 document.getElementById("historyIcon").innerHTML = window.IconLibrary.getIcon("history", "20");
                 document.getElementById("exportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
                 document.getElementById("trashIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
+                document.getElementById("searchIcon").innerHTML = window.IconLibrary.getIcon("search", "16");
                 document.getElementById("databaseIcon").innerHTML = window.IconLibrary.getIcon("database", "20");
                 document.getElementById("debugIcon").innerHTML = window.IconLibrary.getIcon("settings", "16");
                 document.getElementById("debugExportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");

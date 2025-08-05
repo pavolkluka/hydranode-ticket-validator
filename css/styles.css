@@ -803,6 +803,218 @@ body {
     flex-shrink: 0;
 }
 
+/* History Table Styles */
+.history-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-background);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background-color: var(--card-background);
+}
+
+.history-table thead {
+    background-color: var(--background-secondary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.history-table th {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.history-table th:last-child {
+    border-right: none;
+}
+
+.history-table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.history-table td:last-child {
+    border-right: none;
+}
+
+.history-table tbody tr {
+    transition: var(--transition);
+}
+
+.history-table tbody tr:hover {
+    background-color: var(--hover-bg);
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status-based row styling */
+.history-row[data-status="valid"] {
+    border-left: 3px solid var(--success-color);
+}
+
+.history-row[data-status="invalid"] {
+    border-left: 3px solid var(--danger-color);
+}
+
+.history-row[data-status="duplicate"] {
+    border-left: 3px solid var(--warning-color);
+}
+
+/* Table cell specific styling */
+.ticket-id-cell {
+    max-width: 200px;
+    word-break: break-all;
+}
+
+.status-cell {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.timestamp-cell {
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.method-cell {
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Mobile responsive table */
+@media (max-width: 768px) {
+    .history-table-container {
+        border: none;
+        background: transparent;
+    }
+    
+    .history-table,
+    .history-table thead,
+    .history-table tbody,
+    .history-table th,
+    .history-table td,
+    .history-table tr {
+        display: block;
+    }
+    
+    .history-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .history-table tr {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background-color: var(--card-background);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+    }
+    
+    .history-table td {
+        border: none;
+        padding: 0.5rem 0;
+        position: relative;
+        padding-left: 30%;
+        text-align: left;
+    }
+    
+    .history-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 25%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .ticket-id-cell:before {
+        content: "Ticket ID";
+    }
+    
+    .status-cell:before {
+        content: "Status";
+    }
+    
+    .timestamp-cell:before {
+        content: "Time";
+    }
+    
+    .method-cell:before {
+        content: "Method";
+    }
+    
+    .status-cell,
+    .method-cell {
+        text-align: left;
+    }
+    
+    .ticket-id-cell {
+        max-width: none;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Status indicators on mobile */
+    .history-row[data-status="valid"]:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--success-color);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .history-row[data-status="invalid"]:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--danger-color);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .history-row[data-status="duplicate"]:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--warning-color);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+}
+
 /* Toast Notifications */
 .export-toast,
 .debug-toast {

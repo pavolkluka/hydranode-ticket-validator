@@ -409,20 +409,40 @@ function updateHistoryDisplay() {
     } else if (historyToShow.length === 0) {
         historyList.innerHTML = `<div class="no-data" data-i18n="noMatchingScans">No matching scans found</div>`;
     } else {
-        historyList.innerHTML = historyToShow.map(scan => `
-            <div class="history-item" data-status="${scan.status}">
-                <div class="history-item-main">
-                    ${createExpandableTicketId(scan.ticketId, 'history-ticket-id')}
-                    <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
-                </div>
-                <div class="history-item-meta">
-                    <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
-                        ${formatTimestamp(scan.timestamp)}
-                    </span>
-                    <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
-                </div>
+        historyList.innerHTML = `
+            <div class="history-table-container">
+                <table class="history-table" role="table" aria-label="Scan history">
+                    <thead>
+                        <tr role="row">
+                            <th scope="col" class="ticket-id-header" data-i18n="ticketId">Ticket ID</th>
+                            <th scope="col" class="status-header" data-i18n="status">Status</th>
+                            <th scope="col" class="timestamp-header" data-i18n="timestamp">Time</th>
+                            <th scope="col" class="method-header" data-i18n="method">Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${historyToShow.map(scan => `
+                            <tr class="history-row" data-status="${scan.status}" role="row">
+                                <td class="ticket-id-cell" role="gridcell">
+                                    ${createExpandableTicketId(scan.ticketId, 'history-ticket-id')}
+                                </td>
+                                <td class="status-cell" role="gridcell">
+                                    <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
+                                </td>
+                                <td class="timestamp-cell" role="gridcell">
+                                    <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
+                                        ${formatTimestamp(scan.timestamp)}
+                                    </span>
+                                </td>
+                                <td class="method-cell" role="gridcell">
+                                    <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
             </div>
-        `).join('');
+        `;
     }
     
     // Update language content
@@ -631,9 +651,32 @@ function debouncedFilterSearch() {
 function updateHistoryStats() {
     const visibleCountEl = document.getElementById('visibleCount');
     const totalCountEl = document.getElementById('totalCount');
+    const historyStatsContainer = document.getElementById('historyStats');
     
     if (visibleCountEl) visibleCountEl.textContent = filteredScanHistory.length;
     if (totalCountEl) totalCountEl.textContent = scanHistory.length;
+    
+    // Update the translated text with actual values
+    if (historyStatsContainer) {
+        const historyCountSpan = historyStatsContainer.querySelector('.history-count');
+        if (historyCountSpan && typeof window.LanguageManager !== 'undefined') {
+            const template = window.LanguageManager.get('showingResults') || 'Showing {visible} of {total} scans';
+            const interpolatedText = template
+                .replace('{visible}', filteredScanHistory.length)
+                .replace('{total}', scanHistory.length);
+            
+            // Update only the text content, preserving the span elements
+            const spans = historyCountSpan.querySelectorAll('span');
+            if (spans.length >= 2) {
+                // Update individual span values
+                spans[0].textContent = filteredScanHistory.length;
+                spans[1].textContent = scanHistory.length;
+            } else {
+                // Fallback: replace entire text content
+                historyCountSpan.innerHTML = interpolatedText;
+            }
+        }
+    }
 }
 
 function initSearchAndFilter() {

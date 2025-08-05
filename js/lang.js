@@ -83,6 +83,10 @@ class LanguageManager {
                 duplicateOnly: 'Duplicate Only',
                 showingResults: 'Showing {visible} of {total} scans',
                 noMatchingScans: 'No matching scans found',
+                ticketId: 'Ticket ID',
+                status: 'Status',
+                timestamp: 'Time',
+                method: 'Method',
                 
                 // Data Display
                 dataDisplay: 'Ticket Data',
@@ -184,6 +188,10 @@ class LanguageManager {
                 duplicateOnly: 'Iba duplicitné',
                 showingResults: 'Zobrazuje sa {visible} z {total} skenov',
                 noMatchingScans: 'Nenašli sa žiadne vyhovujúce skeny',
+                ticketId: 'ID lístka',
+                status: 'Stav',
+                timestamp: 'Čas',
+                method: 'Metóda',
                 
                 // Data Display
                 dataDisplay: 'Dáta lístkov',
@@ -285,6 +293,10 @@ class LanguageManager {
                 duplicateOnly: 'Pouze duplicitní',
                 showingResults: 'Zobrazuje se {visible} z {total} skenů',
                 noMatchingScans: 'Nenalezeny žádné odpovídající skeny',
+                ticketId: 'ID vstupenky',
+                status: 'Stav',
+                timestamp: 'Čas',
+                method: 'Metoda',
                 
                 // Data Display
                 dataDisplay: 'Data vstupenek',
@@ -386,6 +398,10 @@ class LanguageManager {
                 duplicateOnly: 'Solo duplicadas',
                 showingResults: 'Mostrando {visible} de {total} escaneos',
                 noMatchingScans: 'No se encontraron escaneos coincidentes',
+                ticketId: 'ID de entrada',
+                status: 'Estado',
+                timestamp: 'Hora',
+                method: 'Método',
                 
                 // Data Display
                 dataDisplay: 'Datos de entradas',

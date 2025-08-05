@@ -178,6 +178,13 @@ class UIEnhancements {
                 element.removeAttribute('aria-busy');
             }
         };
+        
+        // Global method to clear file upload loading state
+        this.clearFileUploadLoading = function() {
+            if (this.currentUploadLabel) {
+                this.removeLoadingState(this.currentUploadLabel);
+            }
+        };
     }
 
     // Enhanced visual feedback
@@ -205,17 +212,18 @@ class UIEnhancements {
         const uploadLabel = document.querySelector('label[for="fileInput"]');
 
         if (fileInput && uploadLabel) {
+            // Store reference for global access
+            this.currentUploadLabel = uploadLabel;
+            
             fileInput.addEventListener('change', () => {
                 if (fileInput.files.length > 0) {
                     this.addLoadingState(uploadLabel);
                     this.announceToScreenReader('File selected, processing...');
                 }
             });
-
-            // Remove loading state when processing is complete
-            setTimeout(() => {
-                this.removeLoadingState(uploadLabel);
-            }, 2000);
+            
+            // Loading state will be removed by file processing completion
+            // No hardcoded timeout needed
         }
     }
 

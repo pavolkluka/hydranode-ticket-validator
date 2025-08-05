@@ -337,11 +337,21 @@ async function handleFileSelect(event) {
             fileInfo.style.display = 'block';
             fileInfo.textContent = `File processed successfully: ${file.name}`;
         }
+        
+        // Clear loading state after successful processing
+        if (window.UIEnhancements && window.UIEnhancements.clearFileUploadLoading) {
+            window.UIEnhancements.clearFileUploadLoading();
+        }
     } catch (error) {
         console.error('Error handling file:', error);
         if (fileInfo) {
             fileInfo.style.display = 'block';
             fileInfo.textContent = error.message;
+        }
+        
+        // Clear loading state after error
+        if (window.UIEnhancements && window.UIEnhancements.clearFileUploadLoading) {
+            window.UIEnhancements.clearFileUploadLoading();
         }
     }
 }

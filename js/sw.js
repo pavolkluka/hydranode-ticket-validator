@@ -12,7 +12,7 @@ const ASSETS = [
   './manifest.json',
   './offline.html',
   'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js',
-  'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'
+  './js/jsQR.min.js'
 ];
 
 // Install event

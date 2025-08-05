@@ -422,22 +422,34 @@ function updateHistoryDisplay() {
                     </thead>
                     <tbody>
                         ${historyToShow.map(scan => {
+                            const ticketIdLabel = window.LanguageManager ? window.LanguageManager.get('ticketId') || 'Ticket ID' : 'Ticket ID';
+                            const statusLabel = window.LanguageManager ? window.LanguageManager.get('status') || 'Status' : 'Status';
+                            const timestampLabel = window.LanguageManager ? window.LanguageManager.get('timestamp') || 'Time' : 'Time';
+                            const methodLabel = window.LanguageManager ? window.LanguageManager.get('method') || 'Method' : 'Method';
                             
                             return `
                             <tr class="history-row" data-status="${scan.status}" role="row">
-                                <td class="ticket-id-cell ticket-id-col" role="gridcell">
-                                    ${createExpandableTicketId(scan.ticketId, "history-ticket-id")}
+                                <td class="ticket-id-cell ticket-id-col" data-label="${ticketIdLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        ${createExpandableTicketId(scan.ticketId, 'history-ticket-id')}
+                                    </div>
                                 </td>
-                                <td class="status-cell status-col"  role="gridcell">
-                                    <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
+                                <td class="status-cell status-col" data-label="${statusLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
+                                    </div>
                                 </td>
-                                <td class="timestamp-cell timestamp-col"  role="gridcell">
-                                    <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
-                                        ${formatTimestamp(scan.timestamp)}
-                                    </span>
+                                <td class="timestamp-cell timestamp-col" data-label="${timestampLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
+                                            ${formatTimestamp(scan.timestamp)}
+                                        </span>
+                                    </div>
                                 </td>
-                                <td class="method-cell method-col"  role="gridcell">
-                                    <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
+                                <td class="method-cell method-col" data-label="${methodLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
+                                    </div>
                                 </td>
                             </tr>
                             `;

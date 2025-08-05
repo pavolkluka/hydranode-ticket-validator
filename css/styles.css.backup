@@ -1971,6 +1971,90 @@ select:focus {
     font-weight: 500;
 }
 
+/* Mobile responsive table */
+@media (max-width: 768px) {
+    .history-table-container {
+        border: none;
+        background: transparent;
+    }
+    
+    .history-table,
+    .history-table thead,
+    .history-table tbody,
+    .history-table th,
+    .history-table td,
+    .history-table tr {
+        display: block;
+    }
+    
+    .history-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .history-table tbody tr {
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        margin-bottom: 12px;
+        padding: 16px;
+        position: relative;
+    }
+    
+    .history-table tbody tr[data-status="valid"] {
+        border-top: 3px solid var(--success-color);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .history-table tbody tr[data-status="invalid"] {
+        border-top: 3px solid var(--danger-color);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .history-table tbody tr[data-status="duplicate"] {
+        border-top: 3px solid var(--warning-color);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .history-table td {
+        border: none;
+        padding: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .history-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+    
+    .history-table td .cell-content {
+        flex: 1;
+        text-align: right;
+    }
+}
+
+@media (max-width: 480px) {
+    .history-table tbody tr {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .history-table td {
+        padding: 6px 0;
+        font-size: 13px;
+    }
+    
+    .history-table td:before {
+        min-width: 70px;
+        font-size: 12px;
+    }
+}
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
@@ -1986,50 +2070,3 @@ select:focus {
         border-radius: 50%;
     }
 }                       
-/* Simple mobile responsive approach for history-table */
-@media (max-width: 768px) {
-    .history-table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .history-table {
-        min-width: 600px; /* Ensures table doesn't become too cramped */
-        font-size: 13px;
-    }
-    
-    .history-table th,
-    .history-table td {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-    
-    .history-table .ticket-id-col {
-        min-width: 140px;
-    }
-    
-    .history-table .status-col {
-        min-width: 70px;
-    }
-    
-    .history-table .timestamp-col {
-        min-width: 90px;
-    }
-    
-    .history-table .method-col {
-        min-width: 50px;
-    }
-}
-
-@media (max-width: 480px) {
-    .history-table {
-        min-width: 500px;
-        font-size: 12px;
-    }
-    
-    .history-table th,
-    .history-table td {
-        padding: 6px 8px;
-        font-size: 11px;
-    }
-}

@@ -1887,6 +1887,175 @@ select:focus {
     }
 }
 
+/* History Table Styles */
+.history-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-background);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-background);
+    font-size: 14px;
+}
+
+.history-table th,
+.history-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.history-table th {
+    background-color: var(--hover-bg);
+    font-weight: 600;
+    color: var(--primary-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.history-table tbody tr {
+    transition: var(--transition);
+}
+
+.history-table tbody tr:hover {
+    background-color: var(--hover-bg);
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status-based row highlighting */
+.history-table tbody tr[data-status="valid"] {
+    border-left: 3px solid var(--success-color);
+}
+
+.history-table tbody tr[data-status="invalid"] {
+    border-left: 3px solid var(--danger-color);
+}
+
+.history-table tbody tr[data-status="duplicate"] {
+    border-left: 3px solid var(--warning-color);
+}
+
+/* Column-specific styling */
+.history-table .ticket-id-col {
+    min-width: 120px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.history-table .status-col {
+    min-width: 80px;
+    text-align: center;
+}
+
+.history-table .timestamp-col {
+    min-width: 100px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.history-table .method-col {
+    min-width: 60px;
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* Mobile responsive table */
+@media (max-width: 768px) {
+    .history-table-container {
+        border: none;
+        background: transparent;
+    }
+    
+    .history-table,
+    .history-table thead,
+    .history-table tbody,
+    .history-table th,
+    .history-table td,
+    .history-table tr {
+        display: block;
+    }
+    
+    .history-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .history-table tbody tr {
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        margin-bottom: 12px;
+        padding: 16px;
+        position: relative;
+    }
+    
+    .history-table tbody tr[data-status="valid"] {
+        border-top: 3px solid var(--success-color);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .history-table tbody tr[data-status="invalid"] {
+        border-top: 3px solid var(--danger-color);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .history-table tbody tr[data-status="duplicate"] {
+        border-top: 3px solid var(--warning-color);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .history-table td {
+        border: none;
+        padding: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .history-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+    
+    .history-table td .cell-content {
+        flex: 1;
+        text-align: right;
+    }
+}
+
+@media (max-width: 480px) {
+    .history-table tbody tr {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .history-table td {
+        padding: 6px 0;
+        font-size: 13px;
+    }
+    
+    .history-table td:before {
+        min-width: 70px;
+        font-size: 12px;
+    }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
     * {

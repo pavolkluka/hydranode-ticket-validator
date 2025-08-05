@@ -421,24 +421,39 @@ function updateHistoryDisplay() {
                         </tr>
                     </thead>
                     <tbody>
-                        ${historyToShow.map(scan => `
+                        ${historyToShow.map(scan => {
+                            const ticketIdLabel = window.LanguageManager ? window.LanguageManager.get('ticketId') || 'Ticket ID' : 'Ticket ID';
+                            const statusLabel = window.LanguageManager ? window.LanguageManager.get('status') || 'Status' : 'Status';
+                            const timestampLabel = window.LanguageManager ? window.LanguageManager.get('timestamp') || 'Time' : 'Time';
+                            const methodLabel = window.LanguageManager ? window.LanguageManager.get('method') || 'Method' : 'Method';
+                            
+                            return `
                             <tr class="history-row" data-status="${scan.status}" role="row">
-                                <td class="ticket-id-cell" role="gridcell">
-                                    ${createExpandableTicketId(scan.ticketId, 'history-ticket-id')}
+                                <td class="ticket-id-cell ticket-id-col" data-label="${ticketIdLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        ${createExpandableTicketId(scan.ticketId, 'history-ticket-id')}
+                                    </div>
                                 </td>
-                                <td class="status-cell" role="gridcell">
-                                    <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
+                                <td class="status-cell status-col" data-label="${statusLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        <span class="status-badge ${scan.status}" title="${getStatusText(scan.status)}">${getStatusText(scan.status)}</span>
+                                    </div>
                                 </td>
-                                <td class="timestamp-cell" role="gridcell">
-                                    <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
-                                        ${formatTimestamp(scan.timestamp)}
-                                    </span>
+                                <td class="timestamp-cell timestamp-col" data-label="${timestampLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        <span class="timestamp" title="${new Date(scan.timestamp).toLocaleString()}">
+                                            ${formatTimestamp(scan.timestamp)}
+                                        </span>
+                                    </div>
                                 </td>
-                                <td class="method-cell" role="gridcell">
-                                    <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
+                                <td class="method-cell method-col" data-label="${methodLabel}" role="gridcell">
+                                    <div class="cell-content">
+                                        <span class="scan-method" title="Scan method: ${scan.method}">${scan.method}</span>
+                                    </div>
                                 </td>
                             </tr>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </tbody>
                 </table>
             </div>
@@ -651,31 +666,25 @@ function debouncedFilterSearch() {
 function updateHistoryStats() {
     const visibleCountEl = document.getElementById('visibleCount');
     const totalCountEl = document.getElementById('totalCount');
-    const historyStatsContainer = document.getElementById('historyStats');
+    const historyCountText = document.getElementById('historyCountText');
     
+    // Update the span values
     if (visibleCountEl) visibleCountEl.textContent = filteredScanHistory.length;
     if (totalCountEl) totalCountEl.textContent = scanHistory.length;
     
-    // Update the translated text with actual values
-    if (historyStatsContainer) {
-        const historyCountSpan = historyStatsContainer.querySelector('.history-count');
-        if (historyCountSpan && typeof window.LanguageManager !== 'undefined') {
-            const template = window.LanguageManager.get('showingResults') || 'Showing {visible} of {total} scans';
-            const interpolatedText = template
-                .replace('{visible}', filteredScanHistory.length)
-                .replace('{total}', scanHistory.length);
+    // Update the translated text while preserving the span elements
+    if (historyCountText && typeof window.LanguageManager !== 'undefined') {
+        const template = window.LanguageManager.get('showingResults') || 'Showing {visible} of {total} scans';
+        
+        // Create the text with placeholder spans
+        const visibleSpan = `<span id="visibleCount">${filteredScanHistory.length}</span>`;
+        const totalSpan = `<span id="totalCount">${scanHistory.length}</span>`;
+        
+        const translatedText = template
+            .replace('{visible}', visibleSpan)
+            .replace('{total}', totalSpan);
             
-            // Update only the text content, preserving the span elements
-            const spans = historyCountSpan.querySelectorAll('span');
-            if (spans.length >= 2) {
-                // Update individual span values
-                spans[0].textContent = filteredScanHistory.length;
-                spans[1].textContent = scanHistory.length;
-            } else {
-                // Fallback: replace entire text content
-                historyCountSpan.innerHTML = interpolatedText;
-            }
-        }
+        historyCountText.innerHTML = translatedText;
     }
 }
 

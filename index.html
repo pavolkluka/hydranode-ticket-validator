@@ -64,6 +64,36 @@
                     <span id="themeToggleText" data-i18n="darkMode">Dark Mode</span>
                 </button>
             </div>
+            <div class="option-item debug-section">
+                <span class="option-icon" id="debugIcon"></span>
+                <span class="option-label" data-i18n="debugLogging">Debug Logging</span>
+                <div class="debug-controls">
+                    <button id="debugToggle" class="debug-toggle">
+                        <span id="debugToggleText" data-i18n="debugDisabled">Disabled</span>
+                    </button>
+                    <button id="debugExport" class="debug-export-btn" disabled>
+                        <span class="button-icon" id="debugExportIcon"></span>
+                        <span data-i18n="exportLogs">Export</span>
+                    </button>
+                    <button id="debugClear" class="debug-clear-btn" disabled>
+                        <span class="button-icon" id="debugClearIcon"></span>
+                        <span data-i18n="clearLogs">Clear</span>
+                    </button>
+                </div>
+            </div>
+            <div class="option-item debug-stats" id="debugStats" style="display: none;">
+                <span class="option-icon" id="debugStatsIcon"></span>
+                <div class="debug-stats-content">
+                    <div class="debug-stat-item">
+                        <span data-i18n="totalLogs">Total Logs:</span>
+                        <span id="debugLogCount">0</span>
+                    </div>
+                    <div class="debug-stat-item">
+                        <span data-i18n="storageSize">Storage:</span>
+                        <span id="debugStorageSize">0 KB</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <main class="main-container">
@@ -216,6 +246,7 @@
     </div>
 
     <!-- Core Scripts -->
+    <script src="js/debug-logger.js"></script>
     <script src="js/icons.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/lang.js"></script>
@@ -263,6 +294,10 @@
                 document.getElementById("exportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
                 document.getElementById("trashIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
                 document.getElementById("databaseIcon").innerHTML = window.IconLibrary.getIcon("database", "20");
+                document.getElementById("debugIcon").innerHTML = window.IconLibrary.getIcon("settings", "16");
+                document.getElementById("debugExportIcon").innerHTML = window.IconLibrary.getIcon("download", "14");
+                document.getElementById("debugClearIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
+                document.getElementById("debugStatsIcon").innerHTML = window.IconLibrary.getIcon("chart", "16");
                 console.log("Icons initialized successfully");
             } catch (error) {
                 console.error("Error initializing icons:", error);
@@ -283,6 +318,9 @@
         
         // Initialize language selector
         initializeLanguageSelector();
+        
+        // Initialize debug logging controls
+        initializeDebugControls();
     });
     
     function initializeOptionsMenu() {
@@ -368,6 +406,174 @@
                 window.LanguageManager.setLanguage(this.value);
             }
         });
+    }
+    
+    function initializeDebugControls() {
+        const debugToggle = document.getElementById('debugToggle');
+        const debugToggleText = document.getElementById('debugToggleText');
+        const debugExport = document.getElementById('debugExport');
+        const debugClear = document.getElementById('debugClear');
+        const debugStats = document.getElementById('debugStats');
+        const debugLogCount = document.getElementById('debugLogCount');
+        const debugStorageSize = document.getElementById('debugStorageSize');
+        
+        if (!debugToggle || !window.DebugLogger) {
+            console.warn('Debug controls or DebugLogger not available');
+            return;
+        }
+        
+        // Update UI based on current debug state
+        function updateDebugUI() {
+            const isEnabled = window.DebugLogger.isEnabled();
+            const stats = window.DebugLogger.getLogStats();
+            
+            // Update toggle button
+            if (debugToggleText) {
+                debugToggleText.textContent = isEnabled ? 
+                    (window.LanguageManager ? window.LanguageManager.get('debugEnabled') : 'Enabled') : 
+                    (window.LanguageManager ? window.LanguageManager.get('debugDisabled') : 'Disabled');
+            }
+            
+            debugToggle.className = isEnabled ? 'debug-toggle enabled' : 'debug-toggle disabled';
+            
+            // Update export and clear buttons
+            if (debugExport) {
+                debugExport.disabled = !isEnabled || stats.total === 0;
+            }
+            if (debugClear) {
+                debugClear.disabled = !isEnabled || stats.total === 0;
+            }
+            
+            // Update stats display
+            if (debugStats) {
+                debugStats.style.display = isEnabled ? 'flex' : 'none';
+            }
+            
+            if (debugLogCount) {
+                debugLogCount.textContent = stats.total;
+            }
+            
+            if (debugStorageSize) {
+                const sizeKB = Math.round(stats.storageSize / 1024 * 100) / 100;
+                debugStorageSize.textContent = sizeKB + ' KB';
+            }
+        }
+        
+        // Toggle debug logging
+        debugToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (window.DebugLogger.isEnabled()) {
+                window.DebugLogger.disable();
+            } else {
+                window.DebugLogger.enable();
+            }
+            
+            updateDebugUI();
+        });
+        
+        // Export logs
+        if (debugExport) {
+            debugExport.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    // Show export options modal or directly export as JSON
+                    window.DebugLogger.downloadLogs('json');
+                    
+                    // Show success message
+                    if (window.LanguageManager) {
+                        showDebugMessage(window.LanguageManager.get('debugExportSuccess') || 'Debug logs exported successfully');
+                    } else {
+                        showDebugMessage('Debug logs exported successfully');
+                    }
+                } catch (error) {
+                    console.error('Failed to export debug logs:', error);
+                    if (window.LanguageManager) {
+                        showDebugMessage(window.LanguageManager.get('debugExportFailed') || 'Failed to export debug logs');
+                    } else {
+                        showDebugMessage('Failed to export debug logs');
+                    }
+                }
+                
+                updateDebugUI();
+            });
+        }
+        
+        // Clear logs
+        if (debugClear) {
+            debugClear.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (confirm(window.LanguageManager ? window.LanguageManager.get('debugClearConfirm') : 'Are you sure you want to clear all debug logs?')) {
+                    const clearedCount = window.DebugLogger.clearLogs();
+                    
+                    if (window.LanguageManager) {
+                        showDebugMessage(window.LanguageManager.get('debugClearSuccess') || `Cleared ${clearedCount} debug logs`);
+                    } else {
+                        showDebugMessage(`Cleared ${clearedCount} debug logs`);
+                    }
+                    
+                    updateDebugUI();
+                }
+            });
+        }
+        
+        // Initial UI update
+        updateDebugUI();
+        
+        // Update UI periodically if debug is enabled
+        setInterval(function() {
+            if (window.DebugLogger && window.DebugLogger.isEnabled()) {
+                updateDebugUI();
+            }
+        }, 5000);
+    }
+    
+    function showDebugMessage(message) {
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.className = 'debug-toast';
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-background);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            font-size: 0.9rem;
+            max-width: 300px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(0)';
+        }, 50);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
     }
     
     // Service Worker (PWA)

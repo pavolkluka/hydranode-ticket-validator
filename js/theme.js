@@ -80,11 +80,25 @@ class ThemeManager {
 
     setTheme(theme) {
         if (this.themes[theme]) {
+            const previousTheme = this.currentTheme;
             this.currentTheme = theme;
             this.saveTheme(theme);
             this.applyTheme();
             this.updateMetaThemeColor();
             this.notifyCallbacks();
+            
+            if (window.DebugLogger) {
+                window.DebugLogger.info('theme', 'Theme changed', {
+                    previousTheme,
+                    newTheme: theme,
+                    availableThemes: Object.keys(this.themes)
+                });
+            }
+        } else if (window.DebugLogger) {
+            window.DebugLogger.warn('theme', 'Attempted to set unsupported theme', {
+                requestedTheme: theme,
+                availableThemes: Object.keys(this.themes)
+            });
         }
     }
 

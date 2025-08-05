@@ -232,6 +232,116 @@ body {
     background-color: var(--hover-bg);
 }
 
+/* Debug Section Styles */
+.debug-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.debug-section .option-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.debug-controls {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.debug-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 60px;
+}
+
+.debug-toggle:hover {
+    background-color: var(--hover-bg);
+}
+
+.debug-toggle.enabled {
+    background-color: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+}
+
+.debug-toggle.disabled {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+.debug-export-btn,
+.debug-clear-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 50px;
+}
+
+.debug-export-btn:hover:not(:disabled) {
+    background-color: var(--info-color);
+    color: white;
+    border-color: var(--info-color);
+}
+
+.debug-clear-btn:hover:not(:disabled) {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+.debug-export-btn:disabled,
+.debug-clear-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.debug-stats {
+    background-color: rgba(var(--info-color-rgb, 13, 110, 253), 0.1);
+    border-color: var(--info-color);
+    padding: 0.5rem 0.75rem;
+}
+
+.debug-stats-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.debug-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.debug-stat-item span:first-child {
+    color: var(--text-secondary);
+}
+
+.debug-stat-item span:last-child {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
 /* Main Container */
 .main-container {
     flex: 1;

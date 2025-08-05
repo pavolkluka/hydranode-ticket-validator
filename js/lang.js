@@ -42,6 +42,19 @@ class LanguageManager {
                 dataAvailableDetails: '{count} valid tickets available',
                 dataUnavailableDetails: 'Upload an XLS file to enable ticket validation',
                 
+                // Debug System
+                debugLogging: 'Debug Logging',
+                debugEnabled: 'Enabled',
+                debugDisabled: 'Disabled',
+                exportLogs: 'Export',
+                clearLogs: 'Clear',
+                totalLogs: 'Total Logs',
+                storageSize: 'Storage',
+                debugExportSuccess: 'Debug logs exported successfully',
+                debugExportFailed: 'Failed to export debug logs',
+                debugClearConfirm: 'Are you sure you want to clear all debug logs?',
+                debugClearSuccess: 'Debug logs cleared successfully',
+                
                 // Scanner
                 startScanner: 'Start Scanner',
                 stopScanner: 'Stop Scanner',
@@ -405,10 +418,24 @@ class LanguageManager {
 
     setLanguage(lang) {
         if (this.translations[lang]) {
+            const previousLanguage = this.currentLanguage;
             this.currentLanguage = lang;
             this.saveLanguage(lang);
             this.updateUI();
             this.notifyCallbacks();
+            
+            if (window.DebugLogger) {
+                window.DebugLogger.info('language', 'Language changed', {
+                    previousLanguage,
+                    newLanguage: lang,
+                    availableLanguages: Object.keys(this.translations)
+                });
+            }
+        } else if (window.DebugLogger) {
+            window.DebugLogger.warn('language', 'Attempted to set unsupported language', {
+                requestedLanguage: lang,
+                availableLanguages: Object.keys(this.translations)
+            });
         }
     }
 

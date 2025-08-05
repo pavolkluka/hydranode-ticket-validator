@@ -58,9 +58,29 @@ async function isValidFileType(file) {
     const hasValidExtension = file.name.toLowerCase().endsWith('.xls');
     const hasValidMimeType = file.type === validType;
     
+    // Debug logging for file validation
+    if (window.DebugLogger) {
+        window.DebugLogger.debug('file-validation', 'File type validation started', {
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type,
+            expectedType: validType,
+            hasValidExtension,
+            hasValidMimeType
+        });
+    }
+    
     // If basic checks fail, return false
     if (!hasValidExtension || !hasValidMimeType) {
         console.warn('File failed basic type validation');
+        if (window.DebugLogger) {
+            window.DebugLogger.warn('file-validation', 'File failed basic type validation', {
+                fileName: file.name,
+                fileType: file.type,
+                hasValidExtension,
+                hasValidMimeType
+            });
+        }
         return false;
     }
     
@@ -68,7 +88,20 @@ async function isValidFileType(file) {
     const hasValidSignature = await checkFileSignature(file);
     if (!hasValidSignature) {
         console.warn('File failed signature validation');
+        if (window.DebugLogger) {
+            window.DebugLogger.warn('file-validation', 'File failed signature validation', {
+                fileName: file.name,
+                fileSize: file.size
+            });
+        }
         return false;
+    }
+    
+    if (window.DebugLogger) {
+        window.DebugLogger.info('file-validation', 'File validation successful', {
+            fileName: file.name,
+            fileSize: file.size
+        });
     }
     
     return true;
@@ -93,6 +126,13 @@ async function validateFile(file) {
 // File Processing Functions
 async function processFile(file) {
     try {
+        if (window.DebugLogger) {
+            window.DebugLogger.info('file-processing', 'Starting file processing', {
+                fileName: file.name,
+                fileSize: file.size
+            });
+        }
+        
         validateFile(file);
         
         const arrayBuffer = await file.arrayBuffer();
@@ -124,12 +164,25 @@ async function processFile(file) {
             lnurlComment: row.lnurlComment || ''
         }));
         
+        if (window.DebugLogger) {
+            window.DebugLogger.info('file-processing', 'File processing completed', {
+                fileName: file.name,
+                clientId,
+                storeName,
+                totalRows: processedData.length,
+                validTickets: processedData.filter(row => row.invoiceId && row.invoiceId.trim() !== '').length
+            });
+        }
+        
         return {
             clientId,
             storeName,
             data: processedData
         };
     } catch (error) {
+        if (window.DebugLogger) {
+            window.DebugLogger.error('file-processing', 'File processing failed', error);
+        }
         throw new Error(`Error processing file: ${error.message}`);
     }
 }
@@ -145,6 +198,14 @@ function formatDate(date) {
 
 function updateDisplay(processedData) {
     currentData = processedData;
+    
+    if (window.DebugLogger) {
+        window.DebugLogger.info('data-display', 'Updating display with processed data', {
+            totalRows: processedData.data ? processedData.data.length : 0,
+            clientId: processedData.clientId,
+            storeName: processedData.storeName
+        });
+    }
     
     // Update data availability status
     updateDataAvailability();

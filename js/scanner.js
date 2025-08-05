@@ -7,9 +7,17 @@ try {
     const savedHistory = localStorage.getItem('scanHistory');
     if (savedHistory) {
         scanHistory = JSON.parse(savedHistory);
+        if (window.DebugLogger) {
+            window.DebugLogger.info('scanner', 'Scan history loaded from storage', {
+                historyCount: scanHistory.length
+            });
+        }
     }
 } catch (error) {
     console.error('Error loading scan history:', error);
+    if (window.DebugLogger) {
+        window.DebugLogger.error('scanner', 'Failed to load scan history from storage', error);
+    }
 }
 
 // Base58 validation regex
@@ -59,27 +67,55 @@ function startScanner() {
     // Check if XLS data is available before starting scanner
     if (typeof isDataAvailable === 'function' && !isDataAvailable()) {
         updateScanResult('No XLS data loaded. Please upload a valid XLS file first.', 'invalid');
+        if (window.DebugLogger) {
+            window.DebugLogger.warn('scanner', 'Scanner start failed - no XLS data available');
+        }
         return;
+    }
+    
+    if (window.DebugLogger) {
+        window.DebugLogger.info('scanner', 'Starting QR code scanner');
     }
     
     try {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
+            if (window.DebugLogger) {
+                window.DebugLogger.info('scanner', 'Camera access granted', {
+                    videoTracks: stream.getVideoTracks().length,
+                    audioTracks: stream.getAudioTracks().length
+                });
+            }
+            
             video.srcObject = stream;
             video.play();
             scanning = true;
             startButton.disabled = true;
             stopButton.disabled = false;
             requestAnimationFrame(scanQRCode);
+        }).catch(function(error) {
+            console.error('Error accessing camera:', error);
+            if (window.DebugLogger) {
+                window.DebugLogger.error('scanner', 'Failed to access camera', error);
+            }
+            scanResult.textContent = 'Error accessing camera. Please check permissions.';
+            scanResult.className = 'scan-result invalid';
         });
         
     } catch (error) {
         console.error('Error accessing camera:', error);
+        if (window.DebugLogger) {
+            window.DebugLogger.error('scanner', 'Camera access error', error);
+        }
         scanResult.textContent = 'Error accessing camera. Please check permissions.';
         scanResult.className = 'scan-result invalid';
     }
 }
 
 function stopScanner() {
+    if (window.DebugLogger) {
+        window.DebugLogger.info('scanner', 'Stopping QR code scanner');
+    }
+    
     if (video.srcObject) {
         video.srcObject.getTracks().forEach(track => track.stop());
     }

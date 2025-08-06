@@ -1706,6 +1706,377 @@ select:focus {
     }
 }
 
+/* API Configuration Styles */
+.data-source-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.data-source-controls {
+    width: 100%;
+}
+
+.data-source-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+    min-width: 120px;
+}
+
+.data-source-toggle:hover {
+    background-color: var(--hover-bg);
+}
+
+.data-source-toggle.online {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border-color: var(--primary-color);
+}
+
+.data-source-toggle.offline {
+    background-color: var(--info-color);
+    color: white;
+    border-color: var(--info-color);
+}
+
+.api-config-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: rgba(248, 196, 35, 0.05);
+    border: 1px solid rgba(248, 196, 35, 0.2);
+    border-radius: var(--border-radius);
+}
+
+.api-config-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.api-config-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.api-config-header .option-label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.api-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.api-input-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.api-token-input-container {
+    position: relative;
+    display: flex;
+}
+
+.api-token-input {
+    flex: 1;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+    transition: var(--transition);
+}
+
+.api-token-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(248, 196, 35, 0.2);
+}
+
+.toggle-visibility-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0.25rem;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+}
+
+.toggle-visibility-btn:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+}
+
+.api-scanner-group {
+    display: flex;
+    justify-content: center;
+}
+
+.scan-token-btn {
+    background-color: var(--info-color);
+    border-color: var(--info-color);
+    color: white;
+}
+
+.scan-token-btn:hover:not(:disabled) {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+.api-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.api-actions .control-button {
+    flex: 1;
+    min-width: 80px;
+}
+
+.test-btn {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: var(--background-color);
+}
+
+.test-btn:hover:not(:disabled) {
+    background-color: #e0a800;
+    border-color: #e0a800;
+}
+
+.auth-btn {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.auth-btn:hover:not(:disabled) {
+    background-color: #157347;
+    border-color: #157347;
+}
+
+.clear-btn {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+.clear-btn:hover:not(:disabled) {
+    background-color: #b02a37;
+    border-color: #b02a37;
+}
+
+.api-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.8rem;
+    transition: var(--transition);
+}
+
+.api-status.connected {
+    background-color: rgba(25, 135, 84, 0.1);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.api-status.disconnected {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 1px solid var(--warning-color);
+    color: var(--warning-color);
+}
+
+.api-status .status-text {
+    font-weight: 500;
+}
+
+/* Loading spinner for API operations */
+.loading-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* API Toast notifications */
+.api-toast {
+    font-family: inherit;
+    font-size: 0.85rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+}
+
+.api-toast.success {
+    background-color: var(--success-color);
+}
+
+.api-toast.error {
+    background-color: var(--danger-color);
+}
+
+.api-toast.info {
+    background-color: var(--info-color);
+}
+
+/* QR Scanner Modal (to be implemented) */
+.qr-scanner-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-backdrop);
+    z-index: 1001;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.qr-scanner-modal.active {
+    display: flex;
+}
+
+.qr-scanner-content {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    max-width: 90%;
+    width: 500px;
+    box-shadow: var(--shadow-lg);
+}
+
+.qr-scanner-video-container {
+    position: relative;
+    background-color: var(--background-color);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    aspect-ratio: 1/1;
+    max-width: 400px;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+}
+
+.qr-scanner-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.qr-scanner-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.qr-scanner-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.qr-scanner-controls {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+/* Mobile responsive adjustments for API configuration */
+@media (max-width: 768px) {
+    .api-config-section {
+        padding: 0.75rem;
+    }
+    
+    .api-token-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    .api-actions {
+        flex-direction: column;
+    }
+    
+    .api-actions .control-button {
+        min-width: none;
+        width: 100%;
+    }
+    
+    .qr-scanner-content {
+        width: 95%;
+        padding: 1rem;
+    }
+    
+    .qr-scanner-video-container {
+        max-width: none;
+        aspect-ratio: 4/3;
+    }
+    
+    .qr-scanner-overlay {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .api-config-section {
+        padding: 0.5rem;
+    }
+    
+    .api-scanner-group,
+    .api-actions {
+        margin-top: 0.5rem;
+    }
+    
+    .qr-scanner-controls {
+        flex-direction: column;
+    }
+    
+    .qr-scanner-overlay {
+        width: 120px;
+        height: 120px;
+    }
+}
+
 /* Enhanced UI Feedback Styles */
 .error-notification {
     position: fixed;

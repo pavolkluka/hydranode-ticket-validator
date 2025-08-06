@@ -101,6 +101,7 @@ const manualInput = document.getElementById('manualTicketId');
 const submitManual = document.getElementById('submitManual');
 const exportButton = document.getElementById('exportHistory');
 const clearButton = document.getElementById('clearHistory');
+const showAllButton = document.getElementById('showAllHistory');
 const historyList = document.getElementById('scanHistory');
 const scanMessageModal = document.getElementById('scanMessageModal');
 const closeModalButton = document.getElementById('closeModal');
@@ -111,6 +112,7 @@ stopButton.addEventListener('click', stopScanner);
 submitManual.addEventListener('click', handleManualEntry);
 exportButton.addEventListener('click', exportScanHistory);
 clearButton.addEventListener('click', clearScanHistory);
+if (showAllButton) showAllButton.addEventListener('click', toggleShowAll);
 closeModalButton.addEventListener('click', () => {
     scanMessageModal.classList.remove('active');
     scanData.innerHTML = '';
@@ -402,7 +404,12 @@ function getStatusText(status) {
 }
 
 function updateHistoryDisplay() {
-    const historyToShow = typeof filteredScanHistory !== 'undefined' ? filteredScanHistory : scanHistory;
+    let historyToShow = typeof filteredScanHistory !== 'undefined' ? filteredScanHistory : scanHistory;
+
+    // Apply show all logic - always show all by default, or limit for performance
+    if (!showAllRecords && historyToShow.length > defaultMaxRecords) {
+        historyToShow = historyToShow.slice(0, defaultMaxRecords);
+    }
     
     if (scanHistory.length === 0) {
         historyList.innerHTML = `<div class="no-data" data-i18n="noScansYet">No scans yet</div>`;
@@ -455,25 +462,19 @@ function updateHistoryDisplay() {
 }
 
 // Format timestamp for better display
+// Format timestamp as absolute ISO 8601 format with timezone
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
     
-    if (diffMins < 1) {
-        return 'Just now';
-    } else if (diffMins < 60) {
-        return `${diffMins}m ago`;
-    } else if (diffHours < 24) {
-        return `${diffHours}h ago`;
-    } else if (diffDays < 7) {
-        return `${diffDays}d ago`;
-    } else {
-        return date.toLocaleDateString();
-    }
+    // Return ISO 8601 format with timezone: "2025-08-06 11:41:00 UTC"
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC`;
 }
 
 // History Management Functions
@@ -483,6 +484,26 @@ function saveScanHistory() {
     } catch (error) {
         console.error('Error saving scan history:', error);
     }
+}
+
+function toggleShowAll() {
+    showAllRecords = !showAllRecords;
+    
+    const buttonText = showAllButton?.querySelector('[data-i18n]');
+    const buttonIcon = showAllButton?.querySelector('.button-icon');
+    
+    if (showAllRecords) {
+        if (buttonText) buttonText.setAttribute('data-i18n', 'showAll');
+        if (buttonIcon) buttonIcon.textContent = '📋';
+        if (buttonText) buttonText.textContent = 'Show All';
+    } else {
+        if (buttonText) buttonText.setAttribute('data-i18n', 'showLimited');
+        if (buttonIcon) buttonIcon.textContent = '📄';
+        if (buttonText) buttonText.textContent = `Show Limited (${defaultMaxRecords})`;
+    }
+    
+    updateHistoryDisplay();
+    updateHistoryStats();
 }
 
 function clearScanHistory() {
@@ -499,7 +520,10 @@ function clearScanHistory() {
 }
 
 async function exportScanHistory() {
-    if (scanHistory.length === 0) {
+    // Export ALL records regardless of UI pagination or filtering
+    const allRecords = scanHistory; // Always use complete dataset
+    
+    if (allRecords.length === 0) {
         const message = typeof window.LanguageManager !== 'undefined' ? 
             window.LanguageManager.get('noDataToExport') || 'No scan history data to export' :
             'No scan history data to export';
@@ -507,16 +531,16 @@ async function exportScanHistory() {
         return;
     }
     
-    // Enhanced CSV export with status information
-    const headers = ['Ticket ID', 'Status', 'Timestamp', 'Method', 'Date', 'Time'];
+    // Enhanced CSV export with complete dataset and absolute timestamps
+    const headers = ['Ticket ID', 'Status', 'ISO Timestamp', 'Method', 'Date', 'Time'];
     const csvData = [
         headers,
-        ...scanHistory.map(scan => {
+        ...allRecords.map(scan => {
             const date = new Date(scan.timestamp);
             return [
                 scan.ticketId,
                 scan.status,
-                date.toLocaleString(),
+                formatTimestamp(scan.timestamp), // Use new ISO format
                 scan.method,
                 date.toLocaleDateString(),
                 date.toLocaleTimeString()
@@ -530,7 +554,7 @@ async function exportScanHistory() {
             // Escape fields containing commas, quotes, or newlines
             const stringField = String(field || '');
             if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
-                return `"${stringField.replace(/"/g, '""')}"`;
+                return `"${stringField.replace(/"/g, '""')}";
             }
             return stringField;
         }).join(',')
@@ -541,23 +565,24 @@ async function exportScanHistory() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `scan-history-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `scan-history-complete-${new Date().toISOString().split('T')[0]}.csv`;
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    // Show success message
+    // Show success message with ALL records count
     if (window.DebugLogger) {
-        window.DebugLogger.info('export', 'Scan history exported successfully', {
-            recordCount: scanHistory.length,
-            filename: a.download
+        window.DebugLogger.info('export', 'Complete scan history exported successfully', {
+            recordCount: allRecords.length,
+            filename: a.download,
+            exportType: 'complete-dataset'
         });
     }
     
     // Optional: Show user feedback
-    showExportSuccessMessage(scanHistory.length);
+    showExportSuccessMessage(allRecords.length);
 }
 
 function showExportSuccessMessage(recordCount) {
@@ -612,6 +637,8 @@ function showExportSuccessMessage(recordCount) {
 
 // Search and filter functionality
 let filteredScanHistory = [...scanHistory];
+let showAllRecords = true; // Always show all records by default
+let defaultMaxRecords = 100; // Default maximum to prevent performance issues
 let searchDebounceTimer = null;
 
 function filterScanHistory() {

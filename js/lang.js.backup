@@ -588,6 +588,3 @@ class LanguageManager {
 
 // Create global instance
 const languageManager = new LanguageManager();
-
-// Make languageManager available globally
-window.languageManager = languageManager;

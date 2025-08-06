@@ -342,9 +342,6 @@ class IconLibrary {
 // Create global instance and register for theme changes
 const iconLibrary = new IconLibrary();
 
-// Make iconLibrary available globally
-window.iconLibrary = iconLibrary;
-
 // Wait for DOM and themeManager to be ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {

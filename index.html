@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="appName">Hydranode Ticket Validator</title>
+    <meta name="title" content="Scan and verify ticket for your event with Hydranode Ticket Validator!">
+    <meta name="description" content="Hydranode Ticket Validator is a tool that allows you to verify whether a ticket is valid by simply scanning a QR code.">
+    <meta name="theme-color" content="#f8c423">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Ticket Validator">
+    <link rel="manifest" href="/hydranode-ticket-validator/manifest.json">
+    <link rel="icon" id="favicon" href="icons/icon-light-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" id="appleTouchIcon" href="icons/icon-light-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-light-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-light-192x192.png">
+    <!-- Main CSS Style -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- JavaScript Libraries -->
+    <!-- SheetJS from CDN: use version 0.20.3 -->
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
+    <!-- jsQR local copy: version 1.4.0 -->
+    <script lang="javascript" src="js/jsQR.min.js" integrity="sha384-7+6NtuEPG8SPa+HRop4AdiOIt8o2Pn7Mx7kG6WU6DP+bGLL38Nx5/WYqIgAUQKpP" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- PWA Header with Icon, Name, and Options Menu -->
+        <header class="pwa-header">
+            <div class="header-left">
+                <div class="app-icon" id="appIcon"></div>
+                <h1 class="app-name" data-i18n="appName">Hydranode Ticket Validator</h1>
+            </div>
+            <div class="header-right">
+                <button class="options-button" id="optionsButton" aria-label="Options menu">
+                    <span class="options-icon" id="optionsIcon"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Options Menu (Hidden by default) -->
+        <div class="options-menu" id="optionsMenu">
+            <div class="option-item file-upload-option">
+                <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input" aria-describedby="supported-formats">
+                <label for="fileInput" class="option-label">
+                    <span class="option-icon" id="uploadIcon"></span>
+                    <span data-i18n="uploadFile">Upload XLS File</span>
+                </label>
+            </div>
+            <div class="option-item">
+                <span class="option-icon" id="languageIcon"></span>
+                <label for="languageSelect" data-i18n="language">Language</label>
+                <select id="languageSelect" class="option-select">
+                    <option value="en">English</option>
+                    <option value="sk">Slovenčina</option>
+                    <option value="cz">Čeština</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+            <div class="option-item">
+                <span class="option-icon" id="themeIcon"></span>
+                <label for="themeToggle" data-i18n="theme">Theme</label>
+                <button id="themeToggle" class="theme-toggle">
+                    <span id="themeToggleText" data-i18n="darkMode">Dark Mode</span>
+                </button>
+            </div>
+            <div class="option-item debug-section">
+                <span class="option-icon" id="debugIcon"></span>
+                <span class="option-label" data-i18n="debugLogging">Debug Logging</span>
+                <div class="debug-controls">
+                    <button id="debugToggle" class="debug-toggle">
+                        <span id="debugToggleText" data-i18n="debugDisabled">Disabled</span>
+                    </button>
+                    <button id="debugExport" class="debug-export-btn" disabled>
+                        <span class="button-icon" id="debugExportIcon"></span>
+                        <span data-i18n="exportLogs">Export</span>
+                    </button>
+                    <button id="debugClear" class="debug-clear-btn" disabled>
+                        <span class="button-icon" id="debugClearIcon"></span>
+                        <span data-i18n="clearLogs">Clear</span>
+                    </button>
+                </div>
+            </div>
+            <div class="option-item debug-stats" id="debugStats" style="display: none;">
+                <span class="option-icon" id="debugStatsIcon"></span>
+                <div class="debug-stats-content">
+                    <div class="debug-stat-item">
+                        <span data-i18n="totalLogs">Total Logs:</span>
+                        <span id="debugLogCount">0</span>
+                    </div>
+                    <div class="debug-stat-item">
+                        <span data-i18n="storageSize">Storage:</span>
+                        <span id="debugStorageSize">0 KB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main class="main-container">
+            <!-- Data Availability Message (moved to top, compact) -->
+            <section class="data-status-compact" id="dataStatusCompact" aria-labelledby="data-status-heading">
+                <h2 id="data-status-heading" class="sr-only">Data Status</h2>
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-icon" id="statusIcon"></span>
+                    <span class="status-text" id="statusText" data-i18n="dataUnavailable">No XLS Data</span>
+                </div>
+            </section>
+
+            <!-- Scanner Area (main functionality) -->
+            <section class="scanner-section" aria-labelledby="scanner-heading">
+                <h2 id="scanner-heading" class="section-title">
+                    <span class="section-icon" id="scannerIcon"></span>
+                    <span data-i18n="startScanner">Scanner</span>
+                </h2>
+                <div class="scanner-container">
+                    <div class="video-container" role="img" aria-label="Camera viewfinder for QR code scanning">
+                        <video id="qrVideo" playsinline aria-label="QR code scanner camera feed"></video>
+                        <canvas id="qrCanvas" class="qr-overlay" aria-hidden="true"></canvas>
+                        <div class="scanner-overlay" aria-hidden="true"></div>
+                    </div>
+                    <div class="scanner-controls">
+                        <button id="startScan" class="control-button primary">
+                            <span class="button-icon" id="playIcon"></span>
+                            <span data-i18n="startScanner">Start Scanner</span>
+                        </button>
+                        <button id="stopScan" class="control-button secondary" disabled>
+                            <span class="button-icon" id="stopIcon"></span>
+                            <span data-i18n="stopScanner">Stop Scanner</span>
+                        </button>
+                    </div>
+                    <div class="manual-entry">
+                        <input type="text" id="manualTicketId" data-i18n="enterTicketId" placeholder="Enter Ticket ID manually">
+                        <button id="submitManual" class="control-button">
+                            <span data-i18n="submitTicket">Submit</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Modal Message Display -->
+                <div id="scanMessageModal" class="scan-message-modal" role="dialog" aria-modal="true">
+                    <div class="modal-content">
+                        <div id="scanData" class="scan-data"></div>
+                        <div id="scanResult" class="scan-result"></div>
+                        <button id="closeModal" class="control-button">
+                            <span data-i18n="close">Close</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics (optimized size, compact display) -->
+            <section class="statistics-section" aria-labelledby="stats-heading">
+                <h2 id="stats-heading" class="section-title">
+                    <span class="section-icon" id="chartIcon"></span>
+                    <span data-i18n="statistics">Statistics</span>
+                </h2>
+                <div class="statistics-grid">
+                    <div class="stat-card total">
+                        <div class="stat-label" data-i18n="totalTickets">Total</div>
+                        <div class="stat-value" id="totalTickets">0</div>
+                    </div>
+                    <div class="stat-card valid">
+                        <div class="stat-label" data-i18n="validTickets">Valid</div>
+                        <div class="stat-value" id="validTickets">0</div>
+                    </div>
+                    <div class="stat-card duplicate">
+                        <div class="stat-label" data-i18n="duplicateTickets">Duplicate</div>
+                        <div class="stat-value" id="duplicateTickets">0</div>
+                    </div>
+                    <div class="stat-card invalid">
+                        <div class="stat-label" data-i18n="invalidTickets">Invalid</div>
+                        <div class="stat-value" id="invalidTickets">0</div>
+                    </div>
+                    <div class="stat-card remaining">
+                        <div class="stat-label" data-i18n="remainingTickets">Remaining</div>
+                        <div class="stat-value" id="remainingTickets">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scan History (efficient list display) -->
+            <section class="scan-history" aria-labelledby="history-heading">
+                <h2 id="history-heading" class="section-title">
+                    <span class="section-icon" id="historyIcon"></span>
+                    <span data-i18n="scanHistory">Scan History</span>
+                </h2>
+                
+                <!-- Enhanced History Controls with Search and Filter -->
+                <div class="history-controls-enhanced">
+                    <div class="history-search-filter">
+                        <div class="search-input-container">
+                            <input type="text" id="historySearch" class="history-search" 
+                                   placeholder="Search ticket IDs..." 
+                                   data-i18n="searchTickets"
+                                   aria-label="Search scan history">
+                            <span class="search-icon" id="searchIcon"></span>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="statusFilter" class="status-filter" aria-label="Filter by status">
+                                <option value="all" data-i18n="allStatuses">All Statuses</option>
+                                <option value="valid" data-i18n="validOnly">Valid Only</option>
+                                <option value="invalid" data-i18n="invalidOnly">Invalid Only</option>
+                                <option value="duplicate" data-i18n="duplicateOnly">Duplicate Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="history-actions">
+                        <button id="showAllHistory" class="control-button small toggle">
+                            <span class="button-icon" id="showAllIcon">📋</span>
+                            <span data-i18n="showAll">Show All</span>
+                        </button>
+                        <button id="exportHistory" class="control-button small">
+                            <span class="button-icon" id="exportIcon"></span>
+                            <span data-i18n="exportHistory">Export</span>
+                        </button>
+                        <button id="clearHistory" class="control-button small secondary">
+                            <span class="button-icon" id="trashIcon"></span>
+                            <span data-i18n="clearHistory">Clear</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- History Statistics -->
+                <div class="history-stats" id="historyStats">
+                    <span class="history-count" id="historyCountText">Showing <span id="visibleCount">0</span> of <span id="totalCount">0</span> scans</span>
+                </div>
+                
+                <div id="scanHistory" class="history-list"></div>
+            </section>
+
+            <!-- Data Field (for displaying ticket information) -->
+            <section class="data-display" aria-labelledby="data-heading">
+                <h2 id="data-heading" class="section-title">
+                    <span class="section-icon" id="databaseIcon"></span>
+                    <span data-i18n="dataDisplay">Ticket Data</span>
+                </h2>
+                
+                <div class="metadata-panel">
+                    <div id="clientInfo"></div>
+                    <div id="storeInfo"></div>
+                </div>
+
+                <div class="table-controls">
+                    <div class="rows-per-page">
+                        <label for="rowsPerPage" data-i18n="rowsPerPage">Rows per page:</label>
+                        <select id="rowsPerPage">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th data-i18n="date">Date</th>
+                                <th data-i18n="time">Time</th>
+                                <th data-i18n="invoiceId">Invoice ID</th>
+                                <th data-i18n="lnurlComment">LNURL Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Simple Footer -->
+        <footer class="pwa-footer">
+            <span data-i18n="footerText" data-i18n-params='{"year": "2025"}'>© 2025 Hydranode Ticket Validator</span>
+        </footer>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/debug-logger.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/lang.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ui-enhancements.js"></script>
+    <script src="js/scanner.js"></script>
+    
+    <!-- PWA Initialization Script -->
+    <script>
+    // Initialize PWA components
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize icons - use proper app logo
+        // Initialize icons with proper checks - ensure IconLibrary is available
+        // Initialize icons with circuit breaker to prevent infinite loops
+        let iconInitAttempts = 0;
+        const maxIconInitAttempts = 3;
+        
+        function initializeIcons() {
+            iconInitAttempts++;
+            if (iconInitAttempts > maxIconInitAttempts) {
+                console.warn("Icon initialization failed after " + maxIconInitAttempts + " attempts. Stopping retries.");
+                return;
+            }
+            
+            if (typeof IconLibrary === "undefined" || !window.IconLibrary) {
+                if (iconInitAttempts < maxIconInitAttempts) {
+                    console.log("IconLibrary not ready, retry attempt " + iconInitAttempts);
+                    setTimeout(initializeIcons, 500 * iconInitAttempts); // Exponential backoff
+                }
+                return;
+            }
+            
+            try {
+                document.getElementById("appIcon").innerHTML = window.IconLibrary.getIcon("appLogo", "32");
+                document.getElementById("optionsIcon").innerHTML = window.IconLibrary.getIcon("menu", "20");
+                document.getElementById("uploadIcon").innerHTML = window.IconLibrary.getIcon("upload", "16");
+                document.getElementById("languageIcon").innerHTML = window.IconLibrary.getIcon("language", "16");
+                document.getElementById("themeIcon").innerHTML = window.IconLibrary.getIcon("sun", "16");
+                document.getElementById("statusIcon").innerHTML = window.IconLibrary.getIcon("warning", "16");
+                document.getElementById("scannerIcon").innerHTML = window.IconLibrary.getIcon("scanner", "20");
+                document.getElementById("playIcon").innerHTML = window.IconLibrary.getIcon("play", "16");
+                document.getElementById("stopIcon").innerHTML = window.IconLibrary.getIcon("stop", "16");
+                document.getElementById("chartIcon").innerHTML = window.IconLibrary.getIcon("chart", "20");
+                document.getElementById("historyIcon").innerHTML = window.IconLibrary.getIcon("history", "20");
+                document.getElementById("exportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
+                document.getElementById("trashIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
+                document.getElementById("searchIcon").innerHTML = window.IconLibrary.getIcon("search", "16");
+                document.getElementById("databaseIcon").innerHTML = window.IconLibrary.getIcon("database", "20");
+                document.getElementById("debugIcon").innerHTML = window.IconLibrary.getIcon("settings", "16");
+                document.getElementById("debugExportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
+                document.getElementById("debugClearIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
+                document.getElementById("debugStatsIcon").innerHTML = window.IconLibrary.getIcon("chart", "16");
+                console.log("Icons initialized successfully");
+            } catch (error) {
+                console.error("Error initializing icons:", error);
+                if (iconInitAttempts < maxIconInitAttempts) {
+                    setTimeout(initializeIcons, 1000 * iconInitAttempts);
+                }
+            }
+        }
+        
+        // Start icon initialization
+        setTimeout(initializeIcons, 500);
+        
+        // Initialize options menu functionality
+        initializeOptionsMenu();
+        
+        // Initialize theme toggle
+        initializeThemeToggle();
+        
+        // Initialize language selector
+        initializeLanguageSelector();
+        
+        // Initialize debug logging controls
+        initializeDebugControls();
+    });
+    
+    function initializeOptionsMenu() {
+        const optionsButton = document.getElementById('optionsButton');
+        const optionsMenu = document.getElementById('optionsMenu');
+        
+        if (!optionsButton || !optionsMenu) {
+            console.warn('Options menu elements not found');
+            return;
+        }
+        
+        optionsButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            optionsMenu.classList.toggle('active');
+            
+            // Use proper initialization checks for IconLibrary
+            if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
+                document.getElementById('optionsIcon').innerHTML = 
+                    optionsMenu.classList.contains('active') ? 
+                    window.IconLibrary.getIcon('close', '20') : 
+                    window.IconLibrary.getIcon('menu', '20');
+            }
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!optionsMenu.contains(e.target) && e.target !== optionsButton) {
+                optionsMenu.classList.remove('active');
+                if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
+                    document.getElementById('optionsIcon').innerHTML = window.IconLibrary.getIcon('menu', '20');
+                }
+            }
+        });
+    }
+    function initializeThemeToggle() {
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeToggleText');
+        
+        if (!themeToggle || !themeIcon || !themeText) {
+            console.warn('Theme toggle elements not found');
+            return;
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            if (typeof ThemeManager !== 'undefined' && window.ThemeManager) {
+                const newTheme = window.ThemeManager.toggleTheme();
+                updateThemeUI(newTheme);
+            }
+        });
+        
+        // Initialize theme UI
+        if (typeof ThemeManager !== 'undefined' && window.ThemeManager) {
+            updateThemeUI(window.ThemeManager.getCurrentTheme());
+        }
+        
+        function updateThemeUI(theme) {
+            const isDark = theme === 'dark';
+            if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
+                themeIcon.innerHTML = window.IconLibrary.getIcon(isDark ? 'moon' : 'sun', '16');
+            }
+            if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
+                themeText.textContent = isDark ? window.LanguageManager.get('lightMode') : window.LanguageManager.get('darkMode');
+            }
+        }
+    }
+    
+    function initializeLanguageSelector() {
+        const languageSelect = document.getElementById('languageSelect');
+        
+        if (!languageSelect) {
+            console.warn('Language selector element not found');
+            return;
+        }
+        
+        // Set current language
+        if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
+            languageSelect.value = window.LanguageManager.getCurrentLanguage();
+        }
+        
+        languageSelect.addEventListener('change', function() {
+            if (typeof LanguageManager !== 'undefined' && window.LanguageManager) {
+                window.LanguageManager.setLanguage(this.value);
+            }
+        });
+    }
+    
+    function initializeDebugControls() {
+        const debugToggle = document.getElementById('debugToggle');
+        const debugToggleText = document.getElementById('debugToggleText');
+        const debugExport = document.getElementById('debugExport');
+        const debugClear = document.getElementById('debugClear');
+        const debugStats = document.getElementById('debugStats');
+        const debugLogCount = document.getElementById('debugLogCount');
+        const debugStorageSize = document.getElementById('debugStorageSize');
+        
+        if (!debugToggle || !window.DebugLogger) {
+            console.warn('Debug controls or DebugLogger not available');
+            return;
+        }
+        
+        // Update UI based on current debug state
+        function updateDebugUI() {
+            const isEnabled = window.DebugLogger.isEnabled();
+            const stats = window.DebugLogger.getLogStats();
+            
+            // Update toggle button
+            if (debugToggleText) {
+                debugToggleText.textContent = isEnabled ? 
+                    (window.LanguageManager ? window.LanguageManager.get('debugEnabled') : 'Enabled') : 
+                    (window.LanguageManager ? window.LanguageManager.get('debugDisabled') : 'Disabled');
+            }
+            
+            debugToggle.className = isEnabled ? 'debug-toggle enabled' : 'debug-toggle disabled';
+            
+            // Update export and clear buttons
+            if (debugExport) {
+                debugExport.disabled = !isEnabled || stats.total === 0;
+            }
+            if (debugClear) {
+                debugClear.disabled = !isEnabled || stats.total === 0;
+            }
+            
+            // Update stats display
+            if (debugStats) {
+                debugStats.style.display = isEnabled ? 'flex' : 'none';
+            }
+            
+            if (debugLogCount) {
+                debugLogCount.textContent = stats.total;
+            }
+            
+            if (debugStorageSize) {
+                const sizeKB = Math.round(stats.storageSize / 1024 * 100) / 100;
+                debugStorageSize.textContent = sizeKB + ' KB';
+            }
+        }
+        
+        // Toggle debug logging
+        debugToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (window.DebugLogger.isEnabled()) {
+                window.DebugLogger.disable();
+            } else {
+                window.DebugLogger.enable();
+            }
+            
+            updateDebugUI();
+        });
+        
+        // Export logs
+        if (debugExport) {
+            debugExport.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    // Show export options modal or directly export as JSON
+                    window.DebugLogger.downloadLogs('json');
+                    
+                    // Show success message
+                    if (window.LanguageManager) {
+                        showDebugMessage(window.LanguageManager.get('debugExportSuccess') || 'Debug logs exported successfully');
+                    } else {
+                        showDebugMessage('Debug logs exported successfully');
+                    }
+                } catch (error) {
+                    console.error('Failed to export debug logs:', error);
+                    if (window.LanguageManager) {
+                        showDebugMessage(window.LanguageManager.get('debugExportFailed') || 'Failed to export debug logs');
+                    } else {
+                        showDebugMessage('Failed to export debug logs');
+                    }
+                }
+                
+                updateDebugUI();
+            });
+        }
+        
+        // Clear logs
+        if (debugClear) {
+            debugClear.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (confirm(window.LanguageManager ? window.LanguageManager.get('debugClearConfirm') : 'Are you sure you want to clear all debug logs?')) {
+                    const clearedCount = window.DebugLogger.clearLogs();
+                    
+                    if (window.LanguageManager) {
+                        showDebugMessage(window.LanguageManager.get('debugClearSuccess') || `Cleared ${clearedCount} debug logs`);
+                    } else {
+                        showDebugMessage(`Cleared ${clearedCount} debug logs`);
+                    }
+                    
+                    updateDebugUI();
+                }
+            });
+        }
+        
+        // Initial UI update
+        updateDebugUI();
+        
+        // Update UI periodically if debug is enabled
+        setInterval(function() {
+            if (window.DebugLogger && window.DebugLogger.isEnabled()) {
+                updateDebugUI();
+            }
+        }, 5000);
+    }
+    
+    function showDebugMessage(message) {
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.className = 'debug-toast';
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-background);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            font-size: 0.9rem;
+            max-width: 300px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(0)';
+        }, 50);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/hydranode-ticket-validator/js/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+    </script>
+</body>
+</html>

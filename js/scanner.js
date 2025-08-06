@@ -494,11 +494,11 @@ function toggleShowAll() {
     
     if (showAllRecords) {
         if (buttonText) buttonText.setAttribute('data-i18n', 'showAll');
-        if (buttonIcon) buttonIcon.textContent = '📋';
+        if (buttonIcon) if (window.IconLibrary) buttonIcon.innerHTML = window.IconLibrary.getIcon("list", "16"); else buttonIcon.textContent = "📋";;
         if (buttonText) buttonText.textContent = 'Show All';
     } else {
         if (buttonText) buttonText.setAttribute('data-i18n', 'showLimited');
-        if (buttonIcon) buttonIcon.textContent = '📄';
+        if (buttonIcon) if (window.IconLibrary) buttonIcon.innerHTML = window.IconLibrary.getIcon("database", "16"); else buttonIcon.textContent = "📄";;
         if (buttonText) buttonText.textContent = `Show Limited (${defaultMaxRecords})`;
     }
     
@@ -554,7 +554,7 @@ async function exportScanHistory() {
             // Escape fields containing commas, quotes, or newlines
             const stringField = String(field || '');
             if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
-                return `"${stringField.replace(/"/g, '""')}";
+                return `"${stringField.replace(/"/g, '""')}"`;
             }
             return stringField;
         }).join(',')
@@ -742,6 +742,18 @@ initExpandableTicketIds();
 initSearchAndFilter();
 
 // Register data availability callback when main.js is loaded
+// Initialize Show All button with proper SVG icon
+function initializeShowAllIcon() {
+    const buttonIcon = showAllButton?.querySelector(".button-icon");
+    if (buttonIcon && window.IconLibrary) {
+        if (showAllRecords) {
+            buttonIcon.innerHTML = window.IconLibrary.getIcon("list", "16");
+        } else {
+            buttonIcon.innerHTML = window.IconLibrary.getIcon("database", "16");
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Register callback to update scanner controls when data availability changes
     if (typeof registerDataAvailabilityCallback === 'function') {
@@ -752,6 +764,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Register language change callback
+    
+    // Initialize Show All button icon
+    setTimeout(initializeShowAllIcon, 100); // Wait for IconLibrary to be ready
     if (typeof window.LanguageManager !== 'undefined') {
         window.LanguageManager.registerCallback(function(language) {
             // Update history display when language changes

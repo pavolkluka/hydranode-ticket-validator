@@ -1,7 +1,7 @@
 // Global variables
 let currentData = null;
 let currentPage = 1;
-let rowsPerPage = 5;
+let rowsPerPage = 10;
 
 // DOM Elements
 const fileInput = document.getElementById('fileInput');

@@ -102,7 +102,7 @@ class UIEnhancements {
 
         // Check LanguageManager
         this.checkComponent('languageManager', () => {
-            return typeof window.languageManager !== 'undefined' && window.languageManager;
+            return typeof window.languageManager !== 'undefined' return typeof window.languageManager !== 'undefined' && window.languageManager;        });return typeof window.languageManager !== 'undefined' && window.languageManager;        }); window.languageManager;
         });
 
         // Check Service Worker

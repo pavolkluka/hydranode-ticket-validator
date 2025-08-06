@@ -784,27 +784,40 @@
         handleDataSourceChange();
         updateTokenInputState();
         }
-    }
     </script>
 
     <\!-- EMERGENCY CONTENT VISIBILITY SCRIPT -->
     <script>
     // EMERGENCY CONTENT VISIBILITY GUARANTEE
     (function() {
+        let visibilityChecked = false;
+        let visibilityExecutions = 0;
+        
         function forceContentVisible() {
-            console.log('EMERGENCY: Forcing content visibility');
+            if (visibilityChecked) {
+                return; // Already confirmed visible, no need to run again
+            }
+            
+            visibilityExecutions++;
+            let elementsFixed = 0;
             
             // Force main container visible
             const mainContainer = document.querySelector('.main-container');
             if (mainContainer) {
-                mainContainer.style.display = 'flex';
-                mainContainer.style.flexDirection = 'column';
-                mainContainer.style.gap = '1.5rem';
-                mainContainer.style.padding = '1rem';
-                mainContainer.style.flex = '1';
-                mainContainer.style.visibility = 'visible';
-                mainContainer.style.opacity = '1';
-                console.log('EMERGENCY: Main container made visible');
+                const wasHidden = window.getComputedStyle(mainContainer).display === 'none' ||
+                                 window.getComputedStyle(mainContainer).visibility === 'hidden' ||
+                                 window.getComputedStyle(mainContainer).opacity === '0';
+                
+                if (wasHidden) {
+                    mainContainer.style.display = 'flex';
+                    mainContainer.style.flexDirection = 'column';
+                    mainContainer.style.gap = '1.5rem';
+                    mainContainer.style.padding = '1rem';
+                    mainContainer.style.flex = '1';
+                    mainContainer.style.visibility = 'visible';
+                    mainContainer.style.opacity = '1';
+                    elementsFixed++;
+                }
             }
             
             // Force all main sections visible
@@ -812,12 +825,29 @@
             sections.forEach(selector => {
                 const element = document.querySelector(selector);
                 if (element) {
-                    element.style.display = 'block';
-                    element.style.visibility = 'visible';
-                    element.style.opacity = '1';
-                    console.log('EMERGENCY: Made visible:', selector);
+                    const wasHidden = window.getComputedStyle(element).display === 'none' ||
+                                     window.getComputedStyle(element).visibility === 'hidden' ||
+                                     window.getComputedStyle(element).opacity === '0';
+                    
+                    if (wasHidden) {
+                        element.style.display = 'block';
+                        element.style.visibility = 'visible';
+                        element.style.opacity = '1';
+                        elementsFixed++;
+                    }
                 }
             });
+            
+            // Log only if elements were actually fixed or this is the first run
+            if (elementsFixed > 0 || visibilityExecutions === 1) {
+                console.log(`EMERGENCY: Content visibility check #${visibilityExecutions} - Fixed ${elementsFixed} elements`);
+            }
+            
+            // Mark as checked if no elements needed fixing (everything already visible)
+            if (elementsFixed === 0 && visibilityExecutions > 1) {
+                visibilityChecked = true;
+                console.log('EMERGENCY: Content visibility confirmed - stopping checks');
+            }
         }
         
         // Run immediately and multiple times to ensure visibility
@@ -833,4 +863,3 @@
     </script>
 </body>
 </html>
-EOF < /dev/null

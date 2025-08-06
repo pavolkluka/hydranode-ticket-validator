@@ -45,11 +45,17 @@
                 <span class="option-icon" id="dataSourceIcon"></span>
                 <span class="option-label" data-i18n="dataSource">Data Source</span>
                 <div class="data-source-controls">
-                    <button id="dataSourceToggle" class="data-source-toggle">
-                        <span id="dataSourceText" data-i18n="offlineMode">Offline (XLS)</span>
-                    </button>
+                    <div class="data-source-radio-group">
+                        <label class="data-source-option">
+                            <input type="radio" name="dataSource" id="offlineRadio" value="offline" checked>
+                            <span class="radio-label" data-i18n="offlineMode">Offline (XLS)</span>
+                        </label>
+                        <label class="data-source-option">
+                            <input type="radio" name="dataSource" id="onlineRadio" value="online">
+                            <span class="radio-label" data-i18n="onlineMode">Online (API)</span>
+                        </label>
+                    </div>
                 </div>
-            </div>
             
             <!-- API Configuration (hidden by default) -->
             <div class="option-item api-config-section" id="apiConfigSection" style="display: none;">
@@ -712,8 +718,8 @@
     }
     
     function initializeAPIConfiguration() {
-        const dataSourceToggle = document.getElementById('dataSourceToggle');
-        const dataSourceText = document.getElementById('dataSourceText');
+        const offlineRadio = document.getElementById('offlineRadio');
+        const onlineRadio = document.getElementById('onlineRadio');
         const apiConfigSection = document.getElementById('apiConfigSection');
         const fileUploadSection = document.getElementById('fileUploadSection');
         const apiTokenInput = document.getElementById('apiTokenInput');
@@ -726,7 +732,7 @@
         const apiStatusIcon = document.getElementById('apiStatusIcon');
         const apiStatusText = document.getElementById('apiStatusText');
         
-        if (!dataSourceToggle || !window.HydranodeAPI) {
+        if (!offlineRadio || !onlineRadio || !window.HydranodeAPI) {
             console.warn('API configuration elements not found or API client not available');
             return;
         }
@@ -735,15 +741,21 @@
         updateDataSourceUI();
         updateAPIStatus();
         
-        // Data source toggle
-        dataSourceToggle.addEventListener('click', function() {
-            if (window.HydranodeAPI.isOnline()) {
+        // Data source radio button handlers
+        offlineRadio.addEventListener('change', function() {
+            if (this.checked) {
                 window.HydranodeAPI.enableOfflineMode();
-            } else {
-                // Show API configuration when switching to online
-                window.HydranodeAPI.enableOnlineMode();
+                updateDataSourceUI();
+                updateDataAvailability();
             }
-            updateDataSourceUI();
+        });
+        
+        onlineRadio.addEventListener('change', function() {
+            if (this.checked) {
+                window.HydranodeAPI.enableOnlineMode();
+                updateDataSourceUI();
+                updateDataAvailability();
+            }
         });
         
         // Token visibility toggle
@@ -801,28 +813,23 @@
         });
         
         function updateDataSourceUI() {
-            const isOnline = window.HydranodeAPI.isOnline();
+            const isOnlineMode = window.HydranodeAPI.isOnlineMode;
+            const isAuthenticated = window.HydranodeAPI.isAuthenticated();
             
-            if (dataSourceText) {
-                dataSourceText.textContent = isOnline ? 
-                    (window.LanguageManager ? window.LanguageManager.get('onlineMode') : 'Online (API)') :
-                    (window.LanguageManager ? window.LanguageManager.get('offlineMode') : 'Offline (XLS)');
+            // Update radio button selection
+            if (offlineRadio && onlineRadio) {
+                offlineRadio.checked = !isOnlineMode;
+                onlineRadio.checked = isOnlineMode;
             }
             
             // Show/hide sections
             if (apiConfigSection) {
-                apiConfigSection.style.display = isOnline ? 'flex' : 'none';
+                apiConfigSection.style.display = isOnlineMode ? 'flex' : 'none';
             }
             if (fileUploadSection) {
-                fileUploadSection.style.display = isOnline ? 'none' : 'flex';
-            }
-            
-            // Update toggle button style
-            if (dataSourceToggle) {
-                dataSourceToggle.className = isOnline ? 'data-source-toggle online' : 'data-source-toggle offline';
+                fileUploadSection.style.display = isOnlineMode ? 'none' : 'flex';
             }
         }
-        
         function updateAPIButtons() {
             const hasToken = apiTokenInput && apiTokenInput.value.trim().length > 0;
             const isAuthenticated = window.HydranodeAPI.isAuthenticated();

@@ -519,25 +519,42 @@ function updateScannerAvailability(available) {
 
 function updateCompactDataStatusIndicator(availability) {
     // Update the compact data status indicator
-    const statusCompact = document.getElementById('dataStatusCompact');
-    const statusIcon = document.getElementById('statusIcon');
-    const statusText = document.getElementById('statusText');
+    const statusCompact = document.getElementById("dataStatusCompact");
+    const statusIcon = document.getElementById("statusIcon");
+    const statusText = document.getElementById("statusText");
     
     if (statusCompact && statusIcon && statusText) {
-        if (availability.available) {
-            statusCompact.className = 'data-status-compact available';
-            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('check', '16') : '✓';
-            statusText.setAttribute('data-i18n', 'dataAvailable');
-            statusText.setAttribute('data-i18n-params', JSON.stringify({count: availability.validTicketCount}));
+        // Check if we are in online mode
+        const isOnlineMode = window.HydranodeAPI && window.HydranodeAPI.isOnlineMode;
+        const isAuthenticated = window.HydranodeAPI && window.HydranodeAPI.isAuthenticated();
+        
+        if (isOnlineMode && isAuthenticated) {
+            // Online mode - API connected
+            statusCompact.className = "data-status-compact available online";
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("cloud", "16") : "☁";
+            statusText.textContent = "Online (API)";
+            statusText.removeAttribute("data-i18n-params");
+        } else if (isOnlineMode && !isAuthenticated) {
+            // Online mode selected but not authenticated
+            statusCompact.className = "data-status-compact unavailable online-pending";
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("warning", "16") : "⚠";
+            statusText.textContent = "Online Mode - Please configure API token in Settings";
+            statusText.removeAttribute("data-i18n-params");
+        } else if (availability.available) {
+            // Offline mode with data available
+            statusCompact.className = "data-status-compact available offline";
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("check", "16") : "✓";
+            statusText.textContent = `Offline (XLS) - ${availability.validTicketCount} tickets loaded`;
         } else {
-            statusCompact.className = 'data-status-compact unavailable';
-            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('warning', '16') : '⚠';
-            statusText.setAttribute('data-i18n', 'dataUnavailable');
-            statusText.removeAttribute('data-i18n-params');
+            // Offline mode with no data
+            statusCompact.className = "data-status-compact unavailable offline";
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("warning", "16") : "⚠";
+            statusText.textContent = "Offline (XLS) - No data loaded. Please upload XLS file in Settings";
+            statusText.removeAttribute("data-i18n-params");
         }
         
         // Update language content
-        if (typeof window.LanguageManager !== 'undefined') {
+        if (typeof window.LanguageManager !== "undefined") {
             window.LanguageManager.updateUI();
         }
     }

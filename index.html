@@ -1048,5 +1048,49 @@
         });
     }
     </script>
+    <!-- Emergency Content Visibility Guarantee Script -->
+    <script>
+    // Emergency content visibility guarantee
+    (function() {
+        function ensureContentVisibility() {
+            console.log('Ensuring content visibility...');
+            
+            const mainContainer = document.querySelector('.main-container');
+            if (mainContainer) {
+                mainContainer.style.display = 'flex';
+                mainContainer.style.visibility = 'visible';
+                mainContainer.style.opacity = '1';
+                console.log('Main container made visible');
+            }
+            
+            // Ensure all main sections are visible
+            ['.scanner-section', '.statistics-section', '.scan-history', '.data-display'].forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.style.display = 'block';
+                    element.style.visibility = 'visible';
+                    element.style.opacity = '1';
+                    console.log(`Made visible: ${selector}`);
+                }
+            });
+            
+            console.log('Content visibility guarantee completed');
+        }
+        
+        // Run immediately
+        ensureContentVisibility();
+        
+        // Run after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', ensureContentVisibility);
+        } else {
+            ensureContentVisibility();
+        }
+        
+        // Safety net - run after a delay to catch any late-hiding
+        setTimeout(ensureContentVisibility, 1000);
+        setTimeout(ensureContentVisibility, 3000);
+    })();
+    </script>
 </body>
 </html>

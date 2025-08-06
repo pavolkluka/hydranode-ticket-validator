@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ticket-validator-v1';
+const CACHE_NAME = 'ticket-validator-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -9,10 +9,26 @@ const ASSETS = [
   './js/theme.js',
   './js/lang.js',
   './js/ui-enhancements.js',
+  './js/debug-logger.js',
   './manifest.json',
   './offline.html',
   'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js',
-  './js/jsQR.min.js'
+  './js/jsQR.min.js',
+  // PWA Icons - Essential for home screen installation
+  './icons/icon-light-96x96.png',
+  './icons/icon-light-128x128.png',
+  './icons/icon-light-144x144.png',
+  './icons/icon-light-152x152.png',
+  './icons/icon-light-192x192.png',
+  './icons/icon-light-384x384.png',
+  './icons/icon-light-512x512.png',
+  './icons/icon-dark-96x96.png',
+  './icons/icon-dark-128x128.png',
+  './icons/icon-dark-144x144.png',
+  './icons/icon-dark-152x152.png',
+  './icons/icon-dark-192x192.png',
+  './icons/icon-dark-384x384.png',
+  './icons/icon-dark-512x512.png'
 ];
 
 // Install event

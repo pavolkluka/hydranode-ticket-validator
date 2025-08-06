@@ -338,6 +338,19 @@ async function handleFileSelect(event) {
             fileInfo.textContent = `File processed successfully: ${file.name}`;
         }
         
+        // Auto-close Settings (options menu) after successful upload
+        const optionsMenu = document.getElementById('optionsMenu');
+        if (optionsMenu && optionsMenu.classList.contains('active')) {
+            setTimeout(() => {
+                optionsMenu.classList.remove('active');
+                // Update options button icon back to menu icon
+                const optionsIcon = document.getElementById('optionsIcon');
+                if (optionsIcon && typeof IconLibrary !== 'undefined' && window.IconLibrary) {
+                    optionsIcon.innerHTML = window.IconLibrary.getIcon('menu', '20');
+                }
+            }, 500); // Small delay to let user see success message
+        }
+        
         // Clear loading state after successful processing
         if (window.UIEnhancements && window.UIEnhancements.clearFileUploadLoading) {
             window.UIEnhancements.clearFileUploadLoading();

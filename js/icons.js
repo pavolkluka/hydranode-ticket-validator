@@ -86,53 +86,6 @@ class IconLibrary {
                 <rect x="14" y="17" width="1" height="1" fill="currentColor"/>
                 <rect x="19" y="20" width="2" height="1" fill="currentColor"/>
             </svg>`,
-            
-            // QR Code (alias)
-            qr: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-                <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-                <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-                <rect x="5" y="5" width="3" height="3" fill="currentColor"/>
-                <rect x="16" y="5" width="3" height="3" fill="currentColor"/>
-                <rect x="5" y="16" width="3" height="3" fill="currentColor"/>
-                <rect x="14" y="14" width="2" height="2" fill="currentColor"/>
-                <rect x="17" y="14" width="2" height="2" fill="currentColor"/>
-                <rect x="20" y="17" width="1" height="1" fill="currentColor"/>
-                <rect x="14" y="17" width="1" height="1" fill="currentColor"/>
-                <rect x="19" y="20" width="2" height="1" fill="currentColor"/>
-            </svg>`,
-            
-            // Cloud/API
-            cloud: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 10C18.626 10 19.2092 9.84196 19.7134 9.56066C20.2176 9.27936 20.621 8.8918 20.8817 8.42583C21.1425 7.95987 21.2507 7.43506 21.1936 6.91718C21.1365 6.3993 20.9174 5.90861 20.5656 5.51472C20.2138 5.12084 19.7474 4.84379 19.2418 4.72209C18.7361 4.60039 18.2092 4.63998 17.7254 4.83647C17.2416 5.03297 16.8207 5.37633 16.5147 5.82218C16.2087 6.26804 16.031 6.79693 16.005 7.34C15.6815 7.12046 15.3165 6.97287 14.9313 6.90622C14.546 6.8396 14.1495 6.85542 13.7698 6.95251C13.3901 7.0496 13.0356 7.22587 12.7299 7.46941C12.4241 7.71295 12.1743 8.01851 11.9969 8.36666C11.8195 8.71482 11.7185 9.09746 11.7005 9.48846C11.6825 9.87946 11.7479 10.2693 11.8925 10.6321C12.0372 10.9948 12.2578 11.3221 12.5404 11.5928C12.8229 11.8634 13.1613 12.0713 13.532 12.203L13.532 12.203C14.213 12.4687 15 12.4687 15 13C15 14 14 15 13 15H6.5C5.17392 15 3.90215 14.4732 2.96447 13.5355C2.02678 12.5979 1.5 11.3261 1.5 10C1.5 8.67392 2.02678 7.40215 2.96447 6.46447C3.90215 5.52678 5.17392 5 6.5 5C7.82608 5 9.09785 5.52678 10.0355 6.46447C10.9732 7.40215 11.5 8.67392 11.5 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>`,
-            
-            // Eye (visible)
-            eye: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"/>
-                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
-            </svg>`,
-            
-            // Eye Off (hidden)
-            eyeOff: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M17.94 17.94C16.2306 19.243 14.1491 19.9649 12 20C5 20 1 12 1 12C2.24389 9.68192 4.028 7.66699 6.17 6.17L17.94 17.94Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9.9 4.24C10.5883 4.0789 11.2931 3.99836 12 4C19 4 23 12 23 12C22.393 13.1356 21.6691 14.2048 20.84 15.19L9.9 4.24Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>`,
-            
-            // WiFi/Network
-            wifi: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12.55C6.913 10.73 9.348 9.689 12 9.689C14.652 9.689 17.087 10.73 19 12.55" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M1.42 9C4.59934 6.05542 8.71167 4.43718 13 4.43718C17.2883 4.43718 21.4007 6.05542 24.58 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M8.53 16.11C9.37445 15.365 10.4675 14.9436 11.605 14.9436C12.7425 14.9436 13.8356 15.365 14.68 16.11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="20" r="1" fill="currentColor"/>
-            </svg>`,
-            
-            // Key/Authentication
-            key: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 2L19 4L15 8L13 6L11 8C10.5 8.5 10 9 10 10S10.5 11.5 11 12L3 20L4 21L5 20L4 19L5 18L6 19L7 18L6 17L7 16L8 17L9 16L8 15L9 14L8 13L9 12C9.5 11.5 10 11 11 11S12.5 11.5 13 12L15 10L17 12L21 8L23 6L21 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                <circle cx="17" cy="7" r="1" fill="currentColor"/>
-            </svg>`,
 
             // Play/Start
             play: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

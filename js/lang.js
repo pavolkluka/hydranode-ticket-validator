@@ -28,23 +28,6 @@ class LanguageManager {
                 lightMode: 'Light Mode',
                 darkMode: 'Dark Mode',
                 
-                // Data Source & API Configuration
-                dataSource: 'Data Source',
-                offlineMode: 'Offline (XLS)',
-                onlineMode: 'Online (API)',
-                apiConfiguration: 'API Configuration',
-                apiToken: 'API Token',
-                apiTokenPlaceholder: 'Enter your API token...',
-                scanToken: 'Scan QR Code',
-                testConnection: 'Test Connection',
-                authenticate: 'Connect',
-                clearConfig: 'Clear',
-                apiNotConfigured: 'Not configured',
-                apiConnected: 'Connected',
-                scanApiToken: 'Scan API Token QR Code',
-                cancel: 'Cancel',
-                qrScanInstructions: 'Position the QR code within the frame above',
-                
                 // Languages
                 languages: {
                     en: 'English',

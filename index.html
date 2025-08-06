@@ -40,84 +40,13 @@
 
         <!-- Options Menu (Hidden by default) -->
         <div class="options-menu" id="optionsMenu">
-            <!-- Data Source Selection -->
-            <div class="option-item data-source-section">
-                <span class="option-icon" id="dataSourceIcon"></span>
-                <span class="option-label" data-i18n="dataSource">Data Source</span>
-                <div class="data-source-controls">
-                    <div class="data-source-radio-group">
-                        <label class="data-source-option">
-                            <input type="radio" name="dataSource" id="offlineRadio" value="offline" checked>
-                            <span class="radio-label" data-i18n="offlineMode">Offline (XLS)</span>
-                        </label>
-                        <label class="data-source-option">
-                            <input type="radio" name="dataSource" id="onlineRadio" value="online">
-                            <span class="radio-label" data-i18n="onlineMode">Online (API)</span>
-                        </label>
-                    </div>
-                </div>
-            
-            <!-- API Configuration (hidden by default) -->
-            <div class="option-item api-config-section" id="apiConfigSection" style="display: none;">
-                <div class="api-config-content">
-                    <div class="api-config-header">
-                        <span class="option-icon" id="apiIcon"></span>
-                        <span class="option-label" data-i18n="apiConfiguration">API Configuration</span>
-                    </div>
-                    
-                    <!-- API Token Input -->
-                    <div class="api-input-group">
-                        <label for="apiTokenInput" data-i18n="apiToken">API Token</label>
-                        <div class="api-token-input-container">
-                            <input type="password" id="apiTokenInput" class="api-token-input" 
-                                   placeholder="Enter your API token..." data-i18n="apiTokenPlaceholder">
-                            <button id="toggleTokenVisibility" class="toggle-visibility-btn" type="button">
-                                <span id="toggleVisibilityIcon"></span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- QR Scanner Button -->
-                    <div class="api-scanner-group">
-                        <button id="scanTokenQR" class="control-button small scan-token-btn">
-                            <span class="button-icon" id="qrScanIcon"></span>
-                            <span data-i18n="scanToken">Scan QR Code</span>
-                        </button>
-                    </div>
-                    
-                    <!-- API Actions -->
-                    <div class="api-actions">
-                        <button id="testConnection" class="control-button small test-btn" disabled>
-                            <span class="button-icon" id="testConnectionIcon"></span>
-                            <span data-i18n="testConnection">Test Connection</span>
-                        </button>
-                        <button id="authenticateAPI" class="control-button small auth-btn" disabled>
-                            <span class="button-icon" id="authIcon"></span>
-                            <span data-i18n="authenticate">Connect</span>
-                        </button>
-                        <button id="clearAPIConfig" class="control-button small secondary clear-btn" disabled>
-                            <span class="button-icon" id="clearIcon"></span>
-                            <span data-i18n="clearConfig">Clear</span>
-                        </button>
-                    </div>
-                    
-                    <!-- API Status -->
-                    <div class="api-status" id="apiStatus">
-                        <span class="status-icon" id="apiStatusIcon"></span>
-                        <span class="status-text" id="apiStatusText" data-i18n="apiNotConfigured">Not configured</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- File Upload (shown in offline mode) -->
-            <div class="option-item file-upload-option" id="fileUploadSection">
+            <div class="option-item file-upload-option">
                 <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" class="file-input" aria-describedby="supported-formats">
                 <label for="fileInput" class="option-label">
                     <span class="option-icon" id="uploadIcon"></span>
                     <span data-i18n="uploadFile">Upload XLS File</span>
                 </label>
             </div>
-            
             <div class="option-item">
                 <span class="option-icon" id="languageIcon"></span>
                 <label for="languageSelect" data-i18n="language">Language</label>
@@ -215,28 +144,6 @@
                         <button id="closeModal" class="control-button">
                             <span data-i18n="close">Close</span>
                         </button>
-                    </div>
-                </div>
-                
-                <!-- QR Scanner Modal for API Token -->
-                <div id="qrScannerModal" class="qr-scanner-modal" role="dialog" aria-modal="true">
-                    <div class="qr-scanner-content">
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary); text-align: center;">
-                            <span data-i18n="scanApiToken">Scan API Token QR Code</span>
-                        </h3>
-                        <div class="qr-scanner-video-container">
-                            <video id="qrTokenVideo" class="qr-scanner-video" playsinline></video>
-                            <canvas id="qrTokenCanvas" class="qr-scanner-canvas"></canvas>
-                            <div class="qr-scanner-overlay"></div>
-                        </div>
-                        <div class="qr-scanner-controls">
-                            <button id="cancelQRScan" class="control-button secondary">
-                                <span data-i18n="cancel">Cancel</span>
-                            </button>
-                        </div>
-                        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
-                            <span data-i18n="qrScanInstructions">Position the QR code within the frame above</span>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -374,8 +281,6 @@
     <script src="js/icons.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/lang.js"></script>
-    <script src="js/api-client.js"></script>
-    <script src="js/api-token-scanner.js"></script>
     <script src="js/main.js"></script>
     <script src="js/ui-enhancements.js"></script>
     <script src="js/scanner.js"></script>
@@ -408,17 +313,6 @@
             try {
                 document.getElementById("appIcon").innerHTML = window.IconLibrary.getIcon("appLogo", "32");
                 document.getElementById("optionsIcon").innerHTML = window.IconLibrary.getIcon("menu", "20");
-                
-                // Data source and API icons
-                document.getElementById("dataSourceIcon").innerHTML = window.IconLibrary.getIcon("database", "16");
-                document.getElementById("apiIcon").innerHTML = window.IconLibrary.getIcon("cloud", "16");
-                document.getElementById("toggleVisibilityIcon").innerHTML = window.IconLibrary.getIcon("eye", "16");
-                document.getElementById("qrScanIcon").innerHTML = window.IconLibrary.getIcon("qr", "14");
-                document.getElementById("testConnectionIcon").innerHTML = window.IconLibrary.getIcon("wifi", "14");
-                document.getElementById("authIcon").innerHTML = window.IconLibrary.getIcon("key", "14");
-                document.getElementById("clearIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
-                document.getElementById("apiStatusIcon").innerHTML = window.IconLibrary.getIcon("warning", "16");
-                
                 document.getElementById("uploadIcon").innerHTML = window.IconLibrary.getIcon("upload", "16");
                 document.getElementById("languageIcon").innerHTML = window.IconLibrary.getIcon("language", "16");
                 document.getElementById("themeIcon").innerHTML = window.IconLibrary.getIcon("sun", "16");
@@ -459,9 +353,6 @@
         
         // Initialize debug logging controls
         initializeDebugControls();
-        
-        // Initialize API configuration
-        initializeAPIConfiguration();
     });
     
     function initializeOptionsMenu() {
@@ -717,324 +608,6 @@
         }, 3000);
     }
     
-    function initializeAPIConfiguration() {
-        const offlineRadio = document.getElementById('offlineRadio');
-        const onlineRadio = document.getElementById('onlineRadio');
-        const apiConfigSection = document.getElementById('apiConfigSection');
-        const fileUploadSection = document.getElementById('fileUploadSection');
-        const apiTokenInput = document.getElementById('apiTokenInput');
-        const toggleTokenVisibility = document.getElementById('toggleTokenVisibility');
-        const scanTokenQR = document.getElementById('scanTokenQR');
-        const testConnection = document.getElementById('testConnection');
-        const authenticateAPI = document.getElementById('authenticateAPI');
-        const clearAPIConfig = document.getElementById('clearAPIConfig');
-        const apiStatus = document.getElementById('apiStatus');
-        const apiStatusIcon = document.getElementById('apiStatusIcon');
-        const apiStatusText = document.getElementById('apiStatusText');
-        
-        if (!offlineRadio || !onlineRadio || !window.HydranodeAPI) {
-            console.warn('API configuration elements not found or API client not available');
-            return;
-        }
-        
-        // Initialize UI based on saved state
-        updateDataSourceUI();
-        updateAPIStatus();
-        
-        // Data source radio button handlers
-        offlineRadio.addEventListener('change', function() {
-            if (this.checked) {
-                window.HydranodeAPI.enableOfflineMode();
-                updateDataSourceUI();
-                updateDataAvailability();
-            }
-        });
-        
-        onlineRadio.addEventListener('change', function() {
-            if (this.checked) {
-                window.HydranodeAPI.enableOnlineMode();
-                updateDataSourceUI();
-                updateDataAvailability();
-            }
-        });
-        
-        // Token visibility toggle
-        if (toggleTokenVisibility) {
-            toggleTokenVisibility.addEventListener('click', function() {
-                const isPassword = apiTokenInput.type === 'password';
-                apiTokenInput.type = isPassword ? 'text' : 'password';
-                
-                if (typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                    document.getElementById('toggleVisibilityIcon').innerHTML = 
-                        window.IconLibrary.getIcon(isPassword ? 'eyeOff' : 'eye', '16');
-                }
-            });
-        }
-        
-        // API token input changes
-        if (apiTokenInput) {
-            apiTokenInput.addEventListener('input', function() {
-                updateAPIButtons();
-            });
-        }
-        
-        // QR Scanner
-        if (scanTokenQR) {
-            scanTokenQR.addEventListener('click', function() {
-                startTokenQRScan();
-            });
-        }
-        
-        // Test connection
-        if (testConnection) {
-            testConnection.addEventListener('click', async function() {
-                await testAPIConnection();
-            });
-        }
-        
-        // Authenticate
-        if (authenticateAPI) {
-            authenticateAPI.addEventListener('click', async function() {
-                await authenticateWithAPI();
-            });
-        }
-        
-        // Clear configuration
-        if (clearAPIConfig) {
-            clearAPIConfig.addEventListener('click', function() {
-                clearAPIConfiguration();
-            });
-        }
-        
-        // Listen for API mode changes
-        window.addEventListener('hydranode:modechange', function(event) {
-            updateDataSourceUI();
-            updateAPIStatus();
-        });
-        
-        function updateDataSourceUI() {
-            const isOnlineMode = window.HydranodeAPI.isOnlineMode;
-            const isAuthenticated = window.HydranodeAPI.isAuthenticated();
-            
-            // Update radio button selection
-            if (offlineRadio && onlineRadio) {
-                offlineRadio.checked = !isOnlineMode;
-                onlineRadio.checked = isOnlineMode;
-            }
-            
-            // Show/hide sections
-            if (apiConfigSection) {
-                apiConfigSection.style.display = isOnlineMode ? 'flex' : 'none';
-            }
-            if (fileUploadSection) {
-                fileUploadSection.style.display = isOnlineMode ? 'none' : 'flex';
-            }
-        }
-        function updateAPIButtons() {
-            const hasToken = apiTokenInput && apiTokenInput.value.trim().length > 0;
-            const isAuthenticated = window.HydranodeAPI.isAuthenticated();
-            
-            if (testConnection) testConnection.disabled = !hasToken;
-            if (authenticateAPI) authenticateAPI.disabled = !hasToken;
-            if (clearAPIConfig) clearAPIConfig.disabled = !hasToken && !isAuthenticated;
-        }
-        
-        function updateAPIStatus() {
-            if (!apiStatusIcon || !apiStatusText) return;
-            
-            const isAuthenticated = window.HydranodeAPI.isAuthenticated();
-            const userInfo = window.HydranodeAPI.getUserInfo();
-            
-            if (isAuthenticated && userInfo) {
-                const user = userInfo.data?.user;
-                apiStatusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('check', '16') : '✓';
-                apiStatusText.textContent = window.LanguageManager ? 
-                    window.LanguageManager.get('apiConnected') : 
-                    `Connected as ${user?.first_name} ${user?.last_name}`;
-                apiStatus.className = 'api-status connected';
-            } else {
-                apiStatusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('warning', '16') : '⚠';
-                apiStatusText.textContent = window.LanguageManager ? 
-                    window.LanguageManager.get('apiNotConfigured') : 'Not configured';
-                apiStatus.className = 'api-status disconnected';
-            }
-        }
-        
-        async function startTokenQRScan() {
-            const qrScannerModal = document.getElementById('qrScannerModal');
-            const qrTokenVideo = document.getElementById('qrTokenVideo');
-            const qrTokenCanvas = document.getElementById('qrTokenCanvas');
-            const cancelQRScan = document.getElementById('cancelQRScan');
-            
-            if (!qrScannerModal || !qrTokenVideo || !qrTokenCanvas) {
-                showAPIMessage('QR scanner not available', 'error');
-                return;
-            }
-            
-            // Check if API token scanner is supported
-            if (!APITokenScanner.isSupported()) {
-                showAPIMessage('QR scanning not supported in this browser', 'error');
-                return;
-            }
-            
-            // Show modal
-            qrScannerModal.classList.add('active');
-            
-            // Initialize scanner
-            window.APITokenScanner.initializeScanner(qrTokenVideo, qrTokenCanvas);
-            
-            try {
-                // Start scanning
-                await window.APITokenScanner.startScanning(function(token) {
-                    // Token found - close modal and set token
-                    qrScannerModal.classList.remove('active');
-                    
-                    // Set the token in the input field
-                    apiTokenInput.value = token;
-                    updateAPIButtons();
-                    
-                    showAPIMessage('API token scanned successfully!', 'success');
-                });
-                
-            } catch (error) {
-                qrScannerModal.classList.remove('active');
-                showAPIMessage(`Scanner error: ${error.message}`, 'error');
-            }
-            
-            // Handle cancel button
-            const cancelHandler = function() {
-                qrScannerModal.classList.remove('active');
-                window.APITokenScanner.stopScanning();
-                cancelQRScan.removeEventListener('click', cancelHandler);
-            };
-            cancelQRScan.addEventListener('click', cancelHandler);
-            
-            // Handle clicking outside modal
-            const modalClickHandler = function(event) {
-                if (event.target === qrScannerModal) {
-                    cancelHandler();
-                    qrScannerModal.removeEventListener('click', modalClickHandler);
-                }
-            };
-            qrScannerModal.addEventListener('click', modalClickHandler);
-        }
-        
-        async function testAPIConnection() {
-            const token = apiTokenInput.value.trim();
-            if (!token) return;
-            
-            try {
-                testConnection.disabled = true;
-                testConnection.innerHTML = '<span class="loading-spinner"></span> Testing...';
-                
-                // Temporarily set token for testing
-                const originalToken = window.HydranodeAPI.apiToken;
-                window.HydranodeAPI.apiToken = token;
-                
-                await window.HydranodeAPI.testConnection();
-                
-                // Restore original token
-                window.HydranodeAPI.apiToken = originalToken;
-                
-                showAPIMessage('Connection test successful!', 'success');
-            } catch (error) {
-                showAPIMessage(`Connection failed: ${error.message}`, 'error');
-            } finally {
-                testConnection.disabled = false;
-                testConnection.innerHTML = `<span class="button-icon">${window.IconLibrary.getIcon('wifi', '14')}</span> Test Connection`;
-            }
-        }
-        
-        async function authenticateWithAPI() {
-            const token = apiTokenInput.value.trim();
-            if (!token) return;
-            
-            try {
-                authenticateAPI.disabled = true;
-                authenticateAPI.innerHTML = '<span class="loading-spinner"></span> Connecting...';
-                
-                const userInfo = await window.HydranodeAPI.setToken(token);
-                const user = userInfo.data?.user;
-                
-                showAPIMessage(`Welcome, ${user?.first_name} ${user?.last_name}!`, 'success');
-                
-                // Clear the input for security
-                apiTokenInput.value = '';
-                updateAPIButtons();
-                updateAPIStatus();
-                
-                // Auto-close Settings after successful authentication
-                setTimeout(() => {
-                    const optionsMenu = document.getElementById('optionsMenu');
-                    if (optionsMenu && optionsMenu.classList.contains('active')) {
-                        optionsMenu.classList.remove('active');
-                        const optionsIcon = document.getElementById('optionsIcon');
-                        if (optionsIcon && typeof IconLibrary !== 'undefined' && window.IconLibrary) {
-                            optionsIcon.innerHTML = window.IconLibrary.getIcon('menu', '20');
-                        }
-                    }
-                }, 1500);
-                
-            } catch (error) {
-                showAPIMessage(`Authentication failed: ${error.message}`, 'error');
-            } finally {
-                authenticateAPI.disabled = false;
-                authenticateAPI.innerHTML = `<span class="button-icon">${window.IconLibrary.getIcon('key', '14')}</span> Connect`;
-                updateAPIButtons();
-            }
-        }
-        
-        function clearAPIConfiguration() {
-            if (confirm('Are you sure you want to clear the API configuration?')) {
-                window.HydranodeAPI.clearConfiguration();
-                apiTokenInput.value = '';
-                updateAPIButtons();
-                updateAPIStatus();
-                showAPIMessage('API configuration cleared', 'info');
-            }
-        }
-        
-        function showAPIMessage(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `api-toast ${type}`;
-            toast.textContent = message;
-            toast.style.cssText = `
-                position: fixed;
-                top: 80px;
-                right: 20px;
-                background: ${type === 'success' ? 'var(--success-color)' : 
-                           type === 'error' ? 'var(--danger-color)' : 'var(--info-color)'};
-                color: white;
-                padding: 12px 16px;
-                border-radius: var(--border-radius);
-                box-shadow: var(--shadow-lg);
-                z-index: 10001;
-                font-size: 0.9rem;
-                max-width: 300px;
-                opacity: 0;
-                transform: translateX(20px);
-                transition: all 0.3s ease;
-            `;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateX(0)';
-            }, 50);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(20px)';
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                }, 300);
-            }, 3000);
-        }
-    }
-    
     // Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1047,50 +620,6 @@
                 });
         });
     }
-    </script>
-    <!-- Emergency Content Visibility Guarantee Script -->
-    <script>
-    // Emergency content visibility guarantee
-    (function() {
-        function ensureContentVisibility() {
-            console.log('Ensuring content visibility...');
-            
-            const mainContainer = document.querySelector('.main-container');
-            if (mainContainer) {
-                mainContainer.style.display = 'flex';
-                mainContainer.style.visibility = 'visible';
-                mainContainer.style.opacity = '1';
-                console.log('Main container made visible');
-            }
-            
-            // Ensure all main sections are visible
-            ['.scanner-section', '.statistics-section', '.scan-history', '.data-display'].forEach(selector => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    element.style.display = 'block';
-                    element.style.visibility = 'visible';
-                    element.style.opacity = '1';
-                    console.log(`Made visible: ${selector}`);
-                }
-            });
-            
-            console.log('Content visibility guarantee completed');
-        }
-        
-        // Run immediately
-        ensureContentVisibility();
-        
-        // Run after DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', ensureContentVisibility);
-        } else {
-            ensureContentVisibility();
-        }
-        
-        // Safety net - run after a delay to catch any late-hiding
-        setTimeout(ensureContentVisibility, 1000);
-        setTimeout(ensureContentVisibility, 3000);
-    })();
     </script>
 </body>
 </html>

@@ -551,4 +551,16 @@ class LanguageManager {
             } else if (element.hasAttribute('title')) {
                 element.title = this.get(key, parsedParams);
             } else {
-                element.textConte
+                element.textContent = this.get(key, parsedParams);
+            }
+        });
+        
+        // Trigger custom event for UI update
+        document.dispatchEvent(new CustomEvent('languageChanged', { 
+            detail: { language: this.currentLanguage } 
+        }));
+    }
+}
+
+// Create global instance
+const languageManager = new LanguageManager();

@@ -510,6 +510,30 @@ class LanguageManager {
         }
     }
 
+    // Callback management methods
+    addCallback(callback) {
+        if (typeof callback === 'function' && !this.callbacks.includes(callback)) {
+            this.callbacks.push(callback);
+        }
+    }
+
+    removeCallback(callback) {
+        const index = this.callbacks.indexOf(callback);
+        if (index > -1) {
+            this.callbacks.splice(index, 1);
+        }
+    }
+
+    notifyCallbacks() {
+        this.callbacks.forEach(callback => {
+            try {
+                callback(this.currentLanguage);
+            } catch (error) {
+                console.error('Error in language change callback:', error);
+            }
+        });
+    }
+
     getCurrentLanguage() {
         return this.currentLanguage;
     }

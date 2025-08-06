@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydranode API Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #28a745;
+            color: white;
+        }
+        .error {
+            background: #dc3545;
+            color: white;
+        }
+        .warning {
+            background: #ffc107;
+            color: black;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #222;
+            color: #fff;
+            width: 300px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hydranode API Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>1. API Client Initialization Test</h2>
+        <button onclick="testAPIClientInit()">Test API Client Init</button>
+        <div id="init-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Token Validation Test</h2>
+        <input type="text" id="test-token" placeholder="Enter test token" />
+        <button onclick="testTokenValidation()">Test Token Validation</button>
+        <div id="validation-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. API Connection Test</h2>
+        <input type="text" id="connection-token" placeholder="Enter valid API token for connection test" />
+        <button onclick="testAPIConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Authentication Test</h2>
+        <input type="text" id="auth-token" placeholder="Enter valid API token for authentication" />
+        <button onclick="testAuthentication()">Test Authentication</button>
+        <div id="auth-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Configuration Storage Test</h2>
+        <button onclick="testConfigStorage()">Test Configuration Storage</button>
+        <div id="storage-result"></div>
+    </div>
+    
+    <!-- Load required scripts -->
+    <script src="js/debug-logger.js"></script>
+    <script src="js/api-client.js"></script>
+    
+    <script>
+        function showResult(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+        
+        function testAPIClientInit() {
+            try {
+                if (typeof window.HydranodeAPI === 'undefined') {
+                    throw new Error('HydranodeAPI not found in global scope');
+                }
+                
+                if (typeof window.HydranodeAPI.setToken !== 'function') {
+                    throw new Error('API client missing required methods');
+                }
+                
+                const status = window.HydranodeAPI.getStatus();
+                showResult('init-result', `✅ API Client initialized successfully. Status: ${JSON.stringify(status)}`, 'success');
+            } catch (error) {
+                showResult('init-result', `❌ API Client initialization failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testTokenValidation() {
+            const token = document.getElementById('test-token').value;
+            
+            try {
+                const validation = window.HydranodeAPI.constructor.validateToken(token);
+                if (validation.valid) {
+                    showResult('validation-result', `✅ Token validation passed`, 'success');
+                } else {
+                    showResult('validation-result', `⚠️ Token validation failed: ${validation.error}`, 'warning');
+                }
+            } catch (error) {
+                showResult('validation-result', `❌ Token validation error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAPIConnection() {
+            const token = document.getElementById('connection-token').value;
+            
+            if (!token) {
+                showResult('connection-result', '⚠️ Please enter a token first', 'warning');
+                return;
+            }
+            
+            try {
+                window.HydranodeAPI.setToken(token);
+                showResult('connection-result', '🔄 Testing connection...', 'warning');
+                
+                const success = await window.HydranodeAPI.testConnection();
+                if (success) {
+                    showResult('connection-result', '✅ Connection test successful', 'success');
+                } else {
+                    showResult('connection-result', '❌ Connection test failed', 'error');
+                }
+            } catch (error) {
+                showResult('connection-result', `❌ Connection test error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAuthentication() {
+            const token = document.getElementById('auth-token').value;
+            
+            if (!token) {
+                showResult('auth-result', '⚠️ Please enter a token first', 'warning');
+                return;
+            }
+            
+            try {
+                window.HydranodeAPI.setToken(token);
+                showResult('auth-result', '🔄 Authenticating...', 'warning');
+                
+                const userInfo = await window.HydranodeAPI.authenticate();
+                showResult('auth-result', `✅ Authentication successful! User: ${userInfo.first_name} ${userInfo.last_name} (${userInfo.email})`, 'success');
+            } catch (error) {
+                showResult('auth-result', `❌ Authentication failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testConfigStorage() {
+            try {
+                // Test storing configuration
+                window.HydranodeAPI.setToken('test-token-123');
+                window.HydranodeAPI.setOnlineMode(true);
+                
+                // Clear and reload to test persistence
+                const originalToken = window.HydranodeAPI.apiToken;
+                window.HydranodeAPI.loadConfiguration();
+                
+                if (window.HydranodeAPI.apiToken === originalToken) {
+                    showResult('storage-result', '✅ Configuration storage working correctly', 'success');
+                } else {
+                    showResult('storage-result', '❌ Configuration storage failed', 'error');
+                }
+                
+                // Clean up
+                window.HydranodeAPI.clearConfiguration();
+            } catch (error) {
+                showResult('storage-result', `❌ Configuration storage error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run initialization test on page load
+        window.addEventListener('DOMContentLoaded', testAPIClientInit);
+    </script>
+</body>
+</html>

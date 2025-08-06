@@ -783,10 +783,11 @@
         // Apply initial data source state
         handleDataSourceChange();
         updateTokenInputState();
-        }
     }
-    </script>
-
+    
+    function initializeDebugControls() {
+        const debugToggle = document.getElementById('debugToggle');
+        const debugToggleText = document.getElementById('debug
     <\!-- EMERGENCY CONTENT VISIBILITY SCRIPT -->
     <script>
     // EMERGENCY CONTENT VISIBILITY GUARANTEE

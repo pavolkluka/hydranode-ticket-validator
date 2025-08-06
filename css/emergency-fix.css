@@ -1,0 +1,54 @@
+/* EMERGENCY CONTENT VISIBILITY FIX */
+.main-container {
+    display: flex \!important;
+    flex-direction: column \!important;
+    gap: 1.5rem \!important;
+    padding: 1rem \!important;
+    flex: 1 \!important;
+    visibility: visible \!important;
+    opacity: 1 \!important;
+}
+
+.scanner-section,
+.statistics-section,
+.scan-history,
+.data-display {
+    display: block \!important;
+    visibility: visible \!important;
+    opacity: 1 \!important;
+}
+
+.data-status-compact {
+    display: block \!important;
+    visibility: visible \!important;
+    opacity: 1 \!important;
+}
+/* EMERGENCY MAIN CONTAINER STYLES - ADD TO THE END OF styles.css */
+
+/* Main Container Layout */
+.main-container {
+    display: flex \!important;
+    flex-direction: column \!important;
+    gap: 1.5rem \!important;
+    padding: 1rem \!important;
+    flex: 1 \!important;
+    visibility: visible \!important;
+    opacity: 1 \!important;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height)) \!important;
+}
+
+/* Main Sections - Force Visibility */
+.scanner-section,
+.statistics-section, 
+.scan-history,
+.data-display,
+.data-status-compact {
+    display: block \!important;
+    visibility: visible \!important;
+    opacity: 1 \!important;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    transition: var(--transition);
+}

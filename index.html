@@ -17,44 +17,6 @@
     <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-light-192x192.png">
     <!-- Main CSS Style -->
     <link rel="stylesheet" href="css/styles.css">
-    <!-- Emergency CSS Fix for Main Content Visibility -->
-    <style>
-        /* Emergency fix: Force main content visibility */
-        .main-container {
-            display: flex !important;
-            flex-direction: column !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 1 !important;
-            min-height: 400px !important;
-            padding: 1rem !important;
-            gap: 1rem !important;
-            overflow-y: auto !important;
-        }
-        .main-container > * {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-        .scanner-section,
-        .statistics-section,
-        .scan-history,
-        .data-display {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            background-color: #212529 !important;
-            border: 1px solid #444 !important;
-            border-radius: 8px !important;
-            padding: 1rem !important;
-            margin-bottom: 1rem !important;
-        }
-        .data-status-compact {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-    </style>
     <!-- JavaScript Libraries -->
     <!-- SheetJS from CDN: use version 0.20.3 -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>

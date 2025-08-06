@@ -28,6 +28,25 @@ class LanguageManager {
                 lightMode: 'Light Mode',
                 darkMode: 'Dark Mode',
                 
+                // Data Source & API Configuration
+                dataSource: 'Data Source',
+                offlineMode: 'Offline (XLS)',
+                onlineMode: 'Online (API)',
+                apiConfiguration: 'API Configuration',
+                apiToken: 'API Token',
+                apiTokenPlaceholder: 'Enter your API token...',
+                scanToken: 'Scan QR Code',
+                testConnection: 'Test Connection',
+                authenticate: 'Connect',
+                clearConfig: 'Clear',
+                apiNotConfigured: 'Not configured',
+                apiConnected: 'Connected',
+                scanApiToken: 'Scan API Token QR Code',
+                cancel: 'Cancel',
+                qrScanInstructions: 'Position the QR code within the frame above',
+                user: 'User',
+                name: 'Name',
+                
                 // Languages
                 languages: {
                     en: 'English',
@@ -532,37 +551,4 @@ class LanguageManager {
             } else if (element.hasAttribute('title')) {
                 element.title = this.get(key, parsedParams);
             } else {
-                element.textContent = this.get(key, parsedParams);
-            }
-        });
-
-        // Update document language
-        document.documentElement.lang = this.currentLanguage;
-    }
-
-    registerCallback(callback) {
-        if (typeof callback === 'function') {
-            this.callbacks.push(callback);
-        }
-    }
-
-    notifyCallbacks() {
-        this.callbacks.forEach(callback => {
-            try {
-                callback(this.currentLanguage);
-            } catch (error) {
-                console.error('Error in language callback:', error);
-            }
-        });
-    }
-
-    getAvailableLanguages() {
-        return Object.keys(this.translations);
-    }
-}
-
-// Create global instance
-const langManager = new LanguageManager();
-
-// Export for use in other scripts
-window.LanguageManager = langManager;
+                element.textConte

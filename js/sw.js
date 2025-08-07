@@ -1,14 +1,18 @@
-const CACHE_NAME = 'ticket-validator-v2';
+const CACHE_NAME = 'ticket-validator-v3';
 const ASSETS = [
   './',
   './index.html',
-  './css/styles.css',
-  './js/main.js',
-  './js/scanner.js',
-  './js/icons.js',
-  './js/theme.js',
-  './js/lang.js',
-  './js/ui-enhancements.js',
+  // Organized CSS files
+  './css/base.css',
+  './css/layout.css',
+  './css/components.css',
+  './css/themes.css',
+  './css/utilities.css',
+  // Core JavaScript files
+  './js/core/app-core.js',
+  './js/ui/icons.js',
+  './js/ui/theme-lang.js',
+  './js/ui/ui-enhancements.js',
   './js/debug-logger.js',
   './manifest.json',
   './offline.html',

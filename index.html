@@ -16,7 +16,12 @@
     <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-light-152x152.png">
     <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-light-192x192.png">
     <!-- Main CSS Style -->
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- Organized CSS Files -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/utilities.css">
     <!-- JavaScript Libraries -->
     <!-- SheetJS from CDN: use version 0.20.3 -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
@@ -276,14 +281,12 @@
         </footer>
     </div>
 
-    <!-- Core Scripts -->
+    <!-- Core Scripts - New Organized Structure -->
     <script src="js/debug-logger.js"></script>
-    <script src="js/icons.js"></script>
-    <script src="js/theme.js"></script>
-    <script src="js/lang.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/ui-enhancements.js"></script>
-    <script src="js/scanner.js"></script>
+    <script src="js/ui/icons.js"></script>
+    <script src="js/ui/theme-lang.js"></script>
+    <script src="js/core/app-core.js"></script>
+    <script src="js/ui/ui-enhancements.js"></script>
     
     <!-- PWA Initialization Script -->
     <script>

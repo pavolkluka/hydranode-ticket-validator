@@ -1,5 +1,222 @@
-// Language System for Hydranode Ticket Validator
-// Supports SK, CZ, EN, ES languages
+// Combined Theme and Language System for Hydranode Ticket Validator
+// Manages both UI theming and internationalization
+
+// ========================================
+// Theme Management System
+// ========================================
+
+class ThemeManager {
+    constructor() {
+        this.currentTheme = 'dark';
+        this.callbacks = [];
+        this.themes = {
+            light: {
+                '--primary-color': '#f8c423',
+                '--background-color': '#ffffff',
+                '--card-background': '#f8f9fa',
+                '--text-primary': '#212529',
+                '--text-secondary': '#6c757d',
+                '--border-color': '#dee2e6',
+                '--success-color': '#198754',
+                '--warning-color': '#ffc107',
+                '--danger-color': '#dc3545',
+                '--info-color': '#0d6efd',
+                '--hover-bg': '#e9ecef',
+                '--shadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
+                '--shadow-lg': '0 4px 8px rgba(0, 0, 0, 0.15)',
+                '--modal-backdrop': 'rgba(0, 0, 0, 0.5)'
+            },
+            dark: {
+                '--primary-color': '#f8c423',
+                '--background-color': '#000000',
+                '--card-background': '#212529',
+                '--text-primary': '#f8c423',
+                '--text-secondary': '#c3c3c3',
+                '--border-color': '#444',
+                '--success-color': '#198754',
+                '--warning-color': '#ffc107',
+                '--danger-color': '#dc3545',
+                '--info-color': '#0d6efd',
+                '--hover-bg': '#2c3136',
+                '--shadow': '0 2px 4px rgba(0, 0, 0, 0.3)',
+                '--shadow-lg': '0 4px 8px rgba(0, 0, 0, 0.4)',
+                '--modal-backdrop': 'rgba(0, 0, 0, 0.9)'
+            }
+        };
+        this.init();
+    }
+
+    init() {
+        this.setTheme(this.getSavedTheme() || 'dark');
+        this.detectSystemThemePreference();
+    }
+
+    getSavedTheme() {
+        try {
+            return localStorage.getItem('selectedTheme') || null;
+        } catch (error) {
+            console.error('Error loading saved theme:', error);
+            return null;
+        }
+    }
+
+    saveTheme(theme) {
+        try {
+            localStorage.setItem('selectedTheme', theme);
+        } catch (error) {
+            console.error('Error saving theme:', error);
+        }
+    }
+
+    detectSystemThemePreference() {
+        if (window.matchMedia && !this.getSavedTheme()) {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            this.setTheme(prefersDark ? 'dark' : 'light');
+            
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!this.getSavedTheme()) {
+                    this.setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+    }
+
+    setTheme(theme) {
+        if (this.themes[theme]) {
+            const previousTheme = this.currentTheme;
+            this.currentTheme = theme;
+            this.saveTheme(theme);
+            this.applyTheme();
+            this.updateMetaThemeColor();
+            this.notifyCallbacks();
+            
+            if (window.DebugLogger) {
+                window.DebugLogger.info('theme', 'Theme changed', {
+                    previousTheme,
+                    newTheme: theme,
+                    availableThemes: Object.keys(this.themes)
+                });
+            }
+        } else if (window.DebugLogger) {
+            window.DebugLogger.warn('theme', 'Attempted to set unsupported theme', {
+                requestedTheme: theme,
+                availableThemes: Object.keys(this.themes)
+            });
+        }
+    }
+
+    applyTheme() {
+        const root = document.documentElement;
+        const themeColors = this.themes[this.currentTheme];
+        
+        Object.keys(themeColors).forEach(property => {
+            root.style.setProperty(property, themeColors[property]);
+        });
+
+        document.body.className = document.body.className.replace(/theme-\w+/g, '');
+        document.body.classList.add(`theme-${this.currentTheme}`);
+    }
+
+    updateMetaThemeColor() {
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+            themeColorMeta.content = this.themes[this.currentTheme]['--primary-color'];
+        }
+    }
+
+    getCurrentTheme() {
+        return this.currentTheme;
+    }
+
+    toggleTheme() {
+        const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+        return newTheme;
+    }
+
+    isDarkTheme() {
+        return this.currentTheme === 'dark';
+    }
+
+    isLightTheme() {
+        return this.currentTheme === 'light';
+    }
+
+    registerCallback(callback) {
+        if (typeof callback === 'function') {
+            this.callbacks.push(callback);
+        }
+    }
+
+    notifyCallbacks() {
+        this.callbacks.forEach(callback => {
+            try {
+                callback(this.currentTheme);
+            } catch (error) {
+                console.error('Error in theme callback:', error);
+            }
+        });
+    }
+
+    getThemeColors(theme = null) {
+        theme = theme || this.currentTheme;
+        return this.themes[theme] || this.themes.dark;
+    }
+
+    getAnimationDuration() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        return prefersReducedMotion ? '0ms' : '300ms';
+    }
+
+    updateThemeSpecificElements() {
+        this.updateSVGIcons();
+        this.updateCanvasElements();
+    }
+
+    updateSVGIcons() {
+        const svgIcons = document.querySelectorAll('.theme-svg');
+        svgIcons.forEach(svg => {
+            const primaryColor = this.themes[this.currentTheme]['--primary-color'];
+            const textColor = this.themes[this.currentTheme]['--text-primary'];
+            
+            svg.querySelectorAll('[fill]').forEach(element => {
+                if (element.getAttribute('fill') !== 'none') {
+                    element.setAttribute('fill', element.hasAttribute('data-primary') ? primaryColor : textColor);
+                }
+            });
+        });
+    }
+
+    updateCanvasElements() {
+        const event = new CustomEvent('themeChanged', {
+            detail: { theme: this.currentTheme, colors: this.themes[this.currentTheme] }
+        });
+        window.dispatchEvent(event);
+    }
+
+    createThemeTransition(element, duration = null) {
+        if (!element) return;
+        
+        duration = duration || this.getAnimationDuration();
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefersReducedMotion) {
+            return;
+        }
+
+        element.style.transition = `all ${duration} ease-in-out`;
+        
+        setTimeout(() => {
+            if (element.style) {
+                element.style.transition = '';
+            }
+        }, parseInt(duration) || 300);
+    }
+}
+
+// ========================================
+// Language Management System
+// ========================================
 
 class LanguageManager {
     constructor() {
@@ -87,6 +304,10 @@ class LanguageManager {
                 status: 'Status',
                 timestamp: 'Time',
                 method: 'Method',
+                showAll: 'Show All',
+                showLimited: 'Show Limited',
+                noScansYet: 'No scans yet',
+                confirmClearHistory: 'Are you sure you want to clear the scan history?',
                 
                 // Data Display
                 dataDisplay: 'Ticket Data',
@@ -192,6 +413,10 @@ class LanguageManager {
                 status: 'Stav',
                 timestamp: 'Čas',
                 method: 'Metóda',
+                showAll: 'Zobraziť všetky',
+                showLimited: 'Zobraziť obmedzene',
+                noScansYet: 'Zatiaľ žiadne skeny',
+                confirmClearHistory: 'Ste si istí, že chcete vymazať históriu skenovania?',
                 
                 // Data Display
                 dataDisplay: 'Dáta lístkov',
@@ -297,6 +522,10 @@ class LanguageManager {
                 status: 'Stav',
                 timestamp: 'Čas',
                 method: 'Metoda',
+                showAll: 'Zobrazit vše',
+                showLimited: 'Zobrazit omezené',
+                noScansYet: 'Zatím žádné skeny',
+                confirmClearHistory: 'Jste si jisti, že chcete vymazat historii skenování?',
                 
                 // Data Display
                 dataDisplay: 'Data vstupenek',
@@ -402,6 +631,10 @@ class LanguageManager {
                 status: 'Estado',
                 timestamp: 'Hora',
                 method: 'Método',
+                showAll: 'Mostrar todo',
+                showLimited: 'Mostrar limitado',
+                noScansYet: 'Aún no hay escaneos',
+                confirmClearHistory: '¿Está seguro de que desea limpiar el historial de escaneo?',
                 
                 // Data Display
                 dataDisplay: 'Datos de entradas',
@@ -561,8 +794,38 @@ class LanguageManager {
     }
 }
 
-// Create global instance
+// ========================================
+// Global Initialization and Export
+// ========================================
+
+// Create global instances
+const themeManager = new ThemeManager();
 const langManager = new LanguageManager();
 
 // Export for use in other scripts
+window.ThemeManager = themeManager;
 window.LanguageManager = langManager;
+
+// Set up theme callbacks
+themeManager.registerCallback((theme) => {
+    themeManager.updateThemeSpecificElements();
+    
+    if (typeof window.UIEnhancements !== 'undefined' && window.UIEnhancements.announceToScreenReader) {
+        const themeName = theme === 'dark' ? 'Dark' : 'Light';
+        window.UIEnhancements.announceToScreenReader(`Switched to ${themeName} theme`);
+    }
+});
+
+// Apply initial theme and language on load
+document.addEventListener('DOMContentLoaded', () => {
+    themeManager.applyTheme();
+    langManager.updateUI();
+});
+
+// System Integration - Announce language changes to screen readers
+langManager.registerCallback((language) => {
+    if (typeof window.UIEnhancements !== 'undefined' && window.UIEnhancements.announceToScreenReader) {
+        const languageName = langManager.get('languages.' + language);
+        window.UIEnhancements.announceToScreenReader(`Language changed to ${languageName}`);
+    }
+});

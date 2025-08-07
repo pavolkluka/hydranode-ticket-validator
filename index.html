@@ -23,8 +23,6 @@
     <link rel="preload" href="js/ui/theme-lang.min.js" as="script">
     <link rel="preload" href="js/ui/icons.js" as="script">
     <link rel="preload" href="js/core/app-core.min.js" as="script">
-    <link rel="preload" href="logos/hydranode-horizontal-dark.png" as="image" type="image/png">
-    <link rel="preload" href="logos/hydranode-horizontal-light.png" as="image" type="image/png">
     <link rel="preload" href="icons/icon-dark-192x192.png" as="image" type="image/png">
     <link rel="preload" href="icons/icon-light-192x192.png" as="image" type="image/png">
     
@@ -233,7 +231,7 @@
                     </div>
                     <div class="history-actions">
                         <button id="showAllHistory" class="control-button small toggle">
-                            <span class="button-icon" id="showAllIcon">📋</span>
+                            <span class="button-icon" id="showAllIcon"></span>
                             <span data-i18n="showAll">Show All</span>
                         </button>
                         <button id="exportHistory" class="control-button small">
@@ -600,6 +598,7 @@
                 document.getElementById("debugExportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
                 document.getElementById("debugClearIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
                 document.getElementById("debugStatsIcon").innerHTML = window.IconLibrary.getIcon("chart", "16");
+                document.getElementById("showAllIcon").innerHTML = window.IconLibrary.getIcon("list", "14");
                 console.log("Icons initialized successfully");
             } catch (error) {
                 console.error("Error initializing icons:", error);

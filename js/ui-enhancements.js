@@ -92,7 +92,7 @@ class UIEnhancements {
     setupComponentHealthChecks() {
         // Check IconLibrary
         this.checkComponent('iconLibrary', () => {
-            return typeof window.iconLibrary !== 'undefined' && window.iconLibrary;
+            return typeof window.IconLibrary !== 'undefined' && window.IconLibrary;
         });
 
         // Check ThemeManager
@@ -102,7 +102,7 @@ class UIEnhancements {
 
         // Check LanguageManager
         this.checkComponent('languageManager', () => {
-            return typeof window.languageManager !== 'undefined' && window.languageManager;
+            return typeof window.LanguageManager !== 'undefined' && window.LanguageManager;
         });
 
         // Check Service Worker

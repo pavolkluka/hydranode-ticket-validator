@@ -404,44 +404,24 @@ function changePage(page) {
 
 // Data Availability Functions
 function checkDataAvailability() {
-    // Check if we're in online mode and have API access
-    const isOnlineMode = window.HydranodeAPI && window.HydranodeAPI.isOnlineModeEnabled();
-    const isAPIAuthenticated = window.HydranodeAPI && window.HydranodeAPI.isUserAuthenticated();
+    const hasData = currentData && 
+                   currentData.data && 
+                   Array.isArray(currentData.data) && 
+                   currentData.data.length > 0;
     
-    if (isOnlineMode) {
-        // In online mode, data availability depends on API authentication
-        return {
-            available: isAPIAuthenticated,
-            mode: 'online',
-            ticketCount: 0, // API doesn't provide ticket count upfront
-            validTicketCount: 0,
-            clientId: isAPIAuthenticated ? window.HydranodeAPI.getUserInfo()?.email : null,
-            storeName: isAPIAuthenticated ? `${window.HydranodeAPI.getUserInfo()?.first_name} ${window.HydranodeAPI.getUserInfo()?.last_name}` : null,
-            userInfo: isAPIAuthenticated ? window.HydranodeAPI.getUserInfo() : null
-        };
-    } else {
-        // In offline mode, check XLS data availability
-        const hasData = currentData && 
-                       currentData.data && 
-                       Array.isArray(currentData.data) && 
-                       currentData.data.length > 0;
-        
-        const hasValidTickets = hasData && currentData.data.some(row => 
+    const hasValidTickets = hasData && currentData.data.some(row => 
+        row.invoiceId && row.invoiceId.trim() !== ''
+    );
+    
+    return {
+        available: hasValidTickets,
+        ticketCount: hasData ? currentData.data.length : 0,
+        validTicketCount: hasData ? currentData.data.filter(row => 
             row.invoiceId && row.invoiceId.trim() !== ''
-        );
-        
-        return {
-            available: hasValidTickets,
-            mode: 'offline',
-            ticketCount: hasData ? currentData.data.length : 0,
-            validTicketCount: hasData ? currentData.data.filter(row => 
-                row.invoiceId && row.invoiceId.trim() !== ''
-            ).length : 0,
-            clientId: currentData?.clientId || null,
-            storeName: currentData?.storeName || null,
-            userInfo: null
-        };
-    }
+        ).length : 0,
+        clientId: currentData?.clientId || null,
+        storeName: currentData?.storeName || null
+    };
 }
 
 function updateDataAvailability() {
@@ -486,25 +466,13 @@ function updateDataAvailabilityUI(availability) {
     // Update compact data status indicator
     updateCompactDataStatusIndicator(availability);
     
-    // Update metadata panel based on mode
-    if (availability.mode === 'online') {
-        if (availability.available && availability.userInfo) {
-            const userInfo = availability.userInfo;
-            clientInfo.innerHTML = `<strong data-i18n="user">User:</strong> ${userInfo.email}`;
-            storeInfo.innerHTML = `<strong data-i18n="name">Name:</strong> ${userInfo.first_name} ${userInfo.last_name}`;
-        } else {
-            clientInfo.innerHTML = `<strong data-i18n="status">Status:</strong> <span class="data-status-unavailable">Online mode - not authenticated</span>`;
-            storeInfo.innerHTML = `<strong data-i18n="action">Action:</strong> <span>Please configure API token in Settings</span>`;
-        }
+    // Update metadata panel
+    if (availability.available) {
+        clientInfo.innerHTML = `<strong data-i18n="clientId">Client ID:</strong> ${availability.clientId || 'N/A'}`;
+        storeInfo.innerHTML = `<strong data-i18n="storeName">Store Name:</strong> ${availability.storeName || 'N/A'}`;
     } else {
-        // Offline mode
-        if (availability.available) {
-            clientInfo.innerHTML = `<strong data-i18n="clientId">Client ID:</strong> ${availability.clientId || 'N/A'}`;
-            storeInfo.innerHTML = `<strong data-i18n="storeName">Store Name:</strong> ${availability.storeName || 'N/A'}`;
-        } else {
-            clientInfo.innerHTML = `<strong data-i18n="status">Status:</strong> <span class="data-status-unavailable" data-i18n="noDataLoaded">No XLS data loaded</span>`;
-            storeInfo.innerHTML = `<strong data-i18n="action">Action:</strong> <span data-i18n="pleaseUpload">Please upload a valid XLS file to begin</span>`;
-        }
+        clientInfo.innerHTML = `<strong data-i18n="status">Status:</strong> <span class="data-status-unavailable" data-i18n="noDataLoaded">No XLS data loaded</span>`;
+        storeInfo.innerHTML = `<strong data-i18n="action">Action:</strong> <span data-i18n="pleaseUpload">Please upload a valid XLS file to begin</span>`;
     }
     
     // Re-apply language translations after updating content
@@ -551,41 +519,59 @@ function updateScannerAvailability(available) {
 
 function updateCompactDataStatusIndicator(availability) {
     // Update the compact data status indicator
-    const statusCompact = document.getElementById("dataStatusCompact");
-    const statusIcon = document.getElementById("statusIcon");
-    const statusText = document.getElementById("statusText");
+    const statusCompact = document.getElementById('dataStatusCompact');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
     
-    if (!statusCompact || !statusIcon || !statusText) return;
-    
-    if (availability.mode === 'online') {
-        if (availability.available && availability.userInfo) {
-            // Online mode - API connected and authenticated
-            statusCompact.className = "data-status-compact available online";
-            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("cloud", "16") : "☁";
-            statusText.textContent = `Online (API) - ${availability.userInfo.first_name} ${availability.userInfo.last_name}`;
-        } else {
-            // Online mode selected but not authenticated
-            statusCompact.className = "data-status-compact unavailable online-pending";
-            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("warning", "16") : "⚠";
-            statusText.textContent = "Online Mode - Please configure API token in Settings";
-        }
-    } else {
-        // Offline mode
+    if (statusCompact && statusIcon && statusText) {
         if (availability.available) {
-            // Offline mode with data available
-            statusCompact.className = "data-status-compact available offline";
-            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("check", "16") : "✓";
-            statusText.textContent = `Offline (XLS) - ${availability.validTicketCount} tickets loaded`;
+            statusCompact.className = 'data-status-compact available';
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('check', '16') : '✓';
+            statusText.setAttribute('data-i18n', 'dataAvailable');
+            statusText.setAttribute('data-i18n-params', JSON.stringify({count: availability.validTicketCount}));
         } else {
-            // Offline mode with no data
-            statusCompact.className = "data-status-compact unavailable offline";
-            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon("warning", "16") : "⚠";
-            statusText.textContent = "Offline (XLS) - No data loaded. Please upload XLS file in Settings";
+            statusCompact.className = 'data-status-compact unavailable';
+            statusIcon.innerHTML = window.IconLibrary ? window.IconLibrary.getIcon('warning', '16') : '⚠';
+            statusText.setAttribute('data-i18n', 'dataUnavailable');
+            statusText.removeAttribute('data-i18n-params');
         }
-    }
-    
-    // Update language content
-    if (typeof window.LanguageManager !== "undefined") {
-        window.LanguageManager.updateUI();
+        
+        // Update language content
+        if (typeof window.LanguageManager !== 'undefined') {
+            window.LanguageManager.updateUI();
+        }
     }
 }
+
+// Function to check if data is available (for external use)
+function isDataAvailable() {
+    return dataAvailable;
+}
+
+// Function to get data availability info (for external use)
+function getDataAvailabilityInfo() {
+    return checkDataAvailability();
+}
+
+// Initialize data availability status on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial data availability state
+    updateDataAvailability();
+    
+    // Register language change callback
+    if (typeof window.LanguageManager !== 'undefined') {
+        window.LanguageManager.registerCallback(function(language) {
+            // Update placeholders and titles when language changes
+            updateDataAvailability();
+        });
+    }
+    
+    // Register theme change callback for icon updates
+    if (typeof window.ThemeManager !== 'undefined') {
+        window.ThemeManager.registerCallback(function(theme) {
+            // Update status icons when theme changes
+            const availability = checkDataAvailability();
+            updateCompactDataStatusIndicator(availability);
+        });
+    }
+});

@@ -28,25 +28,6 @@ class LanguageManager {
                 lightMode: 'Light Mode',
                 darkMode: 'Dark Mode',
                 
-                // Data Source & API Configuration
-                dataSource: 'Data Source',
-                offlineMode: 'Offline (XLS)',
-                onlineMode: 'Online (API)',
-                apiConfiguration: 'API Configuration',
-                apiToken: 'API Token',
-                apiTokenPlaceholder: 'Enter your API token...',
-                scanToken: 'Scan QR Code',
-                testConnection: 'Test Connection',
-                authenticate: 'Connect',
-                clearConfig: 'Clear',
-                apiNotConfigured: 'Not configured',
-                apiConnected: 'Connected',
-                scanApiToken: 'Scan API Token QR Code',
-                cancel: 'Cancel',
-                qrScanInstructions: 'Position the QR code within the frame above',
-                user: 'User',
-                name: 'Name',
-                
                 // Languages
                 languages: {
                     en: 'English',
@@ -510,30 +491,6 @@ class LanguageManager {
         }
     }
 
-    // Callback management methods
-    addCallback(callback) {
-        if (typeof callback === 'function' && !this.callbacks.includes(callback)) {
-            this.callbacks.push(callback);
-        }
-    }
-
-    removeCallback(callback) {
-        const index = this.callbacks.indexOf(callback);
-        if (index > -1) {
-            this.callbacks.splice(index, 1);
-        }
-    }
-
-    notifyCallbacks() {
-        this.callbacks.forEach(callback => {
-            try {
-                callback(this.currentLanguage);
-            } catch (error) {
-                console.error('Error in language change callback:', error);
-            }
-        });
-    }
-
     getCurrentLanguage() {
         return this.currentLanguage;
     }
@@ -578,16 +535,34 @@ class LanguageManager {
                 element.textContent = this.get(key, parsedParams);
             }
         });
-        
-        // Trigger custom event for UI update
-        document.dispatchEvent(new CustomEvent('languageChanged', { 
-            detail: { language: this.currentLanguage } 
-        }));
+
+        // Update document language
+        document.documentElement.lang = this.currentLanguage;
+    }
+
+    registerCallback(callback) {
+        if (typeof callback === 'function') {
+            this.callbacks.push(callback);
+        }
+    }
+
+    notifyCallbacks() {
+        this.callbacks.forEach(callback => {
+            try {
+                callback(this.currentLanguage);
+            } catch (error) {
+                console.error('Error in language callback:', error);
+            }
+        });
+    }
+
+    getAvailableLanguages() {
+        return Object.keys(this.translations);
     }
 }
 
 // Create global instance
-const languageManager = new LanguageManager();
+const langManager = new LanguageManager();
 
-// Make languageManager available globally
-window.languageManager = languageManager;
+// Export for use in other scripts
+window.LanguageManager = langManager;

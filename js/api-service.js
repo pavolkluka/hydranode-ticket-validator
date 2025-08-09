@@ -3,7 +3,10 @@
 
 class HydranodeAPIService {
     constructor() {
-        this.baseURL = 'https://management.hydranode.net/api';
+        // Without Cloudflare Proxy
+        // this.baseURL = 'https://management.hydranode.net/api';
+        // With Cloudflare Proxy
+        this.baseURL = 'hydranode-api-proxy.cloudflareregistrar-crabmeat616.workers.dev';
         this.currentToken = null;
         this.userData = null;
         this.isOnline = false;

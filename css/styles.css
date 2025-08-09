@@ -2502,10 +2502,29 @@ select:focus {
     margin-top: 0.5rem;
 }
 
-.mode-toggle {
+.mode-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.current-mode-info {
     display: flex;
     align-items: center;
-    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(248, 196, 35, 0.1);
+    border: 1px solid rgba(248, 196, 35, 0.3);
+    border-radius: var(--border-radius-sm);
+}
+
+.mode-status-text {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.mode-status-text strong {
+    color: var(--primary-color);
 }
 
 .mode-toggle-btn {
@@ -2519,7 +2538,15 @@ select:focus {
     transition: var(--transition);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    width: 100%;
+}
+
+.mode-toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mode-toggle-btn:hover {
@@ -2798,6 +2825,11 @@ select:focus {
 }
 
 /* Light Theme Adjustments for API Components */
+[data-theme="light"] .current-mode-info {
+    background: rgba(248, 196, 35, 0.15);
+    border-color: rgba(248, 196, 35, 0.4);
+}
+
 [data-theme="light"] .api-token-section {
     background: #f8f9fa;
     border-color: #dee2e6;
@@ -2837,6 +2869,18 @@ select:focus {
 
 /* Responsive Design for API Components */
 @media (max-width: 768px) {
+    .mode-display {
+        gap: 0.5rem;
+    }
+    
+    .current-mode-info {
+        padding: 0.375rem;
+    }
+    
+    .mode-status-text {
+        font-size: 0.8125rem;
+    }
+    
     .token-input-group {
         flex-direction: column;
     }

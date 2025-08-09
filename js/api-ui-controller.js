@@ -105,19 +105,40 @@ class APIUIController {
 
     updateModeUI() {
         const modeToggleText = document.getElementById('modeToggleText');
+        const modeToggleIcon = document.getElementById('modeToggleIcon');
+        const currentModeDisplay = document.getElementById('currentModeDisplay');
         const apiTokenSection = document.getElementById('apiTokenSection');
         const modeToggle = document.getElementById('modeToggle');
 
-        if (modeToggleText && window.LanguageManager) {
-            modeToggleText.textContent = this.isOnlineMode ? 
-                window.LanguageManager.get('onlineMode') : 
-                window.LanguageManager.get('offlineMode');
+        if (window.LanguageManager) {
+            // Update current mode display
+            if (currentModeDisplay) {
+                currentModeDisplay.textContent = this.isOnlineMode ? 
+                    window.LanguageManager.get('onlineMode') : 
+                    window.LanguageManager.get('offlineMode');
+            }
+
+            // Update toggle button text
+            if (modeToggleText) {
+                modeToggleText.textContent = this.isOnlineMode ? 
+                    window.LanguageManager.get('switchToOffline') : 
+                    window.LanguageManager.get('switchToOnline');
+            }
         }
 
+        // Update toggle button icon
+        if (modeToggleIcon && window.IconLibrary) {
+            modeToggleIcon.innerHTML = this.isOnlineMode ? 
+                window.IconLibrary.getIcon('upload', '14') :  // XLS upload icon for switching to offline
+                window.IconLibrary.getIcon('cloud', '14');    // Cloud icon for switching to online
+        }
+
+        // Show/hide API token section
         if (apiTokenSection) {
             apiTokenSection.style.display = this.isOnlineMode ? 'block' : 'none';
         }
 
+        // Update toggle button style
         if (modeToggle) {
             modeToggle.className = `mode-toggle-btn ${this.isOnlineMode ? 'online' : 'offline'}`;
         }

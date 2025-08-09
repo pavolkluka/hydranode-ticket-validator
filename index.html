@@ -49,11 +49,18 @@
             </div>
             <div class="option-item api-mode-section">
                 <span class="option-icon" id="apiIcon"></span>
-                <span class="option-label" data-i18n="apiMode">API Mode</span>
+                <span class="option-label" data-i18n="apiMode">Data Source</span>
                 <div class="api-mode-controls">
-                    <div class="mode-toggle">
+                    <div class="mode-display">
+                        <div class="current-mode-info">
+                            <span class="mode-status-text">
+                                <span data-i18n="currentDataSource">Current:</span> 
+                                <strong id="currentModeDisplay" data-i18n="offlineMode">XLS File (Offline)</strong>
+                            </span>
+                        </div>
                         <button id="modeToggle" class="mode-toggle-btn">
-                            <span id="modeToggleText" data-i18n="offlineMode">Offline Mode</span>
+                            <span class="mode-toggle-icon" id="modeToggleIcon"></span>
+                            <span id="modeToggleText" data-i18n="switchToOnline">Switch to API (Online)</span>
                         </button>
                     </div>
                     <div class="api-token-section" id="apiTokenSection" style="display: none;">
@@ -368,7 +375,8 @@
                 document.getElementById("debugClearIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
                 document.getElementById("debugStatsIcon").innerHTML = window.IconLibrary.getIcon("chart", "16");
                 // API Mode Icons
-                document.getElementById("apiIcon").innerHTML = window.IconLibrary.getIcon("cloud", "16");
+                document.getElementById("apiIcon").innerHTML = window.IconLibrary.getIcon("database", "16");
+                document.getElementById("modeToggleIcon").innerHTML = window.IconLibrary.getIcon("upload", "14");
                 document.getElementById("tokenScanIcon").innerHTML = window.IconLibrary.getIcon("scanner", "14");
                 document.getElementById("tokenSubmitIcon").innerHTML = window.IconLibrary.getIcon("key", "14");
                 document.getElementById("tokenClearIcon").innerHTML = window.IconLibrary.getIcon("logout", "14");

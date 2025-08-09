@@ -28,10 +28,13 @@ class LanguageManager {
                 lightMode: 'Light Mode',
                 darkMode: 'Dark Mode',
                 
-                // API Mode
+                // Data Source
                 apiMode: 'Data Source',
-                onlineMode: 'Online Mode',
-                offlineMode: 'Offline Mode',
+                onlineMode: 'API (Online)',
+                offlineMode: 'XLS File (Offline)',
+                currentDataSource: 'Current',
+                switchToOnline: 'Switch to API (Online)',
+                switchToOffline: 'Switch to XLS File (Offline)',
                 enterApiToken: 'Enter API Token',
                 authenticate: 'Authenticate',
                 authenticating: 'Authenticating...',
@@ -162,10 +165,13 @@ class LanguageManager {
                 lightMode: 'Svetlý režim',
                 darkMode: 'Tmavý režim',
                 
-                // API Mode
+                // Data Source
                 apiMode: 'Zdroj dát',
-                onlineMode: 'Online režim',
-                offlineMode: 'Offline režim',
+                onlineMode: 'API (Online)',
+                offlineMode: 'XLS súbor (Offline)',
+                currentDataSource: 'Aktuálny',
+                switchToOnline: 'Prepnúť na API (Online)',
+                switchToOffline: 'Prepnúť na XLS súbor (Offline)',
                 enterApiToken: 'Zadajte API token',
                 authenticate: 'Overiť',
                 authenticating: 'Overujem...',
@@ -283,10 +289,13 @@ class LanguageManager {
                 lightMode: 'Světlý režim',
                 darkMode: 'Tmavý režim',
                 
-                // API Mode
+                // Data Source
                 apiMode: 'Zdroj dat',
-                onlineMode: 'Online režim',
-                offlineMode: 'Offline režim',
+                onlineMode: 'API (Online)',
+                offlineMode: 'XLS soubor (Offline)',
+                currentDataSource: 'Aktuální',
+                switchToOnline: 'Přepnout na API (Online)',
+                switchToOffline: 'Přepnout na XLS soubor (Offline)',
                 enterApiToken: 'Zadejte API token',
                 authenticate: 'Ověřit',
                 authenticating: 'Ověřuji...',
@@ -404,10 +413,13 @@ class LanguageManager {
                 lightMode: 'Modo claro',
                 darkMode: 'Modo oscuro',
                 
-                // API Mode
+                // Data Source
                 apiMode: 'Fuente de datos',
-                onlineMode: 'Modo en línea',
-                offlineMode: 'Modo sin conexión',
+                onlineMode: 'API (En línea)',
+                offlineMode: 'Archivo XLS (Sin conexión)',
+                currentDataSource: 'Actual',
+                switchToOnline: 'Cambiar a API (En línea)',
+                switchToOffline: 'Cambiar a Archivo XLS (Sin conexión)',
                 enterApiToken: 'Ingrese token API',
                 authenticate: 'Autenticar',
                 authenticating: 'Autenticando...',

@@ -198,7 +198,7 @@ class IconLibrary {
 
     // Get the appropriate app logo based on current theme
     getAppLogo(size = '32', className = '') {
-        const isDarkTheme = (window.ThemeManager && typeof window.ThemeManager.isDarkTheme === "function") ? window.ThemeManager.isDarkTheme() : true;
+        const isDarkTheme = window.ThemeManager ? window.ThemeManager.isDarkTheme() : true;
         
         // Use theme-appropriate icons from the icons/ folder
         // Dark icons for dark theme, light icons for light theme
@@ -260,7 +260,7 @@ class IconLibrary {
 
     // Update favicon based on current theme
     updateFavicon() {
-        const isDarkTheme = (window.ThemeManager && typeof window.ThemeManager.isDarkTheme === "function") ? window.ThemeManager.isDarkTheme() : true;
+        const isDarkTheme = window.ThemeManager ? window.ThemeManager.isDarkTheme() : true;
         const iconPrefix = isDarkTheme ? 'icon-dark' : 'icon-light';
         
         // Update main favicon

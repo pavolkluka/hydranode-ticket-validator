@@ -16,12 +16,7 @@
     <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-light-152x152.png">
     <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-light-192x192.png">
     <!-- Main CSS Style -->
-    <!-- Organized CSS Files -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/themes.css">
-    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/styles.css">
     <!-- JavaScript Libraries -->
     <!-- SheetJS from CDN: use version 0.20.3 -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous" defer></script>
@@ -51,6 +46,41 @@
                     <span class="option-icon" id="uploadIcon"></span>
                     <span data-i18n="uploadFile">Upload XLS File</span>
                 </label>
+            </div>
+            <div class="option-item api-mode-section">
+                <span class="option-icon" id="apiIcon"></span>
+                <span class="option-label" data-i18n="apiMode">API Mode</span>
+                <div class="api-mode-controls">
+                    <div class="mode-toggle">
+                        <button id="modeToggle" class="mode-toggle-btn">
+                            <span id="modeToggleText" data-i18n="offlineMode">Offline Mode</span>
+                        </button>
+                    </div>
+                    <div class="api-token-section" id="apiTokenSection" style="display: none;">
+                        <div class="token-input-group">
+                            <input type="text" id="apiTokenInput" class="token-input" 
+                                   placeholder="Enter API Token" data-i18n="enterApiToken"
+                                   maxlength="60" autocomplete="off" spellcheck="false">
+                            <button id="tokenScanBtn" class="token-scan-btn" title="Scan QR code">
+                                <span class="button-icon" id="tokenScanIcon"></span>
+                            </button>
+                        </div>
+                        <div class="token-actions">
+                            <button id="tokenSubmit" class="token-submit-btn">
+                                <span class="button-icon" id="tokenSubmitIcon"></span>
+                                <span data-i18n="authenticate">Authenticate</span>
+                            </button>
+                            <button id="tokenClear" class="token-clear-btn" style="display: none;">
+                                <span class="button-icon" id="tokenClearIcon"></span>
+                                <span data-i18n="logout">Logout</span>
+                            </button>
+                        </div>
+                        <div class="user-info" id="userInfo" style="display: none;">
+                            <div class="user-welcome" id="userWelcome"></div>
+                            <div class="user-details" id="userDetails"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="option-item">
                 <span class="option-icon" id="languageIcon"></span>
@@ -281,12 +311,16 @@
         </footer>
     </div>
 
-    <!-- Core Scripts - New Organized Structure -->
+    <!-- Core Scripts -->
     <script src="js/debug-logger.js"></script>
-    <script src="js/ui/icons.js"></script>
-    <script src="js/ui/theme-lang.js"></script>
-    <script src="js/core/app-core.js"></script>
-    <script src="js/ui/ui-enhancements.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/lang.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/api-ui-controller.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ui-enhancements.js"></script>
+    <script src="js/scanner.js"></script>
     
     <!-- PWA Initialization Script -->
     <script>
@@ -333,6 +367,11 @@
                 document.getElementById("debugExportIcon").innerHTML = window.IconLibrary.getIcon("export", "14");
                 document.getElementById("debugClearIcon").innerHTML = window.IconLibrary.getIcon("trash", "14");
                 document.getElementById("debugStatsIcon").innerHTML = window.IconLibrary.getIcon("chart", "16");
+                // API Mode Icons
+                document.getElementById("apiIcon").innerHTML = window.IconLibrary.getIcon("cloud", "16");
+                document.getElementById("tokenScanIcon").innerHTML = window.IconLibrary.getIcon("scanner", "14");
+                document.getElementById("tokenSubmitIcon").innerHTML = window.IconLibrary.getIcon("key", "14");
+                document.getElementById("tokenClearIcon").innerHTML = window.IconLibrary.getIcon("logout", "14");
                 console.log("Icons initialized successfully");
             } catch (error) {
                 console.error("Error initializing icons:", error);

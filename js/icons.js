@@ -171,6 +171,26 @@ class IconLibrary {
                 <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>`,
+
+            // Cloud/API
+            cloud: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 10H16.74C16.24 7.25 14.39 5 12 5C9.61 5 7.76 7.25 7.26 10H6C4.35 10 3 11.35 3 13C3 14.65 4.35 16 6 16H18C19.65 16 21 14.65 21 13C21 11.35 19.65 10 18 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            </svg>`,
+
+            // Key/Authentication
+            key: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/>
+                <path d="M13.6 13.6L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M18 6L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M16 8L18 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>`,
+
+            // Logout/Sign out
+            logout: `<svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="16,17 21,12 16,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>`
         };
     }
